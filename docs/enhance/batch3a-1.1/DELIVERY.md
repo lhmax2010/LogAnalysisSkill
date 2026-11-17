@@ -592,3 +592,79 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 ```
 
 B2 会强制全部 10 项真实 headless 本地测试。这里只提供 FatTank 构建机执行命令，本机没有运行这些真实验收步骤。
+
+
+## Checkpoint B2.3 — 请求版本并发保护与心跳竞态（2026-11-17）
+
+基线 `41e82212e1cdb9d6f47b318fca60d644ad9e0b75`。设计方反馈 v7 构建机 323 项在 362 秒内跑完，未挂起，10 项真实浏览器测试全部 PASS（含 WebSocket、长 TMPDIR、沙箱进程树），B2.2 已接受；唯一失败为 watch CLI 合并时心跳插入导致 stale_head。本节记录设计方实测反馈，本机未访问构建机。
+
+### 修复原则
+
+`submit_model.mutate()` 在同一个请求锁内最多尝试 4 次，只有 stale_head/state_busy 重试，退避 10/20/30 ms。每次重新打开状态库、读 head、重建所有请求，重新核对本请求 version、其它请求的 Hub/build 归属、OBSERVED 字段白名单，再运行调用方的附加状态复核并追加。请求版本改变即 request_version_changed；step 保持丢弃旧 scan 的语义。不同请求抢先绑定时返回 candidate_owned_by_other_request，不把旧候选证据写入当前请求。SQL 的 expected-head、唯一 bind/click/session 约束均保留，不把 append_batch 变成无条件写入。
+
+纯状态库的多步检查改用 `EventStore.transaction()`：先 BEGIN IMMEDIATE，再读状态、核对、追加并提交。嵌套 append/append_batch 使用 SAVEPOINT，失败回滚其批次；外层失败回滚整个事务。没有把网络读取、TTY 等待、浏览器操作或进程/目录清理放进写事务。人工/外部操作锁先取得，之后才取得 SQLite 写锁；manual-rerun 的归属在锁内再次核对，避免 DB→request 锁反序。
+
+需要长读取或人工确认的旧路径不能拿着写事务等待，也不能无条件刷新 head。新增 `append_retry(..., heartbeat_retry=True)` 的窄规则：只有插入的事件全为 submit_heartbeat 时可换用新 head；最多 4 次并短退避。任一实质状态事件仍按原规则拒绝；用户显式提供 --expected-event 时不启用该规则。workflow.loop 原有对无关观察事件的重试策略保留，不放宽对同构建事件或人工/外部写事件的拒绝。
+
+### 全部并发写路径审计
+
+下表文件若无顶层目录，均位于 `vd-cosmos-core/src/vd_cosmos_core/`。审计搜索范围为全部本线 src 中 head/append/append_batch/append_retry 调用；普通 list.append 不属于状态写入。
+
+| 路径 / 调用 | 处理与安全依据 |
+|---|---|
+| state.py / append、append_batch | expected_previous 严格比较、追加触发器与唯一约束保持；支持外层短事务，内层批次 SAVEPOINT 原子回滚。底层不会自行跨过未知事件 |
+| submit_model.py / mutate | 请求锁内 4 次有界完整重检；同请求 version 变化拒绝，跨请求归属每次重检，观察字段白名单每次执行 |
+| submit_model.py / create_request | submit-target 锁 + 同一立即写事务内检查 unresolved/重复轮次/重提关联并追加；心跳无法插入检查与写入之间 |
+| submit_model.py / record_outcome | prepared 检查绑定已读请求 version，委托 mutate；心跳不改 version，真实请求变化拒绝；不会重做浏览器点击 |
+| submit_model.py / resolve build-id、manual-submit、not-submitted、no-manual-submit | 委托 mutate；额外 recheck 在每次尝试读取当前 rerun 记录，刷新关联 rerun 或要求 rerun-records-unrelated 确认，避免“不改请求 version 的挂起记录”被旧检查遗漏 |
+| submit_model.py / resolve no-manual-action、manual-rerun | target 锁内短写事务覆盖 session 状态核对和追加；manual-rerun 先确定请求锁、拿锁后在事务中复核归属再合并，不在持有 DB 锁时等待请求锁 |
+| submit_claim.py / merge_scan、prepare_attest 的观察落库 | 委托 mutate，保留 scan 的原请求 version；step 捕获 request_version_changed 并返回 scan_discarded，网络在锁外 |
+| submit_claim.py / attest | 网络复读、变量比较先完成；请求锁 + 立即写事务中复核 version、硬约束、所有权、确认指纹/确认词，decision 与 bind 同批写入；base_source_attest 检查使用同一事务事件快照，不另开连接 |
+| submit_claim.py / rebind | 保留读取时的请求 version；mutate 每次重检当前请求/其它请求归属，额外重检 base 来源禁用和已有 bind 的历史所有者；SQL bind 唯一约束仍兜底 |
+| submit_claim.py / abandon | 先检查不确定状态，按该请求 version 委托 mutate；心跳可以重试，新的实际决定不会被覆盖 |
+| submit_watch.py / heartbeat | 原有最多 4 次重试已在每次重新读 head、上一心跳、间隔；保留，不改请求 version。数据库真实锁超时仍可报告 state_busy/heartbeat_state_busy |
+| submit_flow.py / intent | 请求锁 + 单个写事务中复核 version、表单摘要、active session、未决提交和重复轮次，再原子记录 click_intent/outcome；点击仍只发生在提交事务成功之后 |
+| submit_sessions.py / start、expose、recover_locked、finish | 各检查/追加阶段使用短事务；恢复先记录再关进程/清目录，收尾另起短事务；进程身份检查和清理均在 DB 事务之外。约束失败保留原来的安全拒绝 |
+| submit_source.py / determine | 页面/报告读取和人工确认完成后，单条 base_source_attest 在短事务内读 head 并追加；不把来源认定当 bind |
+| cli.py / watch、fetch observation started/failed/recorded | 无显式 expected-event 时仅跨过心跳；外部读取不重放，结果仍绑定原实质事件基线；其它事件造成 stale_head 时安全拒绝 |
+| journal.py / write_todos | 接收上层 heartbeat_retry；seen/todo_key 去重与同轮操作锁保持，纯心跳不改变待办依据；其它事件不被窄重试跨过 |
+| vd-cosmos-workflow/src/vd_cosmos_workflow/api.py / tick、loop | tick 意图/结果/待办在自动 head 时支持仅心跳重试；loop 既有 retry 和争用统计保持；显式 expected-event 仍严格，观察/下载不为心跳重复执行 |
+| vd-fix-register/src/vd_fix_register/api.py / decide | 轮次锁覆盖决策；外部读取/TTY 确认后只允许心跳重试。实际状态变化或显式 expected-event 冲突仍退出 6，不重新解释旧确认 |
+| vd-fix-analyze/src/vd_fix_analyze/api.py / create_snapshot | started/completed/failed/reused 与待办支持自动 head 的纯心跳重试；不重跑 P4/快照。真实状态变化仍拒绝完成事件，已写不可变产物不会因此获得有效状态 |
+| status/read/inbox/submit_once 的只读投影 | 不追加状态；无需重试写事务。后续写入仍受上表 version/expected-head 保护。物化报告可重新生成，不构成授权 |
+
+允许保留的退出 6：有限次数耗尽、真实 SQLite 锁繁忙、用户明确指定旧 head、影响依据的实质事件。不是靠忽略 stale_head 来“通过”验收。
+
+### 确定性测试
+
+新增 `vd-cosmos-core/tests/test_batch3a11b23.py`，注入发生在 append_batch/append 边界，无概率性的 sleep 竞态窗口：
+
+| 测试 | 断言 |
+|---|---|
+| test_heartbeat_between_head_and_append_retries_without_losing_chain | head 与 append 之间插入心跳，第二次写入成功；previous_id 链完整且仅一次观察事件 |
+| test_request_version_change_between_head_and_append_rejects_stale_scan | 同请求版本变化 → request_version_changed，旧 seen/scan 未写入 |
+| test_other_request_binding_between_head_and_append_rechecks_ownership | 另一请求抢先绑定 → candidate_owned_by_other_request，当前请求不被绑定 |
+| test_busy_retries_are_bounded_and_observed_checks_repeat | state_busy 最多 4 次；重试仍执行 OBSERVED 拒绝规则 |
+| test_step_discards_scan_when_version_changes_during_merge | step 返回 scan_discarded 并保留新状态 |
+| test_record_outcome_and_abandon_tolerate_heartbeat | outcome/abandon 委托路径可以跨过无关心跳 |
+| test_resolve_rechecks_pending_reruns_that_do_not_bump_request_version | resolve 重试刷新关联 rerun，新的挂起记录要求人工确认，不能吞掉 |
+| test_immediate_transaction_blocks_other_writer_and_preserves_expected_guard | 另一连接不能插入事务读写窗口，提交后旧 expected 仍拒绝 |
+| test_outer_transaction_and_nested_batch_rollback_are_atomic | 外层失败全回滚；内层批次约束失败不留下半个批次 |
+| test_only_heartbeats_rebase_while_explicit_heads_and_real_changes_refuse | 仅心跳自动 head 重试通过；显式旧 head/实质状态事件仍拒绝 |
+| test_workflow_tick_heartbeats_during_action_do_not_repeat_external_read | 意图后和动作后均插入心跳，tick 成功且 observe 只执行一次 |
+| test_fix_register_inbox_done_rebases_heartbeat_but_not_explicit_head | inbox.done 心跳重试通过，显式旧 head 不通过，不重复关闭待办 |
+
+原 `test_batch3a11b1_transport.LifecycleConcurrencyTests.test_watch_cli_readonly_fixture_and_no_click_events` 保留并通过，子进程 timeout 从 10 秒改为 60 秒；原网络锁外/并发 attest/会话唯一性/未决提交/点击意图等测试都在全量套件中。
+
+### 双解释器完整结果
+
+串行 nice 19，tmpfs 测试目录；run_tests.sh 包含 import-linter==2.3 三条约束和静态边界检查。输出首行为解释器版本。
+
+| 解释器 | 结果 | 完整输出 | SHA256 |
+|---|---|---|---|
+| Python 3.10.12 | 335 项：325 PASS、10 SKIP | `evidence-b23/python310.txt` | `32fd06706490b06214e9f37e20857f87191aef12887ea37195faf86dc7cf289b` |
+| Python 3.12.3 | 335 项：325 PASS、10 SKIP | `evidence-b23/python312.txt` | `660324473733af49dc0eed0570badc2da572ef3a3bd04da99da1899f1c7adce9` |
+
+本机仍缺 Playwright，10 项真实浏览器测试 SKIP；这与设计方已经报告的 v7 构建机 10 项 PASS 分开记录。本次未改浏览器层或超时清理层，也未宣称本机执行过浏览器测试。构建机 B2 的 VD_REQUIRE_HEADLESS=1 保持。
+
+源码摘要见 `evidence-b23/source-manifest.json`；结果索引 `validation.json`；最终凭据预检 `prepush-final.json`。STATUS 与本批代码同 commit 更新，无新增 B3a11-Q12 问题。A/B1/B2 构建机入口和参数不变，仅把 EXPECTED_COMMIT 换成本次最终完整提交号；本机未访问真实网络、真实 P4 或浏览器，也未复制真实配置。

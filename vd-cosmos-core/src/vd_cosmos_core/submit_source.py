@@ -104,6 +104,6 @@ def determine(config, hub, build, reader, confirm, context, header_reader=read_h
              'package_digest':base_digest(frozen['PACKAGE_LIST'],config),'variables':frozen,'from_form':[n for n in PROPERTIES if n not in copied],'headers':headers}
     model.ensure_safe(config,display)
     if confirm(display)!=build:raise FlowError(3,'source_confirmation_required')
-    with EventStore(config.data_root) as store:
+    with EventStore(config.data_root) as store, store.transaction():
         store.append(context,'base_source_attest',{'basis':basis,'frozen':frozen,'headers':headers,'at':time.time(),'reason':'once --base-from-hub 回显核对'},store.head())
     return form,basis

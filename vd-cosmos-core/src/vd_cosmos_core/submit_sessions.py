@@ -71,7 +71,7 @@ def recover_locked(config, context, processes, *, session_id=None, holder_gone=F
             if identity==session['payload']['start_time']: raise FlowError(6,'previous_session_may_be_alive')
         model.ensure_safe(config,reason)
         sid=session['operation_id'];rid=session['request_id']
-        with EventStore(config.data_root) as store:
+        with EventStore(config.data_root) as store, store.transaction():
             head=store.head();events=store.events();owned=[e for e in events if e['operation_id']==sid]
             if not any(e['kind']=='submit_recovery' for e in owned):
                 kinds={e['kind'] for e in owned};r=model.requests(events).get(rid)
@@ -89,7 +89,7 @@ def recover_locked(config, context, processes, *, session_id=None, holder_gone=F
         path=profile_path(config,session);processes.close(path)
         browser_temp.cleanup(path)
         if path.exists(): shutil.rmtree(path)
-        with EventStore(config.data_root) as store:
+        with EventStore(config.data_root) as store, store.transaction():
             store.append(context,'submit_session_finished',{'target':model.target(config),'normal_close':False,'recovered':True},store.head(),request_id=rid,operation_id=sid)
 
 
@@ -107,7 +107,7 @@ def start(config, request, context, processes=None):
     if identity is None: raise FlowError(6,'holder_unverified')
     profile='browser/profiles/'+sid
     payload={'target':model.target(config),'pid':pid,'start_time':identity,'profile':profile}
-    with EventStore(config.data_root) as store:
+    with EventStore(config.data_root) as store, store.transaction():
         events=store.events();r=model.requests(events).get(request['request_id'])
         if r is None or r['status']!='prepared' or r['version']!=request['version']:raise FlowError(6,'request_version_changed')
         if model.unresolved(model.requests(events),events,model.target(config)):raise FlowError(6,'unresolved_submission')
@@ -117,7 +117,7 @@ def start(config, request, context, processes=None):
 
 
 def expose(config, session, context):
-    with EventStore(config.data_root) as store:
+    with EventStore(config.data_root) as store, store.transaction():
         if not any(s['operation_id']==session['operation_id'] for s in active(store.events(),model.target(config))):raise FlowError(6,'session_not_active')
         store.append(context,'submit_form_exposed',{'target':model.target(config)},store.head(),request_id=session['request_id'],operation_id=session['operation_id'])
 
@@ -126,5 +126,5 @@ def finish(config, session, context, processes=None):
     path=profile_path(config,session);(processes or Processes()).close(path)
     browser_temp.cleanup(path)
     if path.exists():shutil.rmtree(path)
-    with EventStore(config.data_root) as store:
+    with EventStore(config.data_root) as store, store.transaction():
         store.append(context,'submit_session_finished',{'target':model.target(config),'normal_close':True},store.head(),request_id=session['request_id'],operation_id=session['operation_id'])

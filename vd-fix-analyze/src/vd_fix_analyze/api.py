@@ -9,7 +9,7 @@ from vd_cosmos_core.journal import write_todos
 from vd_cosmos_core.locks import OperationLock
 from vd_cosmos_core.p4 import P4Adapter
 from vd_cosmos_core.receipts import logs_valid
-from vd_cosmos_core.state import EventStore
+from vd_cosmos_core.state import EventStore, append_retry
 from vd_cosmos_core.versions import build_key
 from .snapshot import snapshot
 
@@ -71,8 +71,10 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
     key, context = build_key(reader), command_context('analyze.snapshot')
     with OperationLock(config.data_root, 'round', key), EventStore(config.data_root) as store:
         expected = store.head() if expected_event is None else expected_event
-        if expected != store.head():
+        if expected_event is not None and expected != store.head():
             raise FlowError(6, 'stale_head')
+        def append(kind, payload, expected):
+            return append_retry(store, context, kind, payload, expected, heartbeat_retry=expected_event is None)
         observed = reader.observe(reader.build_ref)
         packages = [p for p in observed['reports'].get(arch, {}).get('packages', []) if p['key']['name'] == name]
         if len(packages) != 1:
@@ -83,7 +85,7 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
             raise FlowError(3, 'p4_unclassified_retry_exhausted')
         attempt = uuid.uuid4().hex
         folder = f'rounds/{key}/snapshots/{attempt}'
-        current = store.append(context, 'snapshot_started', {'build': key, 'package': package['key'], 'attempt': attempt}, expected)
+        current = append('snapshot_started', {'build': key, 'package': package['key'], 'attempt': attempt}, expected)
         try:
             path = config.output(log_path)
             metadata = load_json(str(path)+'.json') if config.output(str(path)+'.json').exists() else {}
@@ -108,7 +110,7 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
                 if saved and digest(config.output(saved['path']).read_bytes()) == saved['sha256']:
                     old = load_json(saved['path'])
                     if old.get('historical_input_unrecoverable') and old.get('input_binding') == binding:
-                        current = store.append(context, 'snapshot_completed', {'build': key, 'package': package['key'], 'attempt': attempt, 'artifact': saved, 'reused': True}, current)
+                        current = append('snapshot_completed', {'build': key, 'package': package['key'], 'attempt': attempt, 'artifact': saved, 'reused': True}, current)
                         return {'artifact': saved, 'mode': '仅诊断', 'skipped': True, 'last_event_id': current, 'exit_code': 0}
                 break
             if isinstance(reader, FixtureReportReader) and reader.manifest.get('p4_fixture'):
@@ -129,17 +131,17 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
             review_basis(data, previous)
             data['input_binding'] = binding
             artifact = atomic_write(config.data_root, folder + '/manifest.json', json_bytes(data))
-            current = store.append(context, 'snapshot_completed', {'build': key, 'package': package['key'],
+            current = append('snapshot_completed', {'build': key, 'package': package['key'],
                 'attempt': attempt, 'artifact': artifact}, current)
-            current = write_todos(store, context, current, key, data['notices'], config)
+            current = write_todos(store, context, current, key, data['notices'], config, heartbeat_retry=expected_event is None)
             report = write_round_report(config, store, key)
             return {'artifact': artifact, 'round_report': report, 'mode': data['mode'], 'last_event_id': current, 'exit_code': 0}
         except FlowError as error:
-            current = store.append(context, 'snapshot_failed', {'build': key, 'package': package['key'],
+            current = append('snapshot_failed', {'build': key, 'package': package['key'],
                 'attempt': attempt, 'error': error.reason}, current)
             todo = error.details.get('todo') or {'reason': error.reason}
             if error.reason == 'p4_unclassified':
                 todo['structured_message'] = error.details.get('message', {})
             todo.update(package=package['key'], basis_version=digest(json_bytes(package['key'])), retry_count=count+1 if error.reason=='p4_unclassified' else 0)
-            write_todos(store, context, current, key, [todo], config)
+            write_todos(store, context, current, key, [todo], config, heartbeat_retry=expected_event is None)
             raise

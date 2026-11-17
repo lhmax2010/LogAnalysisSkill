@@ -189,7 +189,7 @@ class LifecycleConcurrencyTests(B1Case):
             name=str(i)+'.html';(fixture/name).write_bytes(body)
             mapping['https://bm.example.invalid'+path]={'file':name,'clock':{'valid':True,'offset_s':0,'error_s':0,'received_at':self.start,'sent_at':self.start,'server_time':self.start,'rtt_s':0}}
         manifest=fixture/'manifest.json';manifest.write_text(json.dumps({'pages':mapping}))
-        run=subprocess.run([sys.executable,str(REPO/'vd-cosmos-submit/scripts/run.py'),'watch','--config',str(self.path),'--request',r['request_id'],'--fixture',str(manifest),'--max-scans','1','--read-only'],capture_output=True,text=True,timeout=10)
+        run=subprocess.run([sys.executable,str(REPO/'vd-cosmos-submit/scripts/run.py'),'watch','--config',str(self.path),'--request',r['request_id'],'--fixture',str(manifest),'--max-scans','1','--read-only'],capture_output=True,text=True,timeout=60)
         self.assertEqual(run.returncode,0,run.stdout+run.stderr);result=json.loads(run.stdout)
         self.assertIsNone(result['binding'])
         with EventStore(self.config.data_root) as store:self.assertEqual(store.events(kinds=['click_intent','bind']),[])

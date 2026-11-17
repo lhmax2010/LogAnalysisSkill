@@ -103,7 +103,7 @@ def create_request(config, context, form, reason, *, resubmit_of=None, now=None)
     if not reason.strip(): raise FlowError(2, 'reason_required')
     sha = request_digest(config, form); ensure_safe(config, reason)
     with OperationLock(config.data_root, 'submit-target', digest(json_bytes(target(config)))):
-        with EventStore(config.data_root) as store:
+        with EventStore(config.data_root) as store, store.transaction():
             head = store.head(); events = store.events(); all_requests = requests(events)
             if unresolved(all_requests, events, target(config)): raise FlowError(6, 'unresolved_submission')
             same = [r for r in all_requests.values() if r['digest'] == sha and r['target'] == target(config)]
@@ -126,24 +126,32 @@ def create_request(config, context, form, reason, *, resubmit_of=None, now=None)
     return read(config, r)
 
 
-def mutate(config, request_id, expected_version, context, changes, *, kind='submit_decision', extra=None):
+def mutate(config, request_id, expected_version, context, changes, *, kind='submit_decision', extra=None, recheck=None):
     ensure_safe(config, changes)
     with lock(config, request_id):
-        with EventStore(config.data_root) as store:
-            head = store.head(); current = requests(store.events()).get(request_id)
-            if current is None or current['version'] != expected_version:
-                raise FlowError(6, 'request_version_changed')
-            if changes.get('hub_id') or changes.get('binding'):
-                for other in requests(store.events()).values():
-                    if other['request_id'] == request_id: continue
-                    if (changes.get('hub_id') and other.get('hub_id') == changes['hub_id']
-                            or changes.get('binding') and (other.get('binding') or {}).get('build_id') == changes['binding']['build_id']):
-                        raise FlowError(4, 'candidate_owned_by_other_request')
-            if kind == 'submit_observation' and set(changes) - OBSERVED:
-                raise FlowError(4, 'observation_cannot_authorize')
-            entries = [{'kind': kind, 'request_id': request_id, 'payload': {'changes': changes}}]
-            entries.extend(extra or [])
-            store.append_batch(context, entries, head)
+        for attempt in range(4):
+            try:
+                with EventStore(config.data_root) as store:
+                    head = store.head(); all_requests = requests(store.events()); current = all_requests.get(request_id)
+                    if current is None or current['version'] != expected_version:
+                        raise FlowError(6, 'request_version_changed')
+                    if changes.get('hub_id') or changes.get('binding'):
+                        for other in all_requests.values():
+                            if other['request_id'] == request_id: continue
+                            if (changes.get('hub_id') and other.get('hub_id') == changes['hub_id']
+                                    or changes.get('binding') and (other.get('binding') or {}).get('build_id') == changes['binding']['build_id']):
+                                raise FlowError(4, 'candidate_owned_by_other_request')
+                    if kind == 'submit_observation' and set(changes) - OBSERVED:
+                        raise FlowError(4, 'observation_cannot_authorize')
+                    if recheck is not None: recheck(store, all_requests, current)
+                    entries = [{'kind': kind, 'request_id': request_id, 'payload': {'changes': changes}}]
+                    entries.extend(extra or [])
+                    store.append_batch(context, entries, head)
+                break
+            except FlowError as error:
+                if error.reason not in {'stale_head', 'state_busy'} or attempt == 3:
+                    raise
+                time.sleep(.01 * (attempt + 1))
     return read(config, request_id)
 
 
@@ -168,7 +176,7 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
     if mode == 'no-manual-action':
         if not session or not checked_at:raise FlowError(2,'session_and_checked_at_required')
         with OperationLock(config.data_root,'submit-target',digest(json_bytes(target(config)))):
-            with EventStore(config.data_root) as store:
+            with EventStore(config.data_root) as store, store.transaction():
                 events=store.events()
                 if not any(e['operation_id']==session and e['kind'] in {'manual_action_pending','hub_page_exposed'} and e['payload'].get('target')==target(config) for e in events):raise FlowError(6,'session_not_pending')
                 if any(e['operation_id']==session and e['kind']=='submit_rerun_resolved' for e in events):raise FlowError(6,'session_already_resolved')
@@ -177,8 +185,14 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
     if mode == 'manual-rerun':
         if not session or not hub_id or not str(hub_id).isdecimal(): raise FlowError(2, 'rerun_identity_required')
         with OperationLock(config.data_root, 'submit-target', digest(json_bytes(target(config)))):
-            with EventStore(config.data_root) as store:
+            with EventStore(config.data_root) as lookup:
+                owner_ids = [r['request_id'] for r in requests(lookup.events()).values()
+                             if r['target'] == target(config) and r.get('hub_id') == str(hub_id)]
+            with lock(config, owner_ids[0]) if owner_ids else nullcontext(), EventStore(config.data_root) as store, store.transaction():
                 head = store.head(); events = store.events(); all_requests = requests(events)
+                fresh_ids = [r['request_id'] for r in all_requests.values()
+                             if r['target'] == target(config) and r.get('hub_id') == str(hub_id)]
+                if fresh_ids != owner_ids: raise FlowError(6, 'request_version_changed')
                 if any(e['kind'] == 'submit_rerun_resolved' and e['operation_id'] == session for e in events):
                     raise FlowError(6, 'session_already_resolved')
                 owners = [r for r in all_requests.values() if r['target'] == target(config) and r.get('hub_id') == str(hub_id)]
@@ -189,8 +203,7 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
                     r = owners[0]
                     entries.append({'kind': 'submit_decision', 'request_id': r['request_id'],
                                     'payload': {'changes': {'manual_reruns': r.get('manual_reruns', []) + [entries[0]['payload']]}}})
-                with lock(config, owners[0]['request_id']) if owners else nullcontext():
-                    store.append_batch(context, entries, head)
+                store.append_batch(context, entries, head)
         return {'recorded': True, 'pending': not owners, 'read_queues_changed': False}
     r = read(config, request_id)
     if mode in {'build-id', 'manual-submit'}:
@@ -217,4 +230,15 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
         if '未定位' in reason or 'not located' in reason.casefold(): raise FlowError(4, 'lookup_absence_not_resolution_evidence')
         changes = {'status': 'not_submitted', 'resolution_reason': reason, 'checked_at': checked_at}
     else: raise FlowError(2, 'invalid_resolve_mode')
-    return mutate(config, request_id, r['version'], context, changes)
+    def recheck(store, all_requests, current):
+        fresh_events = store.events()
+        if mode in {'build-id', 'manual-submit'}:
+            changes['manual_reruns'] = [e['payload'] for e in fresh_events if e['kind']=='submit_rerun_resolved'
+                and e['payload']['target']==current['target'] and e['payload']['hub_id']==str(hub_id)]
+        else:
+            pending = [e for e in fresh_events if e['kind']=='submit_rerun_resolved'
+                and e['payload'].get('pending') and e['payload']['target']==current['target']]
+            if pending and 'rerun-records-unrelated' not in words:
+                raise FlowError(3, 'rerun_records_confirmation_required', records=[
+                    {'at':e['payload']['at'], 'hub_id':e['payload']['hub_id']} for e in pending])
+    return mutate(config, request_id, r['version'], context, changes, recheck=recheck)

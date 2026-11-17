@@ -131,10 +131,11 @@ def merge_scan(config, r, scan, context, *, now=None):
     return mutate(config, r['request_id'], r['version'], context, changes, kind='submit_observation')
 
 
-def hard_checks(config, r, d, all_requests):
-    with EventStore(config.data_root) as store:
-        if any(e['payload']['basis']['build_id']==d['build_id'] for e in store.events(kinds=['base_source_attest'])):
-            raise FlowError(4,'base_source_not_bindable')
+def hard_checks(config, r, d, all_requests, events=None):
+    if events is None:
+        with EventStore(config.data_root) as store: events=store.events(kinds=['base_source_attest'])
+    if any(e['payload']['basis']['build_id']==d['build_id'] for e in events if e['kind']=='base_source_attest'):
+        raise FlowError(4,'base_source_not_bindable')
     if d['build_id'] in {'19270877', '19206687'}:
         raise FlowError(4, 'verification_source_or_erroneous_build_not_bindable')
     if d['identity'] != 'strong' or not d['hub_id'] or d['conflict']:
@@ -199,10 +200,10 @@ def attest(config, request_id, prepared, context, words, reason, reader, *, now=
     d = reader.detail(prepared['build_id'], fresh=True)
     comparison = bm_pages.compare(before, reader.variables(d['build_id'], variable_names(config)), config)
     with lock(config, request_id):
-        with EventStore(config.data_root) as store:
+        with EventStore(config.data_root) as store, store.transaction():
             head = store.head(); events = store.events(); all_requests = requests(events); r = all_requests[request_id]
             if r['version'] != before['version']: raise FlowError(6, 'request_version_changed')
-            hard_checks(config, r, d, all_requests)
+            hard_checks(config, r, d, all_requests, events)
             if r.get('binding'): return {'already_confirmed': True, 'binding': r['binding']}
             current = confirmation(config, r, r.get('scan', {}), d)
             if current['fingerprint'] != prepared['fingerprint'] or not comparison['matches']:
@@ -251,10 +252,17 @@ def rebind(config, request_id, build_id, context, reason, reader):
         extra.append({'kind': 'bind', 'request_id': request_id, 'build_key': key,
                       'payload': {'build_ref': ref.to_dict(), 'binding': binding,
                                   'previous_build': digest(json_bytes(previous_ref.to_dict()))}})
+    def recheck(store, all_requests, current):
+        hard_checks(config, dict(current, binding=None), d, all_requests, store.events())
+        existing = store.events(key, kinds=['bind'])
+        if existing and existing[0]['request_id'] != request_id:
+            raise FlowError(4, 'candidate_owned_by_other_request')
+        # The bind SQL invariant remains a final guard; avoid duplicate own binds.
+        if existing: extra[:] = [entry for entry in extra if entry['kind'] != 'bind']
     return mutate(config, request_id, r['version'], context,
                   {'binding': binding, 'binding_history': history, 'rebind_reason': reason,
                    'observation_complete': False, 'input_verification': '待报告核对', 'result_caution': '旧映射产物已过期'},
-                  extra=extra)
+                  extra=extra, recheck=recheck)
 
 
 def abandon(config, request_id, context, reason):

@@ -23,7 +23,7 @@ def write_inbox(store, config):
     return atomic_write(config.data_root, 'inbox.md', ('\n'.join(lines) + '\n').encode())
 
 
-def write_todos(store, context, expected, build_key, todos, config, *, retry=False):
+def write_todos(store, context, expected, build_key, todos, config, *, retry=False, heartbeat_retry=False):
     seen = {e['payload'].get('todo_key') for e in store.events(build_key, kinds=['inbox_opened'])}
     for original in todos:
         todo = sorted_body(original)
@@ -31,7 +31,7 @@ def write_todos(store, context, expected, build_key, todos, config, *, retry=Fal
                     'basis_version': todo.get('basis_version', 'unversioned')}
         key = digest(json_bytes(identity))
         if key not in seen:
-            expected = append_retry(store, context, 'inbox_opened', {'todo_key': key, 'todo': todo, 'build': build_key}, expected, retry=retry)
+            expected = append_retry(store, context, 'inbox_opened', {'todo_key': key, 'todo': todo, 'build': build_key}, expected, retry=retry, heartbeat_retry=heartbeat_retry)
             seen.add(key)
     write_inbox(store, config)
     return expected

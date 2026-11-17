@@ -1,6 +1,8 @@
 """Append-only journal with global expected-head concurrency and SQL invariants."""
 import json
+from contextlib import contextmanager
 import sqlite3
+import time
 
 from .commands import authorize_event, COMMANDS, Category
 from .errors import FlowError
@@ -112,14 +114,39 @@ class EventStore:
         except (sqlite3.Error, ValueError) as error:
             raise FlowError(6, classify(error)) from None
 
+    @contextmanager
+    def transaction(self):
+        """Short database-only read/check/write section; nested appends use savepoints."""
+        nested = self.connection.in_transaction
+        self._savepoint = getattr(self, '_savepoint', 0) + 1
+        name = 'event_write_' + str(self._savepoint)
+        started = False
+        try:
+            self.connection.execute('SAVEPOINT '+name if nested else 'BEGIN IMMEDIATE')
+            started = True
+            yield self
+            self.connection.execute('RELEASE '+name if nested else 'COMMIT')
+        except BaseException as error:
+            try:
+                if started and self.connection.in_transaction:
+                    if nested:
+                        self.connection.execute('ROLLBACK TO '+name)
+                        self.connection.execute('RELEASE '+name)
+                    else:
+                        self.connection.execute('ROLLBACK')
+            except sqlite3.Error:
+                raise FlowError(6, 'corrupt') from None
+            if isinstance(error, sqlite3.Error):
+                raise FlowError(6, classify(error)) from None
+            raise
+
     def append(self, context, kind, payload, expected_previous, *, request_id=None,
                operation_id=None, build_ref=None):
         authorize_event(context, kind)
         if type(expected_previous) is not int or expected_previous < 0:
             raise FlowError(2, "invalid_expected_event")
         build_key = digest(json_bytes(build_ref.to_dict())) if build_ref else payload.get("build")
-        try:
-            self.connection.execute("BEGIN IMMEDIATE")
+        with self.transaction():
             if self.head() != expected_previous:
                 raise FlowError(6, "stale_head")
             cursor = self.connection.execute(
@@ -127,24 +154,13 @@ class EventStore:
                 "VALUES(?,?,?,?,?,?,?)",
                 (expected_previous, kind, context.name, request_id, operation_id, build_key,
                  json.dumps(payload, ensure_ascii=False, sort_keys=True)))
-            self.connection.execute("COMMIT")
             return cursor.lastrowid
-        except (sqlite3.Error, FlowError) as error:
-            try:
-                if self.connection.in_transaction:
-                    self.connection.execute("ROLLBACK")
-            except sqlite3.Error:
-                raise FlowError(6, "corrupt") from None
-            if isinstance(error, FlowError):
-                raise
-            raise FlowError(6, classify(error)) from None
 
     def append_batch(self, context, entries, expected_previous):
         """Append related events atomically, retaining the global expected-head guard."""
         for entry in entries:
             authorize_event(context, entry['kind'])
-        try:
-            self.connection.execute('BEGIN IMMEDIATE')
+        with self.transaction():
             if self.head() != expected_previous:
                 raise FlowError(6, 'stale_head')
             ids = []
@@ -154,13 +170,7 @@ class EventStore:
                     (self.head(), entry['kind'], context.name, entry.get('request_id'), entry.get('operation_id'),
                      entry.get('build_key'), json.dumps(entry['payload'], ensure_ascii=False, sort_keys=True)))
                 ids.append(cursor.lastrowid)
-            self.connection.execute('COMMIT')
             return ids
-        except (sqlite3.Error, FlowError) as error:
-            if self.connection.in_transaction:
-                self.connection.execute('ROLLBACK')
-            if isinstance(error, FlowError): raise
-            raise FlowError(6, classify(error)) from None
 
 
 def classify(error):
@@ -173,19 +183,21 @@ def classify(error):
     return 'corrupt'
 
 
-def append_retry(store, context, kind, payload, expected, *, retry=False, **identifiers):
+def append_retry(store, context, kind, payload, expected, *, retry=False, heartbeat_retry=False, **identifiers):
     for attempt in range(4):
         try:
             return store.append(context, kind, payload, expected, **identifiers)
         except FlowError as error:
-            if not retry or error.reason not in {'stale_head', 'state_busy'}:
+            if not (retry or heartbeat_retry) or error.reason not in {'stale_head', 'state_busy'}:
                 raise
             new_head = store.head()
             intervening = store.events(after=expected)
-            if any(e.get('build_key') == payload.get('build') or
-                   COMMANDS.get(e['command']) in {Category.HUMAN, Category.EXTERNAL} for e in intervening):
+            harmless_heartbeat = heartbeat_retry and all(e['kind']=='submit_heartbeat' for e in intervening)
+            if not harmless_heartbeat and (not retry or any(e.get('build_key') == payload.get('build') or
+                   COMMANDS.get(e['command']) in {Category.HUMAN, Category.EXTERNAL} for e in intervening)):
                 error.details['intervening_event'] = True
                 raise
             if attempt == 3:
                 raise
             expected = new_head
+            time.sleep(.01 * (attempt + 1))

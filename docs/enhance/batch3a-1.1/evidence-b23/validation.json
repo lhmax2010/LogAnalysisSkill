@@ -1,0 +1,29 @@
+{
+  "runs": [
+    {
+      "interpreter": "Python 3.10.12",
+      "tests": 335,
+      "passed": 325,
+      "skipped": 10,
+      "skip_reason": "Playwright Python runtime unavailable",
+      "output": "docs/enhance/batch3a-1.1/evidence-b23/python310.txt",
+      "sha256": "32fd06706490b06214e9f37e20857f87191aef12887ea37195faf86dc7cf289b",
+      "exit_code": 0
+    },
+    {
+      "interpreter": "Python 3.12.3",
+      "tests": 335,
+      "passed": 325,
+      "skipped": 10,
+      "skip_reason": "Playwright Python runtime unavailable",
+      "output": "docs/enhance/batch3a-1.1/evidence-b23/python312.txt",
+      "sha256": "660324473733af49dc0eed0570badc2da572ef3a3bd04da99da1899f1c7adce9",
+      "exit_code": 0
+    }
+  ],
+  "import_linter": "2.3; 3 contracts kept on each interpreter",
+  "static_check": "PASS",
+  "real_browser_ran_locally": false,
+  "real_network_used": false,
+  "open_questions": []
+}

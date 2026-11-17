@@ -15,7 +15,7 @@ from .files import atomic_write, digest, json_bytes
 from .locks import OperationLock
 from .journal import write_todos as _todos, monitor_todos, monitoring_fields
 from .versions import evaluation
-from .state import EventStore
+from .state import EventStore, append_retry
 
 
 class Parser(argparse.ArgumentParser):
@@ -77,16 +77,18 @@ def execute(skill, args):
     build_key = digest(json_bytes(reader.build_ref.to_dict()))
     with OperationLock(config.data_root, "round", build_key), EventStore(config.data_root) as store:
         expected = args.expected_event if args.expected_event is not None else store.head()
+        def append(kind, payload, expected):
+            return append_retry(store, context, kind, payload, expected, heartbeat_retry=args.expected_event is None)
         attempt = uuid.uuid4().hex
-        current = store.append(context, "observation_started", {"attempt": attempt, "build": build_key}, expected)
+        current = append("observation_started", {"attempt": attempt, "build": build_key}, expected)
         try:
             data = read_action(skill, args.command, reader, args.arch)
         except FlowError as error:
-            current = store.append(context, "observation_failed", {"attempt": attempt, "build": build_key,
+            current = append("observation_failed", {"attempt": attempt, "build": build_key,
                          "reason": error.reason, "exit_code": error.code}, current)
             error_data = {'exit_code': error.code, 'todos': [error.details['todo']] if error.details.get('todo') else []}
             todos = monitor_todos(config, store, build_key, error_data, step='logs' if args.command == 'logs' else 'observe')
-            _todos(store, context, current, build_key, todos, config)
+            _todos(store, context, current, build_key, todos, config, heartbeat_retry=args.expected_event is None)
             raise
         if skill == "watch":
             data["evaluation"] = evaluation(reader, data)
@@ -98,9 +100,9 @@ def execute(skill, args):
                    "header_consistency": data.get("header_consistency"), "package_coverage": data.get("package_coverage"), "exit_code": exit_code}
         if skill == "watch":
             payload.update(monitoring_fields(data))
-        current = store.append(context, "observation_failed" if exit_code else "observation_recorded", payload, current)
+        current = append("observation_failed" if exit_code else "observation_recorded", payload, current)
         todos = monitor_todos(config, store, build_key, data, step="logs" if args.command == "logs" else "observe")
-        current = _todos(store, context, current, build_key, todos, config)
+        current = _todos(store, context, current, build_key, todos, config, heartbeat_retry=args.expected_event is None)
         return {"artifact": artifact, "last_event_id": current, "exit_code": exit_code,
                 **{key: data[key] for key in ("execution_state", "report_state", "result_state", "header_consistency", "package_coverage") if key in data}}
 

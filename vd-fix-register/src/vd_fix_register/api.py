@@ -8,7 +8,7 @@ from vd_cosmos_core.journal import write_inbox
 from vd_cosmos_core.locks import OperationLock
 from vd_cosmos_core.p4 import P4Adapter
 from vd_cosmos_core.receipts import report_digests
-from vd_cosmos_core.state import EventStore
+from vd_cosmos_core.state import EventStore, append_retry
 from vd_cosmos_core.versions import build_key
 
 
@@ -23,8 +23,10 @@ def decide(config, reader, command, *, expected_event=None, reason='', report_bi
     key = build_key(reader)
     with OperationLock(config.data_root, 'round', key), EventStore(config.data_root) as store:
         expected = store.head() if expected_event is None else expected_event
-        if expected != store.head():
+        if expected_event is not None and expected != store.head():
             raise FlowError(6, 'stale_head')
+        def append(kind, payload, expected):
+            return append_retry(store, context, kind, payload, expected, heartbeat_retry=expected_event is None)
         payload = {'build': key, 'reason': reason}
         if command == 'confirm-terminal':
             kind = 'terminal_withdrawn' if withdraw else 'terminal_confirmed'
@@ -79,6 +81,6 @@ def decide(config, reader, command, *, expected_event=None, reason='', report_bi
             payload.update(todo_key=todo_key, package=todo.get('package'), todo_reason=todo.get('reason'))
         else:
             raise FlowError(2, 'unregistered_command')
-        current = store.append(context, kind, payload, expected)
+        current = append(kind, payload, expected)
         write_inbox(store, config)
         return {'last_event_id': current, 'kind': kind, 'exit_code': 0}

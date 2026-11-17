@@ -7,7 +7,7 @@ from .submit_browser_contract import structure, readback, wire_values, verify_pa
 
 def intent(config,request,session,context,H_pre,clock):
     with model.lock(config,request['request_id']):
-        with EventStore(config.data_root) as store:
+        with EventStore(config.data_root) as store, store.transaction():
             events=store.events();all_requests=model.requests(events);r=all_requests.get(request['request_id'])
             if r is None or r['version']!=request['version'] or r['status']!='prepared' or model.request_digest(config,r['form'])!=r['digest']:raise FlowError(6,'request_changed_before_click')
             if not any(s['operation_id']==session['operation_id'] for s in sessions.active(events,model.target(config))):raise FlowError(6,'session_not_active')

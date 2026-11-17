@@ -93,7 +93,7 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
     retry = loop_driven and expected_event is None
     with OperationLock(config.data_root, 'round', key), EventStore(config.data_root) as store:
         expected = store.head() if expected_event is None else expected_event
-        if expected != store.head():
+        if expected_event is not None and expected != store.head():
             raise FlowError(6, 'stale_head')
         clean_unfinished(config, store, key)
         state = projection(config, store, key)
@@ -113,7 +113,7 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
             step = 'observe'
         attempt = uuid.uuid4().hex
         current = append_retry(store, context, 'workflow_intent', {'build': key, 'step': step, 'attempt': attempt},
-                               expected, operation_id=attempt, retry=retry)
+                               expected, operation_id=attempt, retry=retry, heartbeat_retry=expected_event is None)
         if after_intent:
             after_intent()
         try:
@@ -161,12 +161,12 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
         if step == 'notify':
             payload['evaluation'] = evaluation(reader, previous)
             if not code:
-                current = write_todos(store, context, current, key, data['todos'], config, retry=retry)
+                current = write_todos(store, context, current, key, data['todos'], config, retry=retry, heartbeat_retry=expected_event is None)
         if after_action:
             after_action(step)
-        current = append_retry(store, context, 'workflow_result', payload, current, operation_id=attempt, retry=retry)
+        current = append_retry(store, context, 'workflow_result', payload, current, operation_id=attempt, retry=retry, heartbeat_retry=expected_event is None)
         todos = monitor_todos(config, store, key, data, step=step) + state['todos']
-        current = write_todos(store, context, current, key, todos, config, retry=retry)
+        current = write_todos(store, context, current, key, todos, config, retry=retry, heartbeat_retry=expected_event is None)
         return {'phase': phase, 'action': step, 'exit_code': code, 'last_event_id': current, 'artifact': artifact, 'terminal_basis': (data if step == 'observe' else previous or {}).get('effective_terminal_basis'),
                 'watch_started_at': state.get('completed_at') if state.get('completed_evaluation') == evaluation(reader, data if step == 'observe' else previous or {}) else store.events(key, kinds=['workflow_result'], latest=True)[0]['created_at']}
 

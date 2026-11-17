@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 2026-11-17 B2.3：设计方确认 v7（41e8221）323 项/362 秒无挂起、10 项真实浏览器全 PASS，B2.2 接受；唯一 watch CLI stale_head 竞态已修复。mutate 在请求锁内最多 4 次完整重检；其它纯 DB 检查/追加合入短事务；长读取路径仅跨过纯心跳且保留显式 expected-event 与实质状态冲突拒绝；原 CLI timeout 改为 60 秒。Python 3.10.12 / 3.12.3 各 335 项：325 PASS、10 SKIP（本机缺 Playwright），新增 12 项确定性测试全 PASS。逐路径审计、测试与摘要见 batch3a-1.1/DELIVERY.md B2.3 和 evidence-b23/。无新增设计问题，构建机命令不变，本次修复真实复验待执行。
+
 - 2026-11-17 B2.2：按 v6 反馈修复 Playwright 注册回调同步等待（WebSocket 不连接，其余动作在既有 loop 调度）；全部真实浏览器测试独立 90 秒 watchdog、失败线程栈；A/B1/B2 共用进程组 TERM→10 秒→KILL 与逃逸浏览器扫描，检查后流式写 transcript、超时保留 artifact；显式 Chromium sandbox，无降级，新增进程树参数核对。Python 3.10.12 / 3.12.3 各 323 项：313 PASS、10 SKIP（缺 Playwright；构建机强制执行），import/静态检查通过。详情/回调审计/命令/摘要见 batch3a-1.1/DELIVERY.md B2.2 与 evidence-b22/；真实回调与沙箱仍待构建机复验，无新增设计问题。
 
 - 2026-11-16 B2.1：按 v5 构建机长 TMPDIR 的 SingletonSocket 诊断，浏览器子进程改用独立 0700 短临时目录（XDG 合格则优先，否则 /tmp），close/finish/recover 均核验进程和目录身份后清理；六阶段安全启动诊断；测试与 verifier 共用 Chrome wrapper 选择；修正 verifier artifact 路径取值。Python 3.10.12 / 3.12.3 完整各 313 项：304 PASS、9 SKIP（本机缺 Playwright；原 8 项 + 长 TMPDIR 回归），import/静态检查通过；构建机 VD_REQUIRE_HEADLESS=1 强制这 9 项，真实复验待运行。详见 batch3a-1.1/DELIVERY.md 的 B2.1 与 evidence-b21/。无新增设计问题，未访问真实服务或执行提交。
