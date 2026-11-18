@@ -16,6 +16,8 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 
 必须先查看 B2 验收 PASS。仍保持 property_map_confirmed=false；不要为了通过演练临时启用正式提交。配置需要完整 18 项表单值、现有 browser_executable、登记的 auth_paths（主机/路径/方法）和精确 static_paths；名单默认空会拒绝。认证链路若依赖跨域 iframe，当前实现保守拒绝，不能扩大名单绕过框架拦截。
 
+已有配置先用 `nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG"` 写入 B2.4 对应表（同时留下原配置的私有备份）。首版要求 GITURL、Product Version (ks)、rpm Add & Delete、PACKAGE_LIST (DELETE)、PACKAGE_LIST (x86 arch) 全为空；两个复选框保持勾选，Image Skip? 使用打开表单时的预选文本。工具回读确认这些要求后才继续。演练核验编码前不要更改 `property_map_confirmed`。
+
 ```bash
 nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse
 ```

@@ -10,8 +10,32 @@ from . import submit_model as model
 
 KINDS = ['select','text','text','text','select','textarea','select','textarea','ks',
          'textarea','textarea','textarea','textarea','checkbox','checkbox','select','textarea','text']
+EMPTY_CONTROLS = tuple(PROPERTIES[i] for i in (6, 9, 10, 11, 12))
+DEFAULT_CONTROLS = PROPERTIES[13:16]
 SEED = [{'index':i,'label':name,'kind':KINDS[i], 'name':'editor:content:basicProperties:'+str(i)+':property:editor:editor:'+('palette:recorder' if i==8 else 'checkbox' if i in (13,14) else 'wrapper:select' if KINDS[i]=='select' else 'wrapper:input')} for i,name in enumerate(PROPERTIES)]
 CALLBACK_SEED=[{'method':'POST','path':'/wicket/page','listener':'IBehaviorListener','behavior':'0','component':'form-editor-content-basicProperties-'+str(i)+'-property-editor-editor-wrapper-input'} for i in (1,2,3,5,7,17)]
+
+def policy_error(field, rule):
+    reason = 'first_release_submit_policy'
+    return FlowError(4, reason, todo={'reason': reason, 'field': field, 'rule': rule,
+        'message': {'must_be_empty': '首版只允许该控件为空。',
+                    'must_keep_default': '首版必须保留表单当前默认值；请核对请求和表单。'}[rule]})
+
+
+def enforce_policy(form, *, defaults=None, actual=None):
+    if set(form) != set(PROPERTIES):
+        raise FlowError(2, 'all_18_properties_required')
+    if any(not isinstance(value, str) for value in form.values()):
+        raise FlowError(2, 'business_values_must_be_strings')
+    for field in EMPTY_CONTROLS:
+        if form[field] != '' or (actual is not None and actual[field] != ''):
+            raise policy_error(field, 'must_be_empty')
+    for field, allowed in zip(DEFAULT_CONTROLS, ({'true'}, {'true'}, {'yes', 'no'})):
+        requested = form[field]
+        if (requested not in allowed or (defaults is not None and defaults[field] != requested)
+                or (actual is not None and actual[field] != requested)):
+            raise policy_error(field, 'must_keep_default')
+
 
 def normalized(value):
     return '\n'.join(line.rstrip() for line in value.replace('\r\n','\n').replace('\r','\n').split('\n')).rstrip()
@@ -29,9 +53,10 @@ def structure(config, snapshot):
     fingerprint={'target':snapshot['target'],'controls':[{k:v for k,v in c.items() if k!='value'} for c in controls]}
     return fingerprint
 
-def readback(config,snapshot,form):
+def readback(config,snapshot,form, *, defaults=None):
     structure(config,snapshot)
     actual={c['label']:c.get('value') for c in snapshot['controls']}
+    enforce_policy(form, defaults=defaults, actual=actual)
     if any(not isinstance(actual.get(p),str) or normalized(actual[p])!=normalized(form[p]) for p in PROPERTIES):raise FlowError(5,'form_readback_mismatch')
     return actual
 

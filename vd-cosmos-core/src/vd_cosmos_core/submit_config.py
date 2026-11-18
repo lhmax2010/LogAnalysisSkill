@@ -13,6 +13,29 @@ PROPERTIES = ('BUILD_TYPE', 'BASE_REPOS', 'BUILD_CONF', 'PRODUCT_REPOS', 'ARCH',
 TEXT_PROPERTIES = set(PROPERTIES) - {'BUILD_TYPE', 'ARCH', 'GITURL', 'KS_LIST',
     'Ignore package build failure?', "Keep 'Full' build type", 'Image Skip?'}
 SECRET_NAME = re.compile(r'(?:password|passwd|secret|token|cookie|ticket|saml|relaystate|profile_data)', re.I)  # credential-test-sample
+NOT_LISTED = frozenset(PROPERTIES[i] for i in (6, 12, 14, 16))
+
+
+def property_map_defaults():
+    direct = {0, 1, 2, 3, 4, 5, 7, 8, 17}
+    renamed = {9: 'KS_PRODUCT_VERSION', 10: 'KS_PACKAGE_ADD', 11: 'DELETE_PACKAGE_LIST',
+               13: 'BUILD_CONTINUOUS', 15: 'DO_NOT_CREATE_IMAGE'}
+    encodings = {0: 'enum', 4: 'enum', 6: 'enum', 8: 'ks', 13: 'boolean',
+                 14: 'boolean', 15: 'enum'}
+    observed = {0: ['Full'], 4: ['armv7l'], 13: ['true'], 15: ['yes', 'no']}
+    result = {}
+    for i, name in enumerate(PROPERTIES):
+        entry = dict(control_index=i, variable=name if i in direct else renamed.get(i, 'not_listed'),
+                     encoding=encodings.get(i, 'text'), affects_build=name != 'EMAIL_CC',
+                     comparison='cmp-v1', request_text_verified=False, observed_values=observed.get(i, []),
+                     evidence=['recon20 form controls', 'recon25 D variable names and value shapes',
+                               'FatTank form help / B2.4 designer decision'])
+        if i in (13, 14):
+            entry['checked_value'] = 'on'  # HTML form value from recon20, separate from the variable value.
+        if i == 13:
+            entry['variable_values'] = {'true': 'yes'}
+        result[name] = entry
+    return result
 
 
 def configure(raw):
@@ -85,10 +108,13 @@ def configure(raw):
         if not isinstance(entry,dict) or set(entry)!={'method','path','listener','behavior','component'} or entry['method']!='POST' or entry['path']!='/wicket/page' or entry['listener']!='IBehaviorListener' or not isinstance(entry['behavior'],str) or not entry['behavior'].isdecimal() or not re.fullmatch(r'form-editor-content-basicProperties-(?:[0-9]|1[0-7])-property-editor-editor-[A-Za-z0-9_-]+',entry['component']):raise FlowError(2,'invalid_callback_pattern')
     if not isinstance(submit['form_fingerprint'],dict) or len(submit['form_fingerprint'].get('controls',[]))!=18:raise FlowError(2,'invalid_form_fingerprint')
     props = submit.setdefault('property_map', {})
-    if set(props) - set(PROPERTIES):
+    if not isinstance(props, dict) or set(props) - set(PROPERTIES):
         raise FlowError(2, 'unknown_submit_property')
+    defaults = property_map_defaults()
     for index, name in enumerate(PROPERTIES):
-        entry = props.setdefault(name, {})
+        entry = props.setdefault(name, defaults[name])
+        if not isinstance(entry, dict):
+            raise FlowError(2, 'invalid_property_map')
         for key, value in [('control_index', index), ('variable', None), ('encoding', None),
                            ('affects_build', name != 'EMAIL_CC'), ('comparison', 'cmp-v1'),
                            ('request_text_verified', False), ('observed_values', [])]:
@@ -99,4 +125,7 @@ def configure(raw):
                 or not isinstance(entry['observed_values'], list)
                 or (entry['variable'] is not None and
                     (not isinstance(entry['variable'], str) or SECRET_NAME.search(entry['variable'])))):
+            raise FlowError(2, 'invalid_property_map')
+        variable_values = entry.get('variable_values', {})
+        if not isinstance(variable_values, dict) or any(not isinstance(v, str) for v in variable_values.values()):
             raise FlowError(2, 'invalid_property_map')

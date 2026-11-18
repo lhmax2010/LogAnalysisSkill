@@ -40,7 +40,9 @@ class B1Case(unittest.TestCase):
         self.path=self.root/'config.json'; self.path.write_text(json.dumps(raw)); self.config=load_config(self.path)
         self.start=bm_pages.page_time(DATE,'Asia/Seoul')
     def reader(self, data=None): return Reader(self.config,transport=MemoryTransport(data or pages()),sleep=lambda _:None)
-    def form(self): return dict.fromkeys(PROPERTIES,'') | {'PACKAGE_LIST':BASE}
+    def form(self):
+        return dict.fromkeys(PROPERTIES,'') | {'PACKAGE_LIST':BASE, 'Ignore package build failure?':'true',
+                                              "Keep 'Full' build type":'true', 'Image Skip?':'no'}
     def accepted(self, *, H_pre=490, click=True, form=None):
         r=submit_model.create_request(self.config,EXTERNAL,form or self.form(),'fixture',now=self.start)
         return submit_model.record_outcome(self.config,r['request_id'],EXTERNAL,'accepted',now=self.start,

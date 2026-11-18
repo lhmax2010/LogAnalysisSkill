@@ -9,7 +9,7 @@ from .errors import FlowError
 from .export import check_content
 from .files import digest, json_bytes
 from .report import Document, Node, cells, normalize
-from .submit_config import PROPERTIES, SECRET_NAME
+from .submit_config import NOT_LISTED, PROPERTIES, SECRET_NAME
 from .variable_pages import parse as parse_variables, remember
 
 
@@ -238,8 +238,9 @@ def variables(data, config, build_id, names):
 def compare(request, values, config):
     result = {}; props = config.raw['submit']['property_map']
     for name in PROPERTIES:
-        if name == 'EMAIL_CC': continue
         entry = props[name]; var = entry['variable']
+        if name in NOT_LISTED or var == 'not_listed':
+            result[name] = '未核验'; continue
         if name in {'PACKAGE_LIST', 'SHELVE_LIST'}: var = name
         if name == 'SHELVE_LIST':
             result[name] = '一致' if not values.get(var, {}).get('value', '').strip() else '不一致'; continue
@@ -255,7 +256,7 @@ def compare(request, values, config):
         elif entry['encoding'] in {'enum', 'boolean', 'ks'} and str(expected) not in entry['observed_values']:
             result[name] = '未核验'; continue
         else:
-            equal = cmp_v1(str(expected)) == cmp_v1(actual)
+            equal = cmp_v1(entry.get('variable_values', {}).get(expected, expected)) == cmp_v1(actual)
         result[name] = '一致' if equal else '不一致'
     return {'rule': 'cmp-v1', 'fields': result, 'matches': '不一致' not in result.values(),
             'description': '已核验字段一致', 'unverified': [k for k, v in result.items() if v.startswith('未核验')]}

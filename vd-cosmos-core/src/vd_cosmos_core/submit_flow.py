@@ -3,7 +3,8 @@ import time
 from .errors import FlowError
 from .state import EventStore
 from . import submit_model as model, submit_sessions as sessions
-from .submit_browser_contract import structure, readback, wire_values, verify_parts
+from .submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, structure, readback, wire_values, verify_parts
+from .submit_config import PROPERTIES
 
 def intent(config,request,session,context,H_pre,clock):
     with model.lock(config,request['request_id']):
@@ -22,13 +23,15 @@ def intent(config,request,session,context,H_pre,clock):
 def execute(config,request,session,context,driver,confirm,reader_factory,*,rehearse):
     clicked=False
     try:
+        enforce_policy(request['form'])
         driver.open(lambda:sessions.expose(config,session,context),confirm)
         first=driver.snapshot();fingerprint=structure(config,first)
-        for index,name in enumerate(request['form']):
-            # The index comes from the immutable property order, never dictionary order.
-            from .submit_config import PROPERTIES
-            driver.fill(PROPERTIES.index(name),request['form'][name])
-        snapshot=driver.snapshot();values=readback(config,snapshot,request['form'])
+        defaults={c['label']:c.get('value') for c in first['controls'] if c['label'] in DEFAULT_CONTROLS}
+        enforce_policy(request['form'],defaults=defaults)
+        for index,name in enumerate(PROPERTIES):
+            if name not in DEFAULT_CONTROLS:
+                driver.fill(index,request['form'][name])
+        snapshot=driver.snapshot();values=readback(config,snapshot,request['form'],defaults=defaults)
         if structure(config,snapshot)['controls']!=fingerprint['controls']:
             # Default states change during filling; control names/types/options must not.
             def stable(fp):return [{k:v for k,v in c.items() if k!='default'} for c in fp['controls']]
@@ -47,7 +50,7 @@ def execute(config,request,session,context,driver,confirm,reader_factory,*,rehea
             overview=reader.overview();ids=[int(r['hub_id']) for r in overview['rows'] if r.get('hub_id')];H_pre=max(ids) if ids else None;clock=reader.samples[-1] if reader.samples else {}
         except FlowError:pass
         finally:reader.close()
-        final=driver.snapshot();readback(config,final,request['form'])
+        final=driver.snapshot();readback(config,final,request['form'],defaults=defaults)
         def stable(fp):return [{k:v for k,v in c.items() if k not in {'default','value'}} for c in fp['controls']]
         if stable(structure(config,final))!=stable(structure(config,snapshot)):raise FlowError(5,'form_changed_before_click')
         expected=wire_values(config,final,request['form']);request=intent(config,request,session,context,H_pre,clock);clicked=True

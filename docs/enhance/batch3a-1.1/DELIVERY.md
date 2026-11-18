@@ -596,6 +596,8 @@ B2 会强制全部 10 项真实 headless 本地测试。这里只提供 FatTank 
 
 ## Checkpoint B2.3 — 请求版本并发保护与心跳竞态（2026-11-17）
 
+构建机 v8 验收（设计方反馈，提交 `7970b8a`）：A PASS（7 个包快照通过）；B1 PASS（两项查号均唯一且正确）；B2 PASS（335/335，无跳过，含真实无头浏览器和沙箱检查）；无残留进程。B2.3 已接受。
+
 基线 `41e82212e1cdb9d6f47b318fca60d644ad9e0b75`。设计方反馈 v7 构建机 323 项在 362 秒内跑完，未挂起，10 项真实浏览器测试全部 PASS（含 WebSocket、长 TMPDIR、沙箱进程树），B2.2 已接受；唯一失败为 watch CLI 合并时心跳插入导致 stale_head。本节记录设计方实测反馈，本机未访问构建机。
 
 ### 修复原则
@@ -668,3 +670,40 @@ B2 会强制全部 10 项真实 headless 本地测试。这里只提供 FatTank 
 本机仍缺 Playwright，10 项真实浏览器测试 SKIP；这与设计方已经报告的 v7 构建机 10 项 PASS 分开记录。本次未改浏览器层或超时清理层，也未宣称本机执行过浏览器测试。构建机 B2 的 VD_REQUIRE_HEADLESS=1 保持。
 
 源码摘要见 `evidence-b23/source-manifest.json`；结果索引 `validation.json`；最终凭据预检 `prepush-final.json`。STATUS 与本批代码同 commit 更新，无新增 B3a11-Q12 问题。A/B1/B2 构建机入口和参数不变，仅把 EXPECTED_COMMIT 换成本次最终完整提交号；本机未访问真实网络、真实 P4 或浏览器，也未复制真实配置。
+
+## Checkpoint B2.4 — B3a11 设计裁定：表单属性对应表（设计方 2026-11-18）
+
+依据 `../evidence/recon20.txt` 的 18 项控件和初始状态、`../evidence/recon25.txt` D 的变量名称和值形状，以及 FatTank 的表单帮助。本节取代 B1.1 的建议表；对应关系获准，浏览器线上的序列化编码仍须演练观测，`property_map_confirmed` 维持 false。
+
+| 控件 | 变量与比较规则 |
+|---|---|
+| 0 BUILD_TYPE、1 BASE_REPOS、2 BUILD_CONF、3 PRODUCT_REPOS、4 ARCH | 同名变量 |
+| 5 PACKAGE_LIST、7 SHELVE_LIST | 同名变量；PACKAGE_LIST 按解析结果比较 |
+| 8 KS_LIST | 同名变量，取 recorder 值；未观测编码前保持未核验 |
+| 9 Product Version (ks) | KS_PRODUCT_VERSION |
+| 10 rpm Add & Delete | KS_PACKAGE_ADD；派生的 KS_PACKAGE_ADD_MAP 不参与比较 |
+| 11 PACKAGE_LIST (DELETE) | DELETE_PACKAGE_LIST；带架构后缀的派生变量不参与比较 |
+| 13 Ignore package build failure? | BUILD_CONTINUOUS；勾选时变量值为 `yes`，仅此编码已观测 |
+| 15 Image Skip? | DO_NOT_CREATE_IMAGE；按选项文本 `yes` / `no` 原样比较 |
+| 6 GITURL、12 PACKAGE_LIST (x86 arch)、14 Keep 'Full' build type、16 EMAIL_CC | `not_listed`，不读取对比且不记作已核验。12 由 Cosmos 并入 PACKAGE_LIST_x86_64；14 对应变量未知，不能当作 AMEND_BUILD |
+| 17 EXTRA_BUILD_PARAMETER | 同名变量 |
+
+`submit_browser_contract.py` / `submit_once.py` / `submit_flow.py`：6、9、10、11、12 非空（包括空白字符）返回 4 和点名控件的待办，创建请求前拒绝。13、14 必须勾选，15 必须与首次表单快照的预选文本一致；不写这三项，填写后和发送前都回读复核。非演练仍受属性图确认、表单指纹确认和请求闸门限制。`bm_pages.py` 将 `not_listed` 报为未核验，区分勾选所对应的变量值和浏览器表单值。
+
+`apply_property_map.py` 验证已有配置和更新后的配置，保存权限 0600 的同目录原样时间戳备份，并原子替换目标；属性图之外的已有字节不变。只打印新增或变动的属性名。已确认时拒绝；没有变化时不写文件或新备份。构建机仅由 FatTank 在专用配置上运行，当前开发机用测试夹具验证：
+
+```bash
+nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG"
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome /opt/google/chrome/google-chrome
+```
+
+离线回归见 `vd-cosmos-core/tests/test_batch3a11b24.py`：覆盖 18 项与样例一致、五项禁填、三项默认值、回读变化、`not_listed` 与编码、配置原字节/备份/重复运行以及已确认或无效配置拒绝。本批未访问真实 Cosmos、P4 或提交端，也未运行实况演练。
+
+`run_tests.sh` 在两套解释器中均通过语法/标准库检查、静态浏览器边界及 import-linter 2.3 三条约束。新增 8 项均通过；两套环境均缺 Playwright，10 项真实无头/沙箱测试未在本机运行，构建机 B2 验收仍强制这些测试执行。v8 的 335/335 是 `7970b8a` 的构建机结果，不是本提交的浏览器验收结果。
+
+| 解释器 | 结果 | 完整输出 | SHA256 |
+|---|---|---|---|
+| Python 3.10.12 | 343 项：333 PASS、10 SKIP | `evidence-b24/python310.txt` | `1f7f8a83bea3575141a80c4fe566c41e9cd5fac9255015a093ef89186865a601` |
+| Python 3.12.3 | 343 项：333 PASS、10 SKIP | `evidence-b24/python312.txt` | `ae6d32e163b41804a1cade3c6150ca6548ee213d0e572450efbcb57c0f13e3e8` |
+
+凭据预检见 `evidence-b24/prepush-final.json`。无新增设计问题；编码确认仍由 FatTank 根据演练完成。

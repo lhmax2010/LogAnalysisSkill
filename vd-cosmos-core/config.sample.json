@@ -222,165 +222,269 @@
     "property_map": {
       "BUILD_TYPE": {
         "control_index": 0,
-        "variable": null,
-        "encoding": null,
+        "variable": "BUILD_TYPE",
+        "encoding": "enum",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [
+          "Full"
+        ],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "BASE_REPOS": {
         "control_index": 1,
-        "variable": null,
-        "encoding": null,
+        "variable": "BASE_REPOS",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "BUILD_CONF": {
         "control_index": 2,
-        "variable": null,
-        "encoding": null,
+        "variable": "BUILD_CONF",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "PRODUCT_REPOS": {
         "control_index": 3,
-        "variable": null,
-        "encoding": null,
+        "variable": "PRODUCT_REPOS",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "ARCH": {
         "control_index": 4,
-        "variable": null,
-        "encoding": null,
+        "variable": "ARCH",
+        "encoding": "enum",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [
+          "armv7l"
+        ],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "PACKAGE_LIST": {
         "control_index": 5,
-        "variable": null,
-        "encoding": null,
+        "variable": "PACKAGE_LIST",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "GITURL": {
         "control_index": 6,
-        "variable": null,
-        "encoding": null,
+        "variable": "not_listed",
+        "encoding": "enum",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "SHELVE_LIST": {
         "control_index": 7,
-        "variable": null,
-        "encoding": null,
+        "variable": "SHELVE_LIST",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "KS_LIST": {
         "control_index": 8,
-        "variable": null,
-        "encoding": null,
+        "variable": "KS_LIST",
+        "encoding": "ks",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "Product Version (ks)": {
         "control_index": 9,
-        "variable": null,
-        "encoding": null,
+        "variable": "KS_PRODUCT_VERSION",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "rpm Add & Delete": {
         "control_index": 10,
-        "variable": null,
-        "encoding": null,
+        "variable": "KS_PACKAGE_ADD",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "PACKAGE_LIST (DELETE)": {
         "control_index": 11,
-        "variable": null,
-        "encoding": null,
+        "variable": "DELETE_PACKAGE_LIST",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "PACKAGE_LIST (x86 arch)": {
         "control_index": 12,
-        "variable": null,
-        "encoding": null,
+        "variable": "not_listed",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "Ignore package build failure?": {
         "control_index": 13,
-        "variable": null,
-        "encoding": null,
+        "variable": "BUILD_CONTINUOUS",
+        "encoding": "boolean",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [
+          "true"
+        ],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ],
+        "checked_value": "on",
+        "variable_values": {
+          "true": "yes"
+        }
       },
       "Keep 'Full' build type": {
         "control_index": 14,
-        "variable": null,
-        "encoding": null,
+        "variable": "not_listed",
+        "encoding": "boolean",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ],
+        "checked_value": "on"
       },
       "Image Skip?": {
         "control_index": 15,
-        "variable": null,
-        "encoding": null,
+        "variable": "DO_NOT_CREATE_IMAGE",
+        "encoding": "enum",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [
+          "yes",
+          "no"
+        ],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "EMAIL_CC": {
         "control_index": 16,
-        "variable": null,
-        "encoding": null,
+        "variable": "not_listed",
+        "encoding": "text",
         "affects_build": false,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       },
       "EXTRA_BUILD_PARAMETER": {
         "control_index": 17,
-        "variable": null,
-        "encoding": null,
+        "variable": "EXTRA_BUILD_PARAMETER",
+        "encoding": "text",
         "affects_build": true,
         "comparison": "cmp-v1",
         "request_text_verified": false,
-        "observed_values": []
+        "observed_values": [],
+        "evidence": [
+          "recon20 form controls",
+          "recon25 D variable names and value shapes",
+          "FatTank form help / B2.4 designer decision"
+        ]
       }
     },
     "property_map_confirmed": false,

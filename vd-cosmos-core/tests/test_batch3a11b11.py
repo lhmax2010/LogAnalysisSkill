@@ -131,11 +131,8 @@ class VariablePageTests(B1Case):
         self.assertIn('变量页已变化',r['todos'])
         self.assertIsNone(r['binding'])
 
-    def test_registered_text_compares_and_shipped_map_stays_unregistered(self):
-        for entry in self.config.raw['submit']['property_map'].values():
-            self.assertIsNone(entry['variable']);self.assertIsNone(entry['encoding'])
-        p=self.config.raw['submit']['property_map']['EXTRA_BUILD_PARAMETER']
-        p.update(variable='EXTRA_BUILD_PARAMETER',encoding='text',request_text_verified=True)
+    def test_registered_text_compares_while_map_is_unconfirmed_for_submit(self):
+        self.assertFalse(self.config.raw['submit']['property_map_confirmed'])
         result=bm_pages.compare({'form':dict.fromkeys(PROPERTIES,'')|{'PACKAGE_LIST':BASE}},
             {'PACKAGE_LIST':{'value':BASE},'EXTRA_BUILD_PARAMETER':{'value':'a different value'}},self.config)
         self.assertEqual(result['fields']['EXTRA_BUILD_PARAMETER'],'不一致')
@@ -161,6 +158,7 @@ class VariablePageTests(B1Case):
         form=self.form();form['EXTRA_BUILD_PARAMETER']='--threads 32'
         vals={'PACKAGE_LIST':{'value':BASE},'EXTRA_BUILD_PARAMETER':{'value':'--threads 32 \r\n'}}
         prop=self.config.raw['submit']['property_map']['EXTRA_BUILD_PARAMETER']
+        prop.update(variable=None, encoding=None)
         self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'未核验')
         prop.update(variable='EXTRA_BUILD_PARAMETER',encoding=None)
         self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'未核验')

@@ -8,6 +8,7 @@ from .errors import FlowError
 from .files import digest, json_bytes
 from .http_reader import HTTPReportReader
 from .state import EventStore
+from .submit_config import NOT_LISTED
 from .submit_model import mutate, read, requests, ensure_safe, lock
 
 
@@ -36,8 +37,8 @@ def lower_bound(config, r):
 
 
 def variable_names(config):
-    return {'PACKAGE_LIST', 'SHELVE_LIST'} | {e['variable'] for e in config.raw['submit']['property_map'].values()
-        if e['affects_build'] and e['variable'] not in (None, 'not_listed')}
+    return {'PACKAGE_LIST', 'SHELVE_LIST'} | {e['variable'] for name, e in config.raw['submit']['property_map'].items()
+        if name not in NOT_LISTED and e['affects_build'] and e['variable'] not in (None, 'not_listed')}
 
 
 def collect(config, r, reader):

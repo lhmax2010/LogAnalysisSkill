@@ -4,6 +4,7 @@ from .commands import Category
 from .errors import FlowError
 from .state import EventStore
 from . import submit_model as model, submit_sessions as sessions, submit_source
+from .submit_browser_contract import enforce_policy
 
 
 def prepare(config, args, context, reader_factory, confirm, *, processes=None, header_reader=None):
@@ -25,6 +26,7 @@ def prepare(config, args, context, reader_factory, confirm, *, processes=None, h
         finally:reader.close()
     else:
         form=dict(config.raw['submit']['form']);form['PACKAGE_LIST']=config.source(args.base_list).read_text();form['SHELVE_LIST']=''
+    enforce_policy(form)
     sha=model.request_digest(config,form)
     with EventStore(config.data_root) as store:
         previous=[r for r in model.requests(store.events()).values() if r['digest']==sha and model.was_submitted(r)]
