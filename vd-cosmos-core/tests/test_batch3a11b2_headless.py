@@ -105,6 +105,54 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         gate=self.driver.gate;gate.phase='auth';gate.s['auth_paths']=[{'host':self.server.origin.split('://')[1],'path':'/auth','method':'POST'}];self.server.redirect='/run'
         self.page.evaluate("""()=>fetch('/auth',{method:'POST',body:'synthetic'}).catch(()=>{})""")
         self.wait();self.assertEqual(self.server.calls,[('POST','/auth')])
+    def test_dashboard_account_must_match_once_before_target_navigation(self):
+        from unittest.mock import patch
+        account=self.config.raw['submit']['account']
+        self.server.calls.clear()
+        self.driver.gate.phase='auth'
+        with patch.object(self.driver,'launch'):
+            error=self.fails(3,self.driver.open,lambda:None,lambda _:None)
+        self.assertEqual(error.reason,'hub_account_mismatch')
+        self.assertEqual(self.server.calls,[('GET','/dashboard')])
+        dashboard=self.server.origin+'/dashboard'
+        self.page.set_content(f'<header><nav><span id="profile" class="user">{account}</span>'
+                              '<span hidden>fixture-user</span><span>unrelated-user</span></nav></header>')
+        self.driver._check_account(dashboard)
+        evidence=self.driver.gate.records[-1]['account_check']
+        self.assertEqual(evidence,{'matched':True,'element':{'tag':'span','id':'profile','class':'user'}})
+        self.page.set_content(f'<nav><span>{account}</span><span>{account}</span></nav>')
+        self.assertEqual(self.fails(3,self.driver._check_account,dashboard).details['account_check'],
+                         {'matched':False,'element':None})
+        self.page.set_content(f'<nav><span>{account.upper()}</span></nav><main>{account}</main>')
+        self.fails(3,self.driver._check_account,dashboard)
+
+    def test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch(self):
+        from html import escape
+        from vd_cosmos_core.submit_browser_contract import SEED
+        self.driver.gate.run_redirect=True
+        self.page.goto(self.server.origin+'/wicket/page?1')
+        rows=[]
+        for seed in SEED:
+            name=seed['name']
+            if seed['kind']=='ks':
+                prefix=name.removesuffix('recorder')
+                control=(f'<input type="hidden" name="{name}"><select name="{prefix}choices"></select>'
+                         f'<select name="{prefix}selection"></select>')
+            elif seed['kind'] in {'select','textarea'}:
+                control=f'<{seed["kind"]} name="{name}"></{seed["kind"]}>'
+            else:
+                control=f'<input type="{seed["kind"]}" name="{name}">'
+            rows.append(f'<tr><td>{escape(seed["label"])}</td><td>{control}</td></tr>')
+        form='<form id="form" enctype="multipart/form-data"><input type="hidden" name="form_hf_0"><table>'+''.join(rows)+'</table></form>'
+        for breadcrumb, segments in (('root / PRODUCT &gt; fixture » RELEASE', ['root','PRODUCT','fixture','RELEASE']),
+                                     ('PRODUCT › fixture\nRELEASE',['PRODUCT','fixture','RELEASE'])):
+            self.page.set_content(f'<div class="breadcrumbs">{breadcrumb}</div>'+form)
+            self.assertEqual(self.driver.snapshot()['breadcrumb_segments'], segments)
+        self.page.set_content('<div class="breadcrumb">PRODUCT / wrong / RELEASE</div>'+form)
+        error=self.fails(5,self.driver.snapshot)
+        self.assertEqual(error.reason,'form_unrecognized')
+        self.assertEqual(error.details['breadcrumb_segments'],['PRODUCT','wrong','RELEASE'])
+
     def test_service_worker_and_websocket_cannot_open_channels(self):
         self.page.evaluate("""base=>{try{new WebSocket(base.replace('http:','ws:')+'/socket')}catch(e){};navigator.serviceWorker.register('/worker.js').catch(()=>{});}""",self.server.origin)
         self.wait();self.assertEqual(self.server.calls,[])

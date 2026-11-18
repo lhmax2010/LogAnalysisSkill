@@ -36,7 +36,9 @@ class B1Case(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name); raw=config_data(self.root/'data')
         raw['cosmos'].update(bm_host='bm.example.invalid',hub_host='hub.example.invalid',bm_config_id='4362',bm_scan_interval_s=0,hub_id_slack=10)
-        raw['submit']={'account':'fixture-user'}; raw['poll'].update(lock_wait_s=.3,watch_interval_s=.05)
+        raw['submit']={'account':'fixture-user','target_config_id':'35367',
+                       'target_config':'root/PRODUCT/fixture/RELEASE'}
+        raw['poll'].update(lock_wait_s=.3,watch_interval_s=.05)
         self.path=self.root/'config.json'; self.path.write_text(json.dumps(raw)); self.config=load_config(self.path)
         self.start=bm_pages.page_time(DATE,'Asia/Seoul')
     def reader(self, data=None): return Reader(self.config,transport=MemoryTransport(data or pages()),sleep=lambda _:None)
@@ -240,7 +242,7 @@ class RequestAndClaimTests(B1Case):
         submit_model.record_outcome(self.config,r['request_id'],EXTERNAL,'uncertain')
         submit_model.resolve(self.config,RESOLVE,session='s1',hub_id='500',mode='manual-rerun',reason='checked',now=self.start)
         self.fails(3,submit_model.resolve,self.config,RESOLVE,request_id=r['request_id'],mode='not-submitted',reason='history checked',checked_at='2026-11-14')
-        resolved=submit_model.resolve(self.config,RESOLVE,request_id=r['request_id'],hub_id='500',mode='manual-submit',reason='history checked',now=self.start)
+        resolved=submit_model.resolve(self.config,RESOLVE,request_id=r['request_id'],hub_id='500',mode='manual-submit',reason='history checked',now=self.start,reader=self.reader())
         self.assertIsNone(resolved['click_time']);self.assertEqual(resolved['observation']['supplementary_start'],self.start)
         self.assertEqual(len(resolved['manual_reruns']),1)
         again=submit_model.resolve(self.config,RESOLVE,request_id=r['request_id'],hub_id='500',mode='build-id',reason='again',now=self.start+100)

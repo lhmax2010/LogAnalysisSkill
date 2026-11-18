@@ -9,6 +9,10 @@ BASE = '//example/tree/product/[INT]/packages/foo/...@100\n'
 STAMP = 1792216800.0
 DATE = '2026-10-17 15:00:00'
 
+def target_values(hub='500'):
+    return {'HUB_CONFIG_ID': '35367', 'HUB_CONFIG_PATH': 'root/PRODUCT/fixture/RELEASE',
+            'FROM_HUB_ID': hub}
+
 
 def detail(b='900', h='500', *, state='failed', config='4362', hub_host='hub.example.invalid', pair=None,
            begin=DATE, duration='1 hour', variables=None):
@@ -81,4 +85,5 @@ class MemoryTransport:
 def pages(b='900', h='500', **kwargs):
     return {'/overview/4362': overview(), '/history/4362': history([b]),
             '/build/'+b: detail(b,h,**kwargs),
-            '/build/'+b+'/variables': detail(b,h,variables={'PACKAGE_LIST':BASE,'SHELVE_LIST':''},**kwargs)}
+            '/build/'+b+'/variables': detail(b,h,variables={'PACKAGE_LIST':BASE,'SHELVE_LIST':'',
+                                                          **(target_values(h) if h else {})},**kwargs)}

@@ -18,6 +18,8 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 
 已有配置先用 `nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG"` 写入 B2.4 对应表（同时留下原配置的私有备份）。首版要求 GITURL、Product Version (ks)、rpm Add & Delete、PACKAGE_LIST (DELETE)、PACKAGE_LIST (x86 arch) 全为空；两个复选框保持勾选，Image Skip? 使用打开表单时的预选文本。工具回读确认这些要求后才继续。演练核验编码前不要更改 `property_map_confirmed`。
 
+登录后先核对 dashboard 页眉或导航中唯一可见的 `submit.account`（区分大小写），匹配后才打开目标。各操作人在自己的配置中填写账号。目标表单的面包屑逐段核对 `submit.target_config`；不符时检查结果文件中的段列表。查号和绑定以候选变量页的 `HUB_CONFIG_ID`、`HUB_CONFIG_PATH` 和已列出的 `FROM_HUB_ID` 核对目标；前两项未核验时不能绑定。
+
 ```bash
 nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse
 ```

@@ -169,7 +169,7 @@ def record_outcome(config, request_id, context, status, *, now=None, click_time=
 
 
 def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode, reason,
-            checked_at=None, words=(), now=None):
+            checked_at=None, words=(), now=None, reader=None):
     if not reason.strip(): raise FlowError(2, 'reason_required')
     ensure_safe(config, {'reason': reason, 'checked_at': checked_at})
     now = time.time() if now is None else now
@@ -215,11 +215,21 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
             raise FlowError(4, 'hub_already_claimed')
         if r['status'] in SUBMITTED:
             return r
+        if reader is None: raise FlowError(6, 'resolution_target_reader_required')
+        if r['target'] != target(config): raise FlowError(4, 'request_target_changed')
+        scan = reader.lookup(str(hub_id))
+        if scan['exit_code']:
+            raise FlowError(scan['exit_code'], 'resolution_target_lookup_failed', page_errors=scan['page_errors'])
+        if scan['conflicts']:
+            raise FlowError(4, 'candidate_identity_invalid')
+        resolution_target = [{'build_id': c['build_id'], 'variables': c['build_target']}
+                             for c in scan['candidates']]
         changed = dict(r, status='submitted_manual' if mode == 'manual-submit' else 'submitted_resolved')
         reruns = [e['payload'] for e in events if e['kind'] == 'submit_rerun_resolved'
                   and e['payload']['target'] == r['target'] and e['payload']['hub_id'] == str(hub_id)]
         changes = {'status': changed['status'], 'hub_id': str(hub_id), 'mapping_pending': True,
-                   'observation': task(changed, now), 'manual_reruns': reruns, 'resolution_reason': reason}
+                   'observation': task(changed, now), 'manual_reruns': reruns, 'resolution_reason': reason,
+                   'resolution_target': resolution_target}
     elif mode in {'not-submitted', 'no-manual-submit'}:
         if not checked_at: raise FlowError(2, 'checked_at_required')
         if r['status'] in SUBMITTED: raise FlowError(4, 'submitted_cannot_be_erased')

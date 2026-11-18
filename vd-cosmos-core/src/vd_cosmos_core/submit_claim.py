@@ -9,7 +9,7 @@ from .files import digest, json_bytes
 from .http_reader import HTTPReportReader
 from .state import EventStore
 from .submit_config import NOT_LISTED
-from .submit_model import mutate, read, requests, ensure_safe, lock
+from .submit_model import mutate, read, requests, ensure_safe, lock, target
 
 
 def pre_click_evidence(reader):
@@ -55,16 +55,23 @@ def collect(config, r, reader):
                 scan['coverage'] = False; scan['issues'].append('pending_detail_unreadable')
     matches = []; account_rows = []
     for b, row in scan['rows'].items():
-        if not row['version'].startswith('[' + config.raw['submit']['account'] + ']'): continue
         d = scan['details'].get(b)
+        bound = r.get('binding')
+        same_hub = bool(bound and d and d.get('hub_id') == bound['hub_id'] and not d.get('conflict'))
+        if not same_hub and not row['version'].startswith('[' + config.raw['submit']['account'] + ']'): continue
         if not d or d['config_id'] != config.raw['cosmos']['bm_config_id']:
             continue
         if d['start_time'] is not None and d['start_time'] < lower_bound(config, r): continue
         info = dict(d, comparison={'matches': False, 'fields': {}, 'unverified': ['变量页']})
         try:
             # Comparison always re-reads the page, regardless of relationship cache.
-            values = reader.variables(b, variable_names(config))
+            linked = d.get('hub_id') and not d['conflict'] and (not r.get('hub_id') or d['hub_id'] == r['hub_id'])
+            names = variable_names(config) | (bm_pages.BUILD_TARGET_VARS if linked else set())
+            values = reader.variables(b, names)
             info['comparison'] = bm_pages.compare(r, values, config)
+            if same_hub or (linked and info['comparison']['matches']):
+                info['build_target'] = bm_pages.build_target(config, d, values)
+                d['build_target'] = info['build_target']
         except FlowError as e:
             if e.code == 4: raise
             scan['coverage'] = False; scan['issues'].append(e.reason)
@@ -133,6 +140,8 @@ def merge_scan(config, r, scan, context, *, now=None):
 
 
 def hard_checks(config, r, d, all_requests, events=None):
+    if r['target'] != target(config):
+        raise FlowError(4, 'request_target_changed')
     if events is None:
         with EventStore(config.data_root) as store: events=store.events(kinds=['base_source_attest'])
     if any(e['payload']['basis']['build_id']==d['build_id'] for e in events if e['kind']=='base_source_attest'):
@@ -186,6 +195,8 @@ def prepare_attest(config, request_id, build_id, reader):
     d = reader.detail(str(build_id), fresh=True)
     with EventStore(config.data_root) as store: all_requests = requests(store.events())
     hard_checks(config, r, d, all_requests)
+    d = dict(d, build_target=bm_pages.build_target(
+        config, d, reader.variables(d['build_id'], bm_pages.BUILD_TARGET_VARS), require=True))
     scan = collect(config, r, reader)
     # Persist the fresh candidate set before asking; this is observation, not authorization.
     r = merge_scan(config, r, scan, CommandContext('submit.watch', Category.OBSERVE))
@@ -199,7 +210,9 @@ def attest(config, request_id, prepared, context, words, reason, reader, *, now=
     before = read(config, request_id)
     # Only the selected pages are re-read after input; never rescan thousands of pages here.
     d = reader.detail(prepared['build_id'], fresh=True)
-    comparison = bm_pages.compare(before, reader.variables(d['build_id'], variable_names(config)), config)
+    values = reader.variables(d['build_id'], variable_names(config) | bm_pages.BUILD_TARGET_VARS)
+    target_evidence = bm_pages.build_target(config, d, values, require=True)
+    comparison = bm_pages.compare(before, values, config)
     with lock(config, request_id):
         with EventStore(config.data_root) as store, store.transaction():
             head = store.head(); events = store.events(); all_requests = requests(events); r = all_requests[request_id]
@@ -214,6 +227,7 @@ def attest(config, request_id, prepared, context, words, reason, reader, *, now=
             if not current['required_words'] and d['build_id'] not in words:
                 raise FlowError(3, 'build_number_confirmation_required')
             binding = {k: d[k] for k in ('build_id', 'hub_id', 'config_id', 'start_time')}
+            binding['build_target'] = target_evidence
             changes = {'binding': binding, 'hub_id': d['hub_id'], 'mapping_pending': False,
                        'attestation': {'at': now or time.time(), 'reason': reason, 'words': list(words),
                                        'basis': '内容候选确认', 'unverified': 'claim-unverified' in words,
@@ -237,9 +251,12 @@ def rebind(config, request_id, build_id, context, reason, reader):
     d = reader.detail(str(build_id), fresh=True)
     with EventStore(config.data_root) as store: all_requests = requests(store.events())
     hard_checks(config, dict(r, binding=None), d, all_requests)
-    comparison = bm_pages.compare(r, reader.variables(d['build_id'], variable_names(config)), config)
+    values = reader.variables(d['build_id'], variable_names(config) | bm_pages.BUILD_TARGET_VARS)
+    target_evidence = bm_pages.build_target(config, d, values, require=True)
+    comparison = bm_pages.compare(r, values, config)
     if not comparison['matches']: raise FlowError(4, 'binding_inputs_mismatch')
     binding = {k: d[k] for k in ('build_id', 'hub_id', 'config_id', 'start_time')}
+    binding['build_target'] = target_evidence
     history = r.get('binding_history', []) + [r['binding']]
     ref = HTTPReportReader(config, d['build_id']).build_ref
     previous_ref = HTTPReportReader(config, r['binding']['build_id']).build_ref

@@ -2,9 +2,26 @@
 from hashlib import sha256
 from vd_cosmos_core.errors import FlowError
 
-SCRIPT = r"""({operation,index,value,target}) => {
+SCRIPT = r"""({operation,index,value,target,account}) => {
+ if(operation==='account'){
+  if(document.querySelector('input[type="password"]'))return {matched:false,element:null};
+  const visible=e=>{const s=getComputedStyle(e);return e.getClientRects().length>0 &&
+    e.checkVisibility({opacityProperty:true,visibilityProperty:true}) &&
+    s.visibility==='visible' && e.getBoundingClientRect().width>0 && e.getBoundingClientRect().height>0;};
+  const matches=[...document.querySelectorAll('header *,nav *,[role="banner"] *,[role="navigation"] *')]
+    .filter(e=>visible(e) && e.textContent.trim()===account &&
+      ![...e.querySelectorAll('*')].some(c=>visible(c) && c.textContent.trim()===account));
+  return {matched:matches.length===1, element:matches.length===1?
+    {tag:matches[0].tagName.toLowerCase(),id:matches[0].id,class:matches[0].getAttribute('class')||''}:null};
+ }
  const secret = document.querySelector('input[type="password"]');
  if (secret) return {password_present:true,password_autofill:secret.matches(':-webkit-autofill')};
+ const breadcrumbs=[...document.querySelectorAll('.breadcrumb,.breadcrumbs')];
+ const segments=breadcrumbs.length===1 ? breadcrumbs[0].textContent.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean) : [];
+ const expected=target.split('/');
+ const same=(a,b)=>a.length===b.length && a.every((s,i)=>s===b[i]);
+ if(!segments.length || !(same(segments,expected) || (expected[0]==='root' && same(segments,expected.slice(1)))))
+   return {form_unrecognized:true,breadcrumb_segments:segments};
  const forms = [...document.forms].filter(f=>f.enctype==='multipart/form-data');
  if (forms.length!==1) throw Error('form'); const f=forms[0];
  const prefix='editor:content:basicProperties:';
@@ -25,11 +42,9 @@ SCRIPT = r"""({operation,index,value,target}) => {
   const v=i===8?selected.join(','):e.type==='checkbox'?String(e.checked):e.tagName==='SELECT'?e.selectedOptions[0]?.text||'':e.value;
   return {index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,selected,value:v,default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
  });
- const breadcrumb=document.querySelector('.breadcrumb')||document.querySelector('.breadcrumbs');
- if(!breadcrumb || breadcrumb.textContent.trim()!==target)throw Error('target');
  const hidden=all.filter(e=>e.type==='hidden' && e.name===f.id+'_hf_0');
  if(hidden.length!==1 || all.some(e=>e.name && !e.name.startsWith(prefix) && e!==hidden[0]))throw Error('extra');
- if(operation==='snapshot')return {target,controls,hidden:hidden[0].name};
+ if(operation==='snapshot')return {target,controls,hidden:hidden[0].name,breadcrumb_segments:segments};
  if(operation==='serialize')return [...new FormData(f).entries()].map(([k,v])=>{if(typeof v!=='string')throw Error('file');return [k,v];});
  if(operation==='fill'){
   if(!Number.isInteger(index)||index<0||index>17||typeof value!=='string')throw Error('args');
@@ -42,10 +57,14 @@ SCRIPT = r"""({operation,index,value,target}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='58bd72a1d941e5676932dff9e2c027675a8d69f7fb6ae99dbc6b8b7ec191382e'
+DIGEST='80527a6b507120b0d744f89ae4fbb7b04bbdb9369b74e6cfc482457572b1e467'
 
-def arguments(operation,*,index=None,value=None,target=None,**unexpected):
-    if unexpected or operation not in {'snapshot','serialize','fill'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
+def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
+    if unexpected or operation not in {'snapshot','serialize','fill','account'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation=='fill' and (type(index) is not int or not 0<=index<18 or not isinstance(value,str)):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation!='fill' and (index is not None or value is not None):raise FlowError(4,'fixed_script_arguments_rejected')
-    return {'operation':operation,'index':index,'value':value,'target':target}
+    if operation=='account':
+        if not isinstance(account,str) or not account or account!=account.strip():
+            raise FlowError(4,'fixed_script_arguments_rejected')
+    elif account is not None:raise FlowError(4,'fixed_script_arguments_rejected')
+    return {'operation':operation,'index':index,'value':value,'target':target,'account':account}

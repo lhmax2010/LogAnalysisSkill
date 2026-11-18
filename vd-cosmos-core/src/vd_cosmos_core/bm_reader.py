@@ -221,7 +221,8 @@ class Reader:
         scan = self.scan(hub_id=hub_id, since=since)
         for candidate in scan['candidates']:
             try:
-                values = self.variables(candidate['build_id'], {'PACKAGE_LIST'})
+                values = self.variables(candidate['build_id'], {'PACKAGE_LIST'} | bm_pages.BUILD_TARGET_VARS)
+                candidate['build_target'] = self.safe(bm_pages.build_target(self.config, candidate, values))
                 text = values['PACKAGE_LIST']['value']
                 candidate.update(package_list_count=len(bm_pages.parse_list(text, self.c['branch_markers'])),
                                  package_list_sha256=bm_pages.base_digest(text, self.config),

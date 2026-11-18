@@ -83,7 +83,7 @@ class MutationRaceTests(B1Case):
                     store.append(HUMAN,'submit_rerun_resolved',{'target':model.target(self.config),'hub_id':'500','at':self.start,'pending':True},store.head(),operation_id=mode)
             hook,_=self.inject(rerun)
             if mode=='build-id':
-                with hook:result=model.resolve(self.config,HUMAN,request_id=r['request_id'],hub_id='500',mode=mode,reason='checked')
+                with hook:result=model.resolve(self.config,HUMAN,request_id=r['request_id'],hub_id='500',mode=mode,reason='checked',reader=self.reader())
                 self.assertEqual(len(result['manual_reruns']),1)
             else:
                 # The earlier pending record is acknowledged; create a distinct

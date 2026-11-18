@@ -16,7 +16,7 @@ import unittest
 from unittest.mock import patch
 
 from helpers import REPO
-from bm_helpers import BASE, DATE, detail, history, overview, pages
+from bm_helpers import BASE, DATE, detail, history, overview, pages, target_values
 from test_batch3a11b1 import B1Case, HUMAN, EXTERNAL, RESOLVE, OBSERVE
 from vd_cosmos_core import submit_claim, submit_model, submit_watch, verify_b3a11b1
 from vd_cosmos_core.bm_reader import Reader
@@ -170,7 +170,7 @@ class LifecycleConcurrencyTests(B1Case):
         submit_claim.attest(self.config,rid,p,HUMAN,p['required_words'],'checked',self.reader())
         data=pages();data['/history/4362']=history(['902','901','900'],versions={'902':'[other-user] build'})
         data['/build/901']=detail('901','501');data['/build/901/variables']=detail('901','501',variables={'PACKAGE_LIST':BASE})
-        data['/build/902']=detail('902','500');data['/build/902/variables']=detail('902','500',variables={'PACKAGE_LIST':BASE})
+        data['/build/902']=detail('902','500');data['/build/902/variables']=detail('902','500',variables={'PACKAGE_LIST':BASE,**target_values()})
         result=submit_watch.step(self.config,rid,self.reader(data),now=self.start+6000)
         self.assertIn('疑似同内容的另一轮',result['todos']);self.assertIn('发现重跑',result['todos'])
         self.assertEqual(result['binding']['build_id'],'900')

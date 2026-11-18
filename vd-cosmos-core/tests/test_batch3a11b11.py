@@ -5,7 +5,7 @@ from pathlib import Path
 import threading
 import unittest
 
-from bm_helpers import BASE, detail, history, pages, variable_table
+from bm_helpers import BASE, detail, history, pages, target_values, variable_table
 from helpers import CORE
 from test_batch3a11b1 import B1Case, OBSERVE, HUMAN
 from vd_cosmos_core import bm_pages, build_inputs, submit_claim, variable_pages
@@ -188,7 +188,7 @@ class RerunChainTests(B1Case):
         data=pages()
         data['/history/4362']=history(['901','900'])
         data['/build/901']=detail('901','500',state='running')
-        data['/build/901/variables']=detail('901','500',variables={'PACKAGE_LIST':BASE,'SHELVE_LIST':''})
+        data['/build/901/variables']=detail('901','500',variables={'PACKAGE_LIST':BASE,'SHELVE_LIST':'',**target_values()})
         return data
 
     def test_same_hub_multiple_consistent_builds_chain_never_select_or_bind(self):

@@ -707,3 +707,30 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 | Python 3.12.3 | 343 项：333 PASS、10 SKIP | `evidence-b24/python312.txt` | `ae6d32e163b41804a1cade3c6150ca6548ee213d0e572450efbcb57c0f13e3e8` |
 
 凭据预检见 `evidence-b24/prepush-final.json`。无新增设计问题；编码确认仍由 FatTank 根据演练完成。
+
+## Checkpoint B2.5 addendum — FIX 6–8（设计方 2026-11-18）
+
+证据为设计方提供的 diag34（构建机 run/src `7970b8a`，匿名读取变量页）。三个样本为 19206687/37376237、19270912/37491096、19344434/37619264；前两个共用目标 35367，第三个目标为 26400；三个样本的 FROM_HUB_ID 都与 Hub Link 一致。离线夹具保留编号及三列表形、用占位路径和 `*.example.invalid`，不归档原始 HTML 或读取 HUB_DOMAIN。
+
+| 条目 | 实现与验收点 |
+|---|---|
+| FIX 6 | 固定脚本按斜杠、尖括号方向符和换行拆面包屑，逐段比较，允许页面省略配置开头的 root。错误 `form_unrecognized` 的结果文件保留经过凭据检查的规范段列表。无头测试 `test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch`。 |
+| FIX 7 | 在已有请求闸门下先打开 dashboard，认证后在页眉/导航找唯一可见、大小写一致的账号标签，再导航到指定配置。只返回匹配结论和匹配元素的 tag/id/class；失败返回 3 并提示操作人。无头测试 `test_dashboard_account_must_match_once_before_target_navigation` 校验失败时服务器未收到配置页请求，并检查隐藏项、多个匹配及大小写。纯闸门测试 `test_dashboard_callbacks_stay_blocked_without_poisoning_form_gate` 覆盖 dashboard 回调拦截与目标导航次序。 |
+| FIX 8 | 查号、重跑链、确认候选与重新绑定共用变量页证据；同一变量的首读值/缺席及摘要仍不可变。任何值不符时退出 4，名称及通过预检的值进入错误结果。查号报告缺项为 unverified；实际绑定要求 ID 和路径均 verified，FROM_HUB_ID 缺席可记录 unverified。resolve 的两个分支先按提交端编号只读查号核对已有候选；保留无候选时的人工认定与观察任务语义，不直接绑定。请求网络读取保持在 SQLite 写事务外。见 `test_batch3a11b25.py`、既有确认并发与重跑链测试。 |
+
+尚未收到 B2.5 原始 FIX 1–5（含 FIX 5 命令和输入 JSON 契约）；FIX 9 等该契约后接入，现有 B2.4 `apply_property_map.py` 未改。未访问真实服务、运行实况演练或提交构建。
+
+本机运行 `run_tests.sh`，含 import-linter 2.3 和静态浏览器边界检查。12 项真实无头测试（含本次新增 2 项）因本机缺 Playwright 跳过，构建机验收强制执行这 12 项。固定脚本另用 Node 做了本地语法检查与最小 DOM 模拟检查。构建机 B2 命令和参数不变：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome /opt/google/chrome/google-chrome
+```
+
+最终两套各 353 项：341 PASS、12 SKIP。此前一轮 Python 3.12 运行遇到既有 `test_timeout_kills_group_and_detached_browser_and_preserves_stream` 的一次标记数失败（最终 transcript 只含两个标记之一）；未改动该测试或验收器，最终串行运行未复现。
+
+| 解释器 | 完整输出 | SHA256 |
+|---|---|---|
+| Python 3.10.12 | `evidence-b25/python310.txt` | `1738578de5fe533c9e9013cbc4439303c381c6aa7253903ea9fcbb2b7ad2c6ff` |
+| Python 3.12.3 | `evidence-b25/python312.txt` | `0b00312d03d41379aca934fbafe433e06e45df948ffb56ee727d4bd9d8bdc948` |
+
+凭据预检见 `evidence-b25/prepush-final.json`。

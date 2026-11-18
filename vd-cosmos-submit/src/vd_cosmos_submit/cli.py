@@ -101,9 +101,11 @@ def main(argv=None):
                         else:
                             mode = None
                     if mode:
+                        if mode in {'build-id','manual-submit'}:
+                            reader = factory()
                         result = resolve(config, context, request_id=args.request, session=args.session,
                             hub_id=args.hub_id if mode == 'manual-rerun' else args.build_id,
-                            mode=mode, reason=args.reason or '', checked_at=args.checked_at, words=words)
+                            mode=mode, reason=args.reason or '', checked_at=args.checked_at, words=words, reader=reader)
                 else:
                     if not args.request or args.max_scans is not None and args.max_scans < 1: raise FlowError(2, 'watch_arguments_required')
                     result = watch(config, args, factory)
@@ -117,6 +119,16 @@ def main(argv=None):
             result = dict(result, artifact=str(config.output(output)))
     except FlowError as error:
         result = error.as_dict()
+        if error.reason in {'form_unrecognized', 'hub_account_mismatch', 'build_target_mismatch', 'build_target_unverified'} and 'config' in locals():
+            if check_content(json_bytes(result), config)['allowed']:
+                output = 'submit/results/' + str(time.time_ns()) + '.json'
+                try:
+                    atomic_write(config.data_root, output, json_bytes(result))
+                    result['artifact'] = str(config.output(output))
+                except OSError:
+                    result['artifact_error'] = 'result_write_failed'
+            else:
+                result = FlowError(4, 'output_credential_blocked').as_dict()
     except (OSError, ValueError, TypeError, KeyError):
         result = {'exit_code': 5, 'error': 'submit_read_processing_failed'}
     code = result.get('exit_code', 0)
@@ -125,7 +137,7 @@ def main(argv=None):
 
 
 def lookup_summary(result):
-    fields=('build_id','hub_id','state','start_time','ended','config_id','identity','relation','package_list_count','package_list_sha256','inputs')
+    fields=('build_id','hub_id','state','start_time','ended','config_id','identity','relation','package_list_count','package_list_sha256','inputs','build_target')
     errors=result.get('page_errors',[])
     return {**{k:result.get(k) for k in ('exit_code','result','reason','rerun_chains','coverage','coverage_scope','uniqueness_proven','uniqueness_note','candidate_only')},
         'candidates':[{k:c[k] for k in fields if k in c} for c in result.get('candidates',[])],

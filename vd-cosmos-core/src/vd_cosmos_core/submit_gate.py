@@ -22,10 +22,18 @@ class Gate:
         self.config=config;self.s=config.raw['submit'];self.origin=local_origin or 'https://'+config.raw['cosmos']['hub_host'];self.rehearse=rehearse
         if local_origin and not re.fullmatch(r'http://127\.0\.0\.1:[0-9]+',local_origin):raise FlowError(4,'local_origin_required')
         self.phase='auth';self.recording=not self.s.get('gate_patterns_confirmed',False);self.allowed=None;self.filling=None;self.callback_count=0;self.submission=None;self.sent=False;self.records=[];self.fatal=None;self.mutex=threading.RLock();self.auth_return=False;self.run_redirect=False;self.run_response=None
-    def navigation(self,url):
+        self.auth_entry='/overview/'+self.s['target_config_id']
+    def navigation(self,url,*,login_entry=False):
         u=address(url)
-        if u.scheme+'://'+u.netloc!=self.origin or u.path!='/overview/'+self.s['target_config_id'] or u.query:raise FlowError(4,'navigation_unregistered')
+        allowed='/dashboard' if login_entry and self.phase=='auth' else '/overview/'+self.s['target_config_id']
+        if u.scheme+'://'+u.netloc!=self.origin or u.path!=allowed or u.query:raise FlowError(4,'navigation_unregistered')
+        if login_entry:self.auth_entry=allowed
+        elif self.auth_entry=='/dashboard' and self.phase!='account_verified':
+            raise FlowError(4,'navigation_unregistered')
         self.allowed=(url,'GET')
+    def verify_account(self):
+        if self.phase!='account':raise FlowError(4,'navigation_unregistered')
+        self.phase='account_verified'
     def action(self,registered):
         if self.allowed:raise FlowError(6,'gate_action_busy')
         self.allowed=registered
@@ -49,7 +57,7 @@ class Gate:
             if resource in {'Script','Stylesheet','Image','Font'} and method=='GET' and not u.query and u.path in self.s.get('static_paths',[]):return True
             if not main_frame:return self.block(method,u,'frame_or_popup')
             if self.allowed==(url,method):self.allowed=None;return True
-            if self.phase=='auth' and self.auth_return and method=='GET' and u.path=='/overview/'+self.s['target_config_id'] and not u.query:
+            if self.phase=='auth' and self.auth_return and method=='GET' and u.path==self.auth_entry and not u.query:
                 self.auth_return=False;return True
             if self.run_redirect and method=='GET' and u.path=='/wicket/page' and u.query.isdecimal():
                 self.run_redirect=False;return True
@@ -83,9 +91,13 @@ class Gate:
             except FlowError:return False
             if self.phase=='auth':
                 auth=any(x['host']==v.netloc and x['path']==v.path for x in self.s.get('auth_paths',[]))
-                entry=v.scheme+'://'+v.netloc==self.origin and v.path=='/overview/'+self.s['target_config_id'] and not v.query
+                entry=v.scheme+'://'+v.netloc==self.origin and v.path==self.auth_entry and not v.query
                 if auth or entry:self.auth_return=entry;return True
             if self.run_response==url and status==302 and v.scheme+'://'+v.netloc==self.origin and v.path=='/wicket/page' and v.query.isdecimal():self.run_redirect=True;self.run_response=None;return True
             return False
-        if self.phase=='auth' and status==200 and u.scheme+'://'+u.netloc==self.origin and u.path=='/overview/'+self.s['target_config_id'] and not u.query:self.phase='business'
+        if status==200 and u.scheme+'://'+u.netloc==self.origin and not u.query:
+            if self.phase=='auth' and u.path==self.auth_entry:
+                self.phase='account' if self.auth_entry=='/dashboard' else 'business'
+            elif self.phase=='account_verified' and u.path=='/overview/'+self.s['target_config_id']:
+                self.phase='business'
         return True

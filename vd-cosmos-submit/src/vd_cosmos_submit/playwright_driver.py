@@ -163,14 +163,21 @@ class Driver:
         if self.gate.phase!='business' or u.scheme+'://'+u.netloc!=self.gate.origin or u.path!='/wicket/page' or not u.query.isdecimal():raise FlowError(4,'business_page_required')
     def open(self,expose,confirm):
         self.launch();expose()
-        entry=self.gate.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.gate.navigation(entry)
-        try:self._page.goto(entry,wait_until='domcontentloaded')
+        dashboard=self.gate.origin+'/dashboard';self.gate.navigation(dashboard,login_entry=True)
+        try:self._page.goto(dashboard,wait_until='domcontentloaded')
         except Exception:
             if self._fatal:raise FlowError(5,self._fatal) from None
         deadline=time.monotonic()+self.config.raw['submit']['login_wait_s']
-        while self.gate.phase!='business':
+        while self.gate.phase!='account' or self._page.url!=dashboard:
             if time.monotonic()>deadline:raise FlowError(3,'login_wait_expired')
             self._page.wait_for_timeout(100)
+        self._page.wait_for_load_state('domcontentloaded')
+        self._check_account(dashboard)
+        self.gate.verify_account()
+        entry=self.gate.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.gate.navigation(entry)
+        try:self._page.goto(entry,wait_until='domcontentloaded')
+        except Exception:raise FlowError(5,'target_navigation_failed') from None
+        if self._page.url!=entry or self.gate.phase!='business':raise FlowError(5,'target_navigation_failed')
         # Run is intentionally recorded with no permission, then separately confirmed.
         self._window('minimized')
         try:self._page.get_by_text('Run the configuration',exact=True).click(timeout=5000)
@@ -187,12 +194,26 @@ class Driver:
         # Fixed window-only CDP calls; no runtime evaluation/network data extraction.
         info=self._cdp.send('Browser.getWindowForTarget')
         self._cdp.send('Browser.setWindowBounds',{'windowId':info['windowId'],'bounds':{'windowState':state}})
-    def _script(self,operation,**kw):
-        self._check();args=arguments(operation,target=self.config.raw['submit']['target_config'],**kw)
+    def _check_account(self, dashboard):
+        account=self.config.raw['submit']['account']
+        evidence={'matched':False,'element':None}
+        if self.gate.phase=='account' and self._page.url==dashboard and not (self._fatal or self.gate.fatal):
+            evidence=self._fixed_script('account',account=account)
+        self.gate.records.append({'account_check':evidence})
+        if not evidence['matched'] or self._page.url!=dashboard:
+            raise FlowError(3,'hub_account_mismatch',account_check=evidence,
+                            todo={'reason':'hub_account_mismatch','message':f'log in as {account} or change submit.account'})
+    def _fixed_script(self,operation,**kw):
+        args=arguments(operation,target=self.config.raw['submit']['target_config'],**kw)
         if digest(SCRIPT.encode())!=DIGEST:raise FlowError(4,'fixed_script_digest_changed')
         try:value=self._page.evaluate(SCRIPT,args)
         except Exception:raise FlowError(5,'fixed_script_failed') from None
         submit_model.ensure_safe(self.config,value);return value
+    def _script(self,operation,**kw):
+        self._check();value=self._fixed_script(operation,**kw)
+        if isinstance(value,dict) and value.get('form_unrecognized'):
+            raise FlowError(5,'form_unrecognized',breadcrumb_segments=value['breadcrumb_segments'])
+        return value
     def snapshot(self):return self._script('snapshot')
     def fill(self,index,value):
         snap=self.snapshot();c=snap['controls'][index]

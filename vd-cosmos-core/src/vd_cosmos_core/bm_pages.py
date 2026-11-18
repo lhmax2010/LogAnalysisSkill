@@ -211,9 +211,34 @@ def value_shape(value):
             'line_lengths': [len(line) for line in lines]}
 
 
+BUILD_TARGET_VARS = frozenset({'HUB_CONFIG_ID', 'HUB_CONFIG_PATH', 'FROM_HUB_ID'})
+
+
+def build_target(config, candidate, values, *, require=False):
+    submit = config.raw['submit']
+    expected = {'HUB_CONFIG_ID': submit['target_config_id'], 'HUB_CONFIG_PATH': submit['target_config'],
+                'FROM_HUB_ID': candidate['hub_id']}
+    evidence = {}
+    for name, wanted in expected.items():
+        entry = values.get(name)
+        if entry is None:
+            evidence[name] = {'status': 'unverified'}
+            continue
+        if entry['value'] != wanted:
+            raise FlowError(4, 'build_target_mismatch', variable=name, build_id=candidate['build_id'],
+                            expected=wanted, observed=entry['value'])
+        evidence[name] = {'status': 'verified', 'value': entry['value'], 'sha256': entry['sha256']}
+    if require:
+        for name in ('HUB_CONFIG_ID', 'HUB_CONFIG_PATH'):
+            if evidence[name]['status'] != 'verified':
+                raise FlowError(4, 'build_target_unverified', variable=name, build_id=candidate['build_id'],
+                                build_target=evidence)
+    return evidence
+
+
 def variables(data, config, build_id, names):
     names = set(names)
-    if any(SECRET_NAME.search(n) for n in names) or not names <= set(PROPERTIES) | variable_names(config) | {
+    if any(SECRET_NAME.search(n) for n in names) or not names <= set(PROPERTIES) | variable_names(config) | BUILD_TARGET_VARS | {
             e['variable'] for e in config.raw['submit']['property_map'].values() if e['variable'] not in (None, 'not_listed')}:
         raise FlowError(4, 'variable_name_forbidden')
     identity = detail(data, config, build_id, summary_required=False)
