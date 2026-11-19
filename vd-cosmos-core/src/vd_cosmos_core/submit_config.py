@@ -98,11 +98,21 @@ def configure(raw):
     for entry in submit['auth_paths']:
         if not isinstance(entry,dict) or set(entry)!={'host','path','method'} or not all(isinstance(v,str) for v in entry.values()):raise FlowError(2,'invalid_auth_path')
         u=urlsplit('https://'+entry['host'])
-        if not u.hostname or u.username or u.password or u.path or u.query or u.fragment or entry['method'] not in {'GET','POST'}:raise FlowError(2,'invalid_auth_path')
+        if (not u.hostname or u.username or u.password or u.path or u.query or u.fragment
+                or u.netloc!=entry['host'] or re.search(r'[\s\\%?#@]',entry['host'])
+                or entry['host'].endswith(':') or u.port==0 or entry['method'] not in {'GET','POST'}):
+            raise FlowError(2,'invalid_auth_path')
         path=entry['path']
-        if not path.startswith('/') or any(x in path for x in ('?','#','%','..')) or path.startswith(('/wicket','/overview','/dashboard','/build')):raise FlowError(2,'auth_business_path_forbidden')
+        if (not path.startswith('/') or any(x in path for x in ('?','#','%','..','\\','//'))
+                or re.search(r'[\s\x00-\x1f\x7f]',path) or path.startswith(('/wicket','/overview','/build'))
+                or (path.startswith('/dashboard') and (path!='/dashboard' or entry['method']!='GET'))):
+            raise FlowError(2,'auth_business_path_forbidden')
     for path in submit['static_paths']:
-        if not isinstance(path,str) or not path.startswith('/') or any(x in path for x in ('?','#','*','%','..')) or path.startswith(('/wicket','/overview','/dashboard','/build')):raise FlowError(2,'invalid_static_path')
+        if (not isinstance(path,str) or not path.startswith('/') or any(x in path for x in ('?','#','%','..','\\','//'))
+                or '*' in path.replace('-ver-*','-ver-') or re.search(r'[\s\x00-\x1f\x7f]',path)
+                or path.startswith(('/overview','/dashboard','/build'))
+                or (path.startswith('/wicket') and not path.startswith('/wicket/resource/'))):
+            raise FlowError(2,'invalid_static_path')
     if not isinstance(submit['gate_patterns'],list):raise FlowError(2,'invalid_gate_patterns')
     for entry in submit['gate_patterns']:
         if not isinstance(entry,dict) or set(entry)!={'method','path','listener','behavior','component'} or entry['method']!='POST' or entry['path']!='/wicket/page' or entry['listener']!='IBehaviorListener' or not isinstance(entry['behavior'],str) or not entry['behavior'].isdecimal() or not re.fullmatch(r'form-editor-content-basicProperties-(?:[0-9]|1[0-7])-property-editor-editor-[A-Za-z0-9_-]+',entry['component']):raise FlowError(2,'invalid_callback_pattern')

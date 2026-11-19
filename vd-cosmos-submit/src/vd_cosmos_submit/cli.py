@@ -119,7 +119,8 @@ def main(argv=None):
             result = dict(result, artifact=str(config.output(output)))
     except FlowError as error:
         result = error.as_dict()
-        if error.reason in {'form_unrecognized', 'hub_account_mismatch', 'build_target_mismatch', 'build_target_unverified'} and 'config' in locals():
+        if error.reason in {'form_unrecognized', 'hub_account_mismatch', 'hub_manual_login_page', 'run_button_obscured',
+                            'request_during_notice_dismissal', 'build_target_mismatch', 'build_target_unverified'} and 'config' in locals():
             if check_content(json_bytes(result), config)['allowed']:
                 output = 'submit/results/' + str(time.time_ns()) + '.json'
                 try:

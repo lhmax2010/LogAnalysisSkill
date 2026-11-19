@@ -3,19 +3,30 @@ from hashlib import sha256
 from vd_cosmos_core.errors import FlowError
 
 SCRIPT = r"""({operation,index,value,target,account}) => {
+ const secret = document.querySelector('input[type="password"]');
+ if(operation==='login_probe')return {manual_login:!!secret};
+ if (secret) return {password_present:true,password_autofill:secret.matches(':-webkit-autofill')};
+ const visible=e=>{const s=getComputedStyle(e);return e.getClientRects().length>0 &&
+   e.checkVisibility({opacityProperty:true,visibilityProperty:true}) &&
+   s.visibility==='visible' && e.getBoundingClientRect().width>0 && e.getBoundingClientRect().height>0;};
+ if(operation==='dismiss_notice'||operation==='run_position'){
+  const notices=[...document.querySelectorAll('#myNav.overlay')].filter(visible);
+  if(notices.length>1)return {clear:false};
+  if(operation==='dismiss_notice' && notices.length===1)notices[0].style.setProperty('display','none','important');
+  const buttons=[...document.querySelectorAll('a,button,[role="button"],input[type="button"],input[type="submit"]')]
+    .filter(e=>visible(e) && (e.tagName==='INPUT'?e.value:e.innerText).trim()==='Run the configuration');
+  if(buttons.length!==1)return {clear:false};
+  const button=buttons[0],r=button.getBoundingClientRect();
+  const x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);
+  return hit&&button.contains(hit)?{clear:true,x,y}:{clear:false};
+ }
  if(operation==='account'){
-  if(document.querySelector('input[type="password"]'))return {matched:false,element:null};
-  const visible=e=>{const s=getComputedStyle(e);return e.getClientRects().length>0 &&
-    e.checkVisibility({opacityProperty:true,visibilityProperty:true}) &&
-    s.visibility==='visible' && e.getBoundingClientRect().width>0 && e.getBoundingClientRect().height>0;};
   const matches=[...document.querySelectorAll('header *,nav *,[role="banner"] *,[role="navigation"] *')]
     .filter(e=>visible(e) && e.textContent.trim()===account &&
       ![...e.querySelectorAll('*')].some(c=>visible(c) && c.textContent.trim()===account));
   return {matched:matches.length===1, element:matches.length===1?
     {tag:matches[0].tagName.toLowerCase(),id:matches[0].id,class:matches[0].getAttribute('class')||''}:null};
  }
- const secret = document.querySelector('input[type="password"]');
- if (secret) return {password_present:true,password_autofill:secret.matches(':-webkit-autofill')};
  const breadcrumbs=[...document.querySelectorAll('.breadcrumb,.breadcrumbs')];
  const segments=breadcrumbs.length===1 ? breadcrumbs[0].textContent.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean) : [];
  const expected=target.split('/');
@@ -57,10 +68,10 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='80527a6b507120b0d744f89ae4fbb7b04bbdb9369b74e6cfc482457572b1e467'
+DIGEST='eb47681d276779b8f2a4f14d6db6c117dd603bb6cd74c839e69ab5d2d1bbd322'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
-    if unexpected or operation not in {'snapshot','serialize','fill','account'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
+    if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation=='fill' and (type(index) is not int or not 0<=index<18 or not isinstance(value,str)):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation!='fill' and (index is not None or value is not None):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation=='account':

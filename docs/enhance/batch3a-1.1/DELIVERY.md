@@ -734,3 +734,28 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 | Python 3.12.3 | `evidence-b25/python312.txt` | `0b00312d03d41379aca934fbafe433e06e45df948ffb56ee727d4bd9d8bdc948` |
 
 凭据预检见 `evidence-b25/prepush-final.json`。
+
+## Checkpoint B2.5 主任务（设计方 2026-11-18）
+
+基线 `c27d8ec`，设计方已确认追补 FIX 6–8。本次按 FatTank 的 diag32/diag33 和 recon20 补齐 FIX 1–5、9、10。夹具只使用 127.0.0.1 和保留示例域名；实际 Hub/SSO 主机、资源路径列表及账号不入 Git。
+
+| 条目 | 实现与回归 |
+|---|---|
+| FIX 1–2 | 从 Hub 根地址走 SSO；准确匹配认证 host/path/method（显式端口独立，查询不用于匹配）。Hub 自带密码表单或 manual-login 跳转退出 3，认证阶段拒绝 Hub Wicket listener 查询。见 `test_root_sso_chain_literal_host_port_query_and_method`、`test_manual_login_and_wicket_queries_cannot_use_auth_allowlist` 及无头密码页拒绝测试。 |
+| FIX 3 | 静态类型和 GET、同源、路径版本标记与完整 query 形状共同限制；被拒的 Other 不致命。见 `test_versioned_static_paths_and_only_exact_query_shapes`。 |
+| FIX 4 | 固定摘要脚本只隐藏公告元素的样式，命中检测使用 Run 中心；隐藏时的请求拒绝并致命。先拦截记录主文档 Run GET，人工确认后仅放行同一个 GET 一次；只接收同源 302 数字编辑器地址并允许下一跳精确访问一次。见 `test_run_is_exact_single_main_document_get_and_numeric_editor_redirect`、`test_dismissal_blocks_even_allowlisted_request_and_sets_fatal` 和两项无头公告测试。 |
+| FIX 5、9 | `apply_property_map.py --config "$VD_CONFIG" --browser-input "$VD_BROWSER_INPUT"`。验证原配置和编辑结果，只更新输入 JSON 中允许的五项，不输出值；两确认标志任一为 true 即拒绝。见 `WriterTests` 两项回归。 |
+| FIX 10 | `test_timeout_kills_group_and_detached_browser_and_preserves_stream` 的两个子进程共用管道；无缓冲 print 会将字段、分隔和换行分成多次写，两个 READY 可能落在同一行。改成每进程一次短 os.write，并以流式产物中的两条完整标记作为触发测试时钟的屏障。验证器生产超时未改，原测试的 .8 秒预算未加长；断言超时错误、产物、两进程被清理。 |
+
+构建机 B2 命令不变（EXPECTED_COMMIT 换成本次提交）。本机不执行真实 SSO、演练或提交。
+
+两套完整 `run_tests.sh` 各 363 项（348 通过、15 跳过；本机无 Playwright，构建机仍强制执行无头测试）。本机以 127.0.0.1 夹具串行运行；Node 模拟 DOM 检查通过（固定脚本摘要、样式变更、中心遮挡、密码页识别）。清理回归在 nice 19 下按解释器分别单独执行 20 次，各 20/20 通过。
+
+| 记录 | SHA256 |
+|---|---|
+| `evidence-b25-main/python310.txt` | `115d5480a0fecd14508b3556467dde5b6df8565f27618422658ed384b9097d32` |
+| `evidence-b25-main/python312.txt` | `3485d2f36e0d106a9e8eb75f23ec53061834e3903ac565a759606ecbf6a2a12a` |
+| `evidence-b25-main/cleanup-python310.txt` | `fdeb6f8eafd841bfedc2c8d40cebf71067e5f0bf155e5ebac0977e9ff7fe2bc4` |
+| `evidence-b25-main/cleanup-python312.txt` | `2274f33aa52b853dfac146a72866eecf09731a9b5a91b438ddd9cd15ef086340` |
+
+凭据预检：`evidence-b25-main/prepush-final.json`。

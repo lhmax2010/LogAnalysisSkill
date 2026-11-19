@@ -20,6 +20,14 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 
 登录后先核对 dashboard 页眉或导航中唯一可见的 `submit.account`（区分大小写），匹配后才打开目标。各操作人在自己的配置中填写账号。目标表单的面包屑逐段核对 `submit.target_config`；不符时检查结果文件中的段列表。查号和绑定以候选变量页的 `HUB_CONFIG_ID`、`HUB_CONFIG_PATH` 和已列出的 `FROM_HUB_ID` 核对目标；前两项未核验时不能绑定。
 
+B2.5 从 Hub 根地址开始 SSO。若遇到 Hub 自己的密码登录页，工具拒绝继续；请关闭并重新走 SSO。真实允许列表及账号放在私有 JSON 中，再导入以下五个可选字段：`auth_paths`、`static_paths`、`target_config`、`target_config_id`、`account`。认证条目严格匹配 host/path/method；带显式端口的主机须作为独立条目登记。输出只列变更键，原配置备份权限为 0600。任一确认标志为 true 时不更新。
+
+```bash
+nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG" --browser-input "$VD_BROWSER_INPUT"
+```
+
+工具只以样式隐藏已识别的公告，不调用网页关闭函数。Run 按钮中心仍被遮挡，或隐藏公告期间有请求，演练会停止；不要绕过拦截。
+
 ```bash
 nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse
 ```

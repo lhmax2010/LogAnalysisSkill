@@ -10,7 +10,6 @@ from pathlib import Path
 import signal
 import subprocess
 import sys
-import threading
 import time
 from types import SimpleNamespace
 from unittest.mock import MagicMock,patch
@@ -85,20 +84,27 @@ class VerificationProcessTests(B1Case):
     def test_timeout_kills_group_and_detached_browser_and_preserves_stream(self):
         directory=self.root/'verify';directory.mkdir();transcript=directory/'offline-tests.txt'
         # Both descendants ignore TERM, one escapes the child's process group.
-        grand="import os,signal,time;signal.signal(signal.SIGTERM,signal.SIG_IGN);print('READY',os.getpid(),flush=True);time.sleep(100)"
+        # Each marker must be a single pipe write; concurrent print() calls can interleave fields.
+        grand="import os,signal,time;signal.signal(signal.SIGTERM,signal.SIG_IGN);os.write(1,f'READY {os.getpid()}\\n'.encode());time.sleep(100)"
         code="import subprocess,sys,time,signal;signal.signal(signal.SIGTERM,signal.SIG_IGN);print('Python fixture',flush=True);subprocess.Popen([sys.executable,'-c',sys.argv[1]]);subprocess.Popen([sys.executable,'-c',sys.argv[1]],start_new_session=True);time.sleep(100)"
-        observed=[]
-        def inspect_live():
-            deadline=time.monotonic()+3
-            while time.monotonic()<deadline:
-                if transcript.exists() and transcript.read_text().count('READY')==2:observed.append(True);return
-                time.sleep(.01)
-        thread=threading.Thread(target=inspect_live);thread.start()
-        error=self.fails(5,vp.process,[sys.executable,'-u','-c',code,grand],directory,os.environ,timeout=.8,terminate_grace=.15,config=self.config,artifact=transcript)
-        thread.join();self.assertTrue(observed,'output must reach disk before timeout')
+        def read_pids():
+            return [int(line.split()[1]) for line in transcript.read_text().splitlines() if line.startswith('READY ')]
+        budget=.8;start=time.monotonic();elapsed_from=None;observed=[]
+        def clock():
+            nonlocal elapsed_from
+            now=time.monotonic()
+            if elapsed_from is None and transcript.exists():
+                pids=read_pids()
+                if len(pids)==2:
+                    observed.extend(pids);elapsed_from=now
+            if elapsed_from is None and now-start>=10:elapsed_from=now
+            return 0 if elapsed_from is None else budget+now-elapsed_from
+        with patch.object(vp,'time',SimpleNamespace(monotonic=clock,sleep=time.sleep)):
+            error=self.fails(5,vp.process,[sys.executable,'-u','-c',code,grand],directory,os.environ,timeout=budget,terminate_grace=.15,config=self.config,artifact=transcript)
+        self.assertEqual(len(observed),2,'both complete markers must reach disk before timeout')
         self.assertEqual(error.reason,'acceptance_process_timeout');self.assertEqual(error.details['output_artifact']['path'],str(transcript))
-        pids=[int(line.split()[1]) for line in transcript.read_text().splitlines() if line.startswith('READY')]
-        self.assertEqual(len(pids),2)
+        pids=read_pids()
+        self.assertEqual(observed,pids)
         deadline=time.monotonic()+3
         while any(vp.identity(pid) is not None for pid in pids) and time.monotonic()<deadline:time.sleep(.01)
         self.assertTrue(all(vp.identity(pid) is None for pid in pids))

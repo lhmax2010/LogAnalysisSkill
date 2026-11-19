@@ -50,7 +50,7 @@ class HeadlessTempTests(HeadlessWatchdog,B1Case):
 
 class Server(ThreadingHTTPServer):
     def __init__(self):
-        super().__init__(('127.0.0.1',0),Handler);self.calls=[];self.redirect=None
+        super().__init__(('127.0.0.1',0),Handler);self.calls=[];self.redirect=None;self.responses={}
         self.thread=threading.Thread(target=self.serve_forever,daemon=True);self.thread.start()
     @property
     def origin(self):return 'http://127.0.0.1:'+str(self.server_port)
@@ -59,8 +59,11 @@ class Server(ThreadingHTTPServer):
 class Handler(BaseHTTPRequestHandler):
     def log_message(self,*args):pass
     def do_GET(self):
-        self.server.calls.append(('GET',self.path));self.send_response(200);self.send_header('Content-Type','text/html');self.end_headers()
-        self.wfile.write(b'<html><body><button id="human">human action</button><input type="password" autocomplete="current-password"></body></html>')
+        self.server.calls.append(('GET',self.path))
+        status,location,body=self.server.responses.get(self.path,(200,None,b'<html><body><button id="human">human action</button><input type="password" autocomplete="current-password"></body></html>'))
+        self.send_response(status)
+        if location:self.send_header('Location',location)
+        self.send_header('Content-Type','text/html');self.end_headers();self.wfile.write(body)
     def do_POST(self):
         body=self.rfile.read(int(self.headers.get('Content-Length','0')));self.server.calls.append(('POST',self.path))
         if self.server.redirect:self.send_response(302);self.send_header('Location',self.server.redirect)
@@ -110,10 +113,12 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         account=self.config.raw['submit']['account']
         self.server.calls.clear()
         self.driver.gate.phase='auth'
+        self.server.responses['/']=(302,'/dashboard',b'')
+        self.server.responses['/dashboard']=(200,None,b'<header>no account match</header>')
         with patch.object(self.driver,'launch'):
             error=self.fails(3,self.driver.open,lambda:None,lambda _:None)
         self.assertEqual(error.reason,'hub_account_mismatch')
-        self.assertEqual(self.server.calls,[('GET','/dashboard')])
+        self.assertEqual(self.server.calls,[('GET','/'),('GET','/dashboard')])
         dashboard=self.server.origin+'/dashboard'
         self.page.set_content(f'<header><nav><span id="profile" class="user">{account}</span>'
                               '<span hidden>fixture-user</span><span>unrelated-user</span></nav></header>')
@@ -126,10 +131,59 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.page.set_content(f'<nav><span>{account.upper()}</span></nav><main>{account}</main>')
         self.fails(3,self.driver._check_account,dashboard)
 
+    def test_manual_login_redirect_and_password_document_refuse_sso_fallback(self):
+        from unittest.mock import patch
+        self.driver.gate.phase='auth'
+        self.server.responses['/']=(302,'/signin?manual-login',b'')
+        with patch.object(self.driver,'launch'):
+            e=self.fails(3,self.driver.open,lambda:None,lambda _:None)
+        self.assertEqual(e.reason,'hub_manual_login_page')
+        self.assertEqual(self.server.calls,[('GET','/')])
+        self.server.calls.clear();self.driver.gate.manual_login=False
+        self.server.responses['/']=(302,'/dashboard',b'')
+        with patch.object(self.driver,'launch'):
+            e=self.fails(3,self.driver.open,lambda:None,lambda _:None)
+        self.assertEqual(e.details['todo']['message'],'log in through SSO only; restart')
+        self.assertEqual(self.server.calls,[('GET','/'),('GET','/dashboard')])
+
+    def test_notice_style_only_and_exact_run_sends_once(self):
+        from unittest.mock import patch
+        path=self.driver.gate.overview
+        run=path+'?7-1.ILinkListener-run'
+        self.server.responses[run]=(302,'/wicket/page?9',b'')
+        self.server.responses['/wicket/page?9']=(200,None,b'<main>editor</main>')
+        self.page.set_content(f'<a href="{run}">Run the configuration</a>'
+                              '<div id="myNav" class="overlay" style="position:fixed;inset:0">'
+                              '<a onclick="fetch(\'/should-not-run\')">close</a></div>')
+        entry=self.server.origin+path
+        self.driver._dismiss_notice(entry)
+        self.assertEqual(self.server.calls,[])
+        self.assertFalse(self.page.locator('#myNav').is_visible())
+        def confirm(details):
+            self.assertEqual(self.server.calls,[])
+            self.assertEqual(details['run_pattern']['path'],path)
+            return 'allow-run'
+        with patch.object(self.driver,'_window'):
+            self.driver._run_editor(entry,confirm)
+        self.assertEqual(self.server.calls,[('GET',run),('GET','/wicket/page?9')])
+
+    def test_notice_cannot_hide_other_obstructions_or_send_mutation_requests(self):
+        entry=self.page.url
+        self.page.set_content('<button>Run the configuration</button>'
+                              '<div style="position:fixed;inset:0"></div>')
+        self.assertEqual(self.fails(4,self.driver._dismiss_notice,entry).reason,'run_button_obscured')
+        self.page.set_content('<button>Run the configuration</button>'
+                              '<div id="myNav" class="overlay" style="position:fixed;inset:0"></div>'
+                              '<script>new MutationObserver(()=>fetch("/leak")).observe('
+                              'document.querySelector("#myNav"),{attributes:true});</script>')
+        e=self.fails(4,self.driver._dismiss_notice,entry)
+        self.assertEqual(e.reason,'request_during_notice_dismissal')
+        self.assertEqual(self.server.calls,[])
+
     def test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch(self):
         from html import escape
         from vd_cosmos_core.submit_browser_contract import SEED
-        self.driver.gate.run_redirect=True
+        self.driver.gate.run_redirect=self.server.origin+'/wicket/page?1'
         self.page.goto(self.server.origin+'/wicket/page?1')
         rows=[]
         for seed in SEED:

@@ -124,18 +124,22 @@ class Driver:
     def _websocket(self,route):
         # Not connecting is the mock/block operation. Even close() can deadlock
         # a sync callback; do not call it, connect_to_server(), or inspect frames.
+        if self.gate is not None and self.gate.dismissing:
+            self.gate.fatal='request_during_notice_dismissal'
         return None
     def _new_page(self,page):
         if page!=self._page:self._defer(page,'close')
     def _route(self,route):
         try:
+            if self.gate is not None and self.gate.dismissing:
+                self.gate.fatal='request_during_notice_dismissal';self._defer(route,'abort');return
             if route.request.frame!=self._page.main_frame:self._defer(route,'abort');return
             self._defer(route,'continue_')
         except Exception:
             try:self._defer(route,'abort')
             except Exception:pass
     def _paused(self,event):
-        rid=event['requestId'];r=event['request'];url=r['url'];method=r['method'];allow=False
+        rid=event['requestId'];r=event['request'];url=r['url'];method=r['method'];allow=False;blocked='BlockedByClient'
         try:
             if 'responseStatusCode' in event:
                 status=event['responseStatusCode']
@@ -143,53 +147,105 @@ class Driver:
                 if self.gate.sent and rid==self._submission_id:
                     self._result='accepted' if status==302 and accepted_location(self.config,url,location) else 'uncertain'
                     allow=False
-                else:allow=self.gate.response(url,status,location)
+                else:allow=self.gate.response(url,status,location,main_document=event.get('frameId')==self._frame and event.get('resourceType')=='Document')
             else:
                 business=self.gate.phase=='business';u=urlsplit(url)
                 # Authentication values are never accessed. Only the business form endpoint is decoded.
                 inspect=business and u.path=='/wicket/page' and u.netloc==urlsplit(self.gate.origin).netloc
                 headers={k.lower():v for k,v in r.get('headers',{}).items() if k.lower() in {'content-type','wicket-ajax'}} if inspect else {}
+                run_ajax=business and self.gate.is_hub(u) and u.path==self.gate.overview and any(
+                    k.lower()=='wicket-ajax' for k in r.get('headers',{}))
                 body=r.get('postData','').encode() if inspect else b''
-                allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
+                captured=len(self.gate.run_candidates)
+                allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=run_ajax or headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
+                if len(self.gate.run_candidates)>captured:blocked='Aborted'
                 if allow and self.gate.sent and self._submission_id is None:self._submission_id=rid
-            self._defer(self._cdp,'send','Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':'BlockedByClient'})
+            self._defer(self._cdp,'send','Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':blocked})
         except Exception:
             self._fatal='request_gate_failed'
             try:self._defer(self._cdp,'send','Fetch.failRequest',{'requestId':rid,'errorReason':'BlockedByClient'})
             except Exception:pass
     def _check(self):
+        self._check_manual_login()
         if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
         u=urlsplit(self._page.url)
         if self.gate.phase!='business' or u.scheme+'://'+u.netloc!=self.gate.origin or u.path!='/wicket/page' or not u.query.isdecimal():raise FlowError(4,'business_page_required')
     def open(self,expose,confirm):
         self.launch();expose()
-        dashboard=self.gate.origin+'/dashboard';self.gate.navigation(dashboard,login_entry=True)
-        try:self._page.goto(dashboard,wait_until='domcontentloaded')
+        dashboard=self.gate.origin+'/dashboard';start=self.gate.origin+'/'
+        self.gate.navigation(start,login_entry=True)
+        try:self._page.goto(start,wait_until='domcontentloaded')
         except Exception:
+            self._check_manual_login()
             if self._fatal:raise FlowError(5,self._fatal) from None
         deadline=time.monotonic()+self.config.raw['submit']['login_wait_s']
         while self.gate.phase!='account' or self._page.url!=dashboard:
+            self._check_manual_login()
+            if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
             if time.monotonic()>deadline:raise FlowError(3,'login_wait_expired')
             self._page.wait_for_timeout(100)
         self._page.wait_for_load_state('domcontentloaded')
+        self._check_manual_login()
         self._check_account(dashboard)
         self.gate.verify_account()
         entry=self.gate.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.gate.navigation(entry)
         try:self._page.goto(entry,wait_until='domcontentloaded')
-        except Exception:raise FlowError(5,'target_navigation_failed') from None
+        except Exception:
+            self._check_manual_login()
+            raise FlowError(5,'target_navigation_failed') from None
         if self._page.url!=entry or self.gate.phase!='business':raise FlowError(5,'target_navigation_failed')
-        # Run is intentionally recorded with no permission, then separately confirmed.
-        self._window('minimized')
-        try:self._page.get_by_text('Run the configuration',exact=True).click(timeout=5000)
-        except Exception:pass
-        records=[x for x in self.gate.records if x.get('listener')=='ILinkListener' and x.get('classification')=='callback_candidate']
-        if len(records)!=1:raise FlowError(4,'run_pattern_unregistered')
-        candidate={k:records[0][k] for k in ('method','path','listener','behavior','component')}
-        if candidate['method']!='GET' or confirm({'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':raise FlowError(3,'run_confirmation_required')
-        self.gate.action(candidate)
-        try:self._page.get_by_text('Run the configuration',exact=True).click(timeout=5000)
-        except Exception:raise FlowError(5,'run_navigation_failed') from None
+        self._dismiss_notice(entry)
+        self._run_editor(entry,confirm)
         self._check()
+    def _manual_login_error(self):
+        return FlowError(3,'hub_manual_login_page',todo={'reason':'hub_manual_login_page',
+                        'message':'log in through SSO only; restart'})
+    def _check_manual_login(self):
+        url=self._page.url
+        u=urlsplit(url)
+        if self.gate.manual_login or self.gate.manual_url(u):raise self._manual_login_error()
+        if self.gate.is_hub(u):
+            try:probe=self._fixed_script('login_probe')
+            except FlowError as err:
+                # During auth, the document may be replaced as the probe runs.
+                if err.reason=='fixed_script_failed' and self.gate.phase=='auth':return
+                raise
+            if probe['manual_login']:raise self._manual_login_error()
+    def _run_position(self,entry,operation='run_position'):
+        self._check_manual_login()
+        if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+        if self._page.url!=entry:raise FlowError(5,'target_navigation_failed')
+        position=self._fixed_script(operation)
+        if not position['clear']:raise FlowError(4,'run_button_obscured')
+        return position['x'],position['y']
+    def _dismiss_notice(self,entry):
+        self.gate.dismissing=True
+        try:
+            self._run_position(entry,'dismiss_notice')
+            self._page.wait_for_timeout(150)
+            if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+        finally:self.gate.dismissing=False
+    def _run_editor(self,entry,confirm):
+        # The first click is observed but never sent. Permission is for the exact GET only.
+        self._window('minimized')
+        self.gate.capture_run=True
+        try:
+            self._page.mouse.click(*self._run_position(entry))
+            deadline=time.monotonic()+5
+            while not self.gate.run_candidates and not (self._fatal or self.gate.fatal) and time.monotonic()<deadline:
+                self._page.wait_for_timeout(20)
+        finally:self.gate.capture_run=False
+        if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+        if len(self.gate.run_candidates)!=1:raise FlowError(4,'run_pattern_unregistered')
+        candidate={'method':'GET','path':self.gate.overview,'listener':'ILinkListener','behavior':None,'component':'run'}
+        if confirm({'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':raise FlowError(3,'run_confirmation_required')
+        position=self._run_position(entry)
+        self.gate.allow_run(self.gate.run_candidates[0])
+        self._page.mouse.click(*position)
+        try:self._page.wait_for_url(re.compile(re.escape(self.gate.origin)+r'/wicket/page\?[0-9]+$'),timeout=5000)
+        except Exception:
+            self._check_manual_login()
+            raise FlowError(5,'run_navigation_failed') from None
     def _window(self,state):
         # Fixed window-only CDP calls; no runtime evaluation/network data extraction.
         info=self._cdp.send('Browser.getWindowForTarget')
@@ -199,6 +255,7 @@ class Driver:
         evidence={'matched':False,'element':None}
         if self.gate.phase=='account' and self._page.url==dashboard and not (self._fatal or self.gate.fatal):
             evidence=self._fixed_script('account',account=account)
+            if evidence.get('password_present'):raise self._manual_login_error()
         self.gate.records.append({'account_check':evidence})
         if not evidence['matched'] or self._page.url!=dashboard:
             raise FlowError(3,'hub_account_mismatch',account_check=evidence,
@@ -213,6 +270,7 @@ class Driver:
         self._check();value=self._fixed_script(operation,**kw)
         if isinstance(value,dict) and value.get('form_unrecognized'):
             raise FlowError(5,'form_unrecognized',breadcrumb_segments=value['breadcrumb_segments'])
+        if isinstance(value,dict) and value.get('password_present'):raise self._manual_login_error()
         return value
     def snapshot(self):return self._script('snapshot')
     def fill(self,index,value):

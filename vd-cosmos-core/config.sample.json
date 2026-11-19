@@ -500,8 +500,11 @@
     ],
     "browser_executable": "/usr/bin/google-chrome",
     "login_wait_s": 600,
-    "auth_paths": [],
-    "static_paths": [],
+    "auth_paths": [
+      {"host": "hub.example.invalid", "path": "/dashboard", "method": "GET"},
+      {"host": "auth.example.invalid:443", "path": "/sso/example", "method": "GET"}
+    ],
+    "static_paths": ["/assets/example-ver-*.css"],
     "gate_patterns": [
       {
         "method": "POST",

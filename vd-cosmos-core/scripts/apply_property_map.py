@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Install only the approved property map in an existing configuration."""
+"""Install the approved property map or import local browser settings."""
 import argparse
 from datetime import datetime, timezone
 import fcntl
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import sys
 import tempfile
@@ -14,6 +15,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.errors import FlowError
+from vd_cosmos_core.files import load_json
 from vd_cosmos_core.submit_config import property_map_defaults
 
 
@@ -39,16 +41,38 @@ def object_members(text, start):
     return members, index
 
 
-def rewrite(text, replacement):
+def rewrite(text, updates):
     root, root_end = object_members(text, len(text) - len(text.lstrip()))
-    value = json.dumps(replacement, ensure_ascii=False, indent=2).replace('\n', '\n    ')
+    def encode(value):
+        return json.dumps(value, ensure_ascii=False, indent=2).replace('\n', '\n    ')
     if 'submit' not in root:
-        return text[:root_end] + ',"submit":{"property_map":' + value + '}' + text[root_end:]
+        return text[:root_end] + ',"submit":' + encode(updates) + text[root_end:]
     submit, submit_end = object_members(text, root['submit'][0])
-    if 'property_map' not in submit:
-        return text[:submit_end] + (',' if submit else '') + '"property_map":' + value + text[submit_end:]
-    start, end = submit['property_map']
-    return text[:start] + value + text[end:]
+    added = [json.dumps(key) + ':' + encode(updates[key]) for key in updates.keys() - submit.keys()]
+    if added:
+        text = text[:submit_end] + (',' if submit else '') + ','.join(sorted(added)) + text[submit_end:]
+    for (start, end), key in sorted(((submit[k],k) for k in updates.keys() & submit.keys()), reverse=True):
+        text = text[:start] + encode(updates[key]) + text[end:]
+    return text
+
+
+BROWSER_KEYS = {'auth_paths', 'static_paths', 'target_config', 'target_config_id', 'account'}
+
+
+def browser_updates(path):
+    data = load_json(path)
+    if not isinstance(data, dict) or data.keys() - BROWSER_KEYS:
+        raise FlowError(2, 'invalid_browser_input_keys')
+    for key in data.keys() & {'target_config', 'target_config_id', 'account'}:
+        value = data[key]
+        if not isinstance(value, str) or not value or value != value.strip() or re.search(r'[\x00-\x1f\x7f]', value):
+            raise FlowError(2, 'invalid_browser_input_value')
+        if key == 'target_config_id' and not re.fullmatch(r'[0-9]+', value):
+            raise FlowError(2, 'invalid_browser_input_value')
+        if key == 'target_config' and any(not part.strip() or part != part.strip() or part in {'.','..'}
+                                          for part in value.split('/')):
+            raise FlowError(2, 'invalid_browser_input_value')
+    return data
 
 
 def sync_write(stream, data):
@@ -57,7 +81,7 @@ def sync_write(stream, data):
     os.fsync(stream.fileno())
 
 
-def apply(path):
+def apply(path, browser_input=None):
     if path.is_symlink() or not path.is_file():
         raise FlowError(2, 'existing_regular_config_required')
     path = path.resolve()
@@ -71,9 +95,18 @@ def apply(path):
         config = load_config(path)
         if config.raw['submit']['property_map_confirmed']:
             raise FlowError(4, 'property_map_already_confirmed')
+        if config.raw['submit']['gate_patterns_confirmed']:
+            raise FlowError(4, 'gate_patterns_already_confirmed')
         text = original.decode('utf-8')
-        old = json.loads(text).get('submit', {}).get('property_map', {})
-        new = property_map_defaults()
+        submit = json.loads(text).get('submit', {})
+        if browser_input is None:
+            old = submit.get('property_map', {})
+            new = property_map_defaults()
+            updates = {'property_map':new}
+        else:
+            new = browser_updates(browser_input)
+            old = submit
+            updates = {key:value for key,value in new.items() if key not in old or old[key]!=value}
         changes = {'added': sorted(new.keys() - old.keys()),
                    'changed': sorted(k for k in new.keys() & old.keys() if new[k] != old[k])}
         if not any(changes.values()):
@@ -82,7 +115,7 @@ def apply(path):
         with tempfile.NamedTemporaryFile(dir=path.parent, prefix='.property-map-', delete=False) as output:
             pending = Path(output.name)
             try:
-                sync_write(output, rewrite(text, new).encode('utf-8'))
+                sync_write(output, rewrite(text, updates).encode('utf-8'))
                 load_config(pending)
                 if path.read_bytes() != original:
                     raise FlowError(6, 'config_changed_during_update')
@@ -110,9 +143,11 @@ class Parser(argparse.ArgumentParser):
 def main():
     parser = Parser(description=__doc__)
     parser.add_argument('--config', required=True, type=Path)
+    parser.add_argument('--browser-input', type=Path)
     try:
         args = parser.parse_args()
-        print(json.dumps({'ok': True, 'submit.property_map': apply(args.config)}))
+        section = 'submit' if args.browser_input is not None else 'submit.property_map'
+        print(json.dumps({'ok': True, section: apply(args.config, args.browser_input)}))
         return 0
     except (OSError, ValueError):
         result = FlowError(6, 'config_update_failed')
