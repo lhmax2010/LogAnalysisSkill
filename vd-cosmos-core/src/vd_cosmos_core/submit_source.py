@@ -1,6 +1,4 @@
 """Source determination reads only explicit variables and report headers; no rounds."""
-from html.parser import HTMLParser
-import re
 import time
 from urllib.parse import urlsplit
 from . import submit_model as model
@@ -8,7 +6,7 @@ from .bm_pages import base_digest
 from .build_inputs import parse_list
 from .errors import FlowError
 from .files import digest, json_bytes
-from .report import HEADERS, label, normalize
+from .report import Document, report_headers
 from .state import EventStore
 from .submit_config import SECRET_NAME, PROPERTIES
 from .transport import HTTPTransport
@@ -16,40 +14,27 @@ from .transport import HTTPTransport
 COPY_DEFAULT = ['PACKAGE_LIST','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','BUILD_TYPE','KS_LIST','EXTRA_BUILD_PARAMETER']
 
 
-class HeaderOnly(HTMLParser):
-    def __init__(self):
-        super().__init__(); self.headers={}; self.cell=None; self.key=None; self.parts=[]
-    def put(self, key, value):
-        value=normalize(value)
-        if key in self.headers and self.headers[key]!=value: raise FlowError(5,'source_header_conflict')
-        self.headers[key]=value
-    def handle_starttag(self, tag, attrs):
-        if tag=='tr': self.key=None;self.cell=0
-        if tag in {'td','th'} and self.cell is not None:self.cell+=1;self.parts=[]
-    def handle_data(self, data):
-        if self.cell==1 or self.cell==2 and self.key:self.parts.append(data)
-        for line in data.splitlines():
-            m=re.fullmatch(r'\s*([^:\t]+):\s*(.+?)\s*',line)
-            if m and label(m[1]) in HEADERS:self.put(HEADERS[label(m[1])],m[2])
-    def handle_endtag(self, tag):
-        if tag in {'td','th'}:
-            if self.cell==1:self.key=HEADERS.get(label(''.join(self.parts)))
-            elif self.cell==2 and self.key:self.put(self.key,''.join(self.parts))
-            self.parts=[]
-        if tag=='tr':self.cell=None;self.key=None
+REQUIRED_HEADERS = {'arch', 'start_time', 'base', 'product', 'build_conf'}
 
 
 def headers_only(data):
-    parser=HeaderOnly()
-    try:parser.feed(data.decode('utf-8'));parser.close()
-    except (UnicodeError,ValueError):raise FlowError(5,'source_header_unrecognized') from None
-    required={'arch','start_time','base','product','build_conf'}
-    if not required<=parser.headers.keys() or not all(parser.headers[k] for k in required):raise FlowError(5,'source_header_missing')
-    return parser.headers
+    try:
+        headers, conflicts = report_headers(Document(data.decode('utf-8')))
+    except (UnicodeError, ValueError, RecursionError):
+        raise FlowError(5, 'source_header_unrecognized') from None
+    if conflicts:
+        raise FlowError(5, 'source_header_conflict', keys=sorted(conflicts), found=sorted(headers))
+    missing = sorted(key for key in REQUIRED_HEADERS if not headers.get(key))
+    if missing:
+        raise FlowError(5, 'source_header_missing', keys=missing, found=sorted(headers))
+    return headers
 
 
 def read_headers(config, build, arch, reader):
-    c=config.raw['cosmos'];path=c['report_path_template'].format(build_id=build,last3=build[-3:].zfill(3),arch=arch)
+    c=config.raw['cosmos']
+    if not c.get('report_path_template') or not c.get('report_root'):
+        raise FlowError(2, 'source_report_config_required')
+    path=c['report_path_template'].format(build_id=build,last3=build[-3:].zfill(3),arch=arch)
     url=c['report_root'].rstrip('/')+'/'+path.lstrip('/')
     if urlsplit(url).scheme!='https':raise FlowError(4,'source_report_requires_https')
     from .bm_reader import FixtureTransport
@@ -61,7 +46,9 @@ def read_headers(config, build, arch, reader):
     return headers_only(body)
 
 
-def determine(config, hub, build, reader, confirm, context, header_reader=read_headers):
+def prepare_source(config, hub, build, reader, header_reader=read_headers, *, write=True, evidence=None):
+    """Run the same pre-confirmation checks for once and the read-only verifier."""
+    evidence = {} if evidence is None else evidence
     if not str(hub).isdecimal() or build is not None and not str(build).isdecimal():raise FlowError(2,'source_identity_required')
     if build=='19270877':raise FlowError(4,'erroneous_build_forbidden')
     scan=None
@@ -74,6 +61,7 @@ def determine(config, hub, build, reader, confirm, context, header_reader=read_h
         if len(candidates)!=1 or scan['conflicts']:
             raise FlowError(3,'source_not_unique',todo={'reason':'source_not_unique','message':'来源未定位或重跑链；请明确 --bm-build'})
         d=candidates[0];build=d['build_id'];coverage=scan['coverage'];version=scan['rows'].get(build,{}).get('version')
+    evidence['detail_keys'] = sorted(d)
     if build=='19270877' or d.get('conflict') or d.get('hub_id')!=str(hub):raise FlowError(4,'source_hub_mismatch')
     if d['config_id']!=config.raw['cosmos']['bm_config_id']:raise FlowError(4,'source_config_mismatch')
     copy_names=config.raw['submit'].get('copy_from_source_vars',COPY_DEFAULT)
@@ -82,12 +70,21 @@ def determine(config, hub, build, reader, confirm, context, header_reader=read_h
         raise FlowError(2,'source_variable_names_required')
     names=set(copy_names)|set(compare_names)
     if 'PACKAGE_LIST' not in copy_names or any(n in {'SHELVE_LIST','EMAIL_CC'} or SECRET_NAME.search(n) for n in names):raise FlowError(4,'source_variable_forbidden')
-    values=reader.variables(build,names)
+    values=reader.variables(build,names) if write else reader.variables(build,names,write=False)
+    evidence['variable_keys'] = sorted(values)
     if set(values)!=names:raise FlowError(5,'source_variable_missing',todo={'reason':'source_variable_missing'})
     frozen={n:values[n]['value'] for n in sorted(names)}
-    headers={arch:header_reader(config,build,arch,reader) for arch in config.raw['cosmos']['archs']}
-    for arch,h in headers.items():
-        if h['arch']!=arch:raise FlowError(4,'source_header_arch_mismatch')
+    headers = {}
+    evidence['report_header_keys'] = {}
+    for arch in config.raw['cosmos']['archs']:
+        try:
+            headers[arch] = header_reader(config,build,arch,reader)
+        except FlowError as error:
+            evidence['report_header_keys'][arch] = error.details.get('found', [])
+            raise FlowError(error.code, error.reason, **{**error.details, 'arch': arch}) from None
+        evidence['report_header_keys'][arch] = sorted(headers[arch])
+        if headers[arch]['arch'] != arch:
+            raise FlowError(4, 'source_header_arch_mismatch', arch=arch)
     model.ensure_safe(config,headers)
     form=dict(config.raw['submit']['form'])
     if set(form)!=set(PROPERTIES):raise FlowError(2,'all_18_properties_required')
@@ -103,7 +100,12 @@ def determine(config, hub, build, reader, confirm, context, header_reader=read_h
              'package_count':len(parse_list(frozen['PACKAGE_LIST'],config.raw['cosmos']['branch_markers'])),
              'package_digest':base_digest(frozen['PACKAGE_LIST'],config),'variables':frozen,'from_form':[n for n in PROPERTIES if n not in copied],'headers':headers}
     model.ensure_safe(config,display)
-    if confirm(display)!=build:raise FlowError(3,'source_confirmation_required')
+    return form, basis, display
+
+
+def determine(config, hub, build, reader, confirm, context, header_reader=read_headers):
+    form, basis, display = prepare_source(config, hub, build, reader, header_reader)
+    if confirm(display)!=basis['build_id']:raise FlowError(3,'source_confirmation_required')
     with EventStore(config.data_root) as store, store.transaction():
-        store.append(context,'base_source_attest',{'basis':basis,'frozen':frozen,'headers':headers,'at':time.time(),'reason':'once --base-from-hub 回显核对'},store.head())
+        store.append(context,'base_source_attest',{'basis':basis,'frozen':display['variables'],'headers':display['headers'],'at':time.time(),'reason':'once --base-from-hub 回显核对'},store.head())
     return form,basis

@@ -26,8 +26,10 @@ class Node:
     children: list = field(default_factory=list)
     end_line: int = 0
 
-    def text(self):
-        result = "".join(x.text() if isinstance(x, Node) else x for x in self.children)
+    def text(self, *, omit_tables=False):
+        if omit_tables and self.tag == "table":
+            return "\n"
+        result = "".join(x.text(omit_tables=omit_tables) if isinstance(x, Node) else x for x in self.children)
         if self.tag in {"br", "tr", "p", "div", "h1", "h2", "h3", "h4"}:
             result += "\n"
         elif self.tag in {"td", "th"}:
@@ -152,23 +154,30 @@ def count_label(value):
     return re.sub(r"\s+packages$", "", label(value))
 
 
-def _header_and_counts(document, summary_prefix):
-    headers, counts = {}, {}
-    malformed = False
+def report_headers(document):
+    """Return header values and conflicting keys without interpreting report tables."""
+    headers, conflicts = {}, set()
+
+    def record(key, value):
+        if key in headers and headers[key] != value:
+            conflicts.add(key)
+        headers[key] = value
+
     for row in document.root.descendants({"tr"}):
-        values = [normalize(c.text()) for c in cells(row)]
-        if len(values) == 2 and label(values[0]) in HEADERS:
-            key = HEADERS[label(values[0])]
-            if key in headers and headers[key] != values[1]:
-                malformed = True
-            headers[key] = values[1]
-    for line in document.root.text().splitlines():
+        columns = cells(row)
+        if len(columns) == 2 and (key := HEADERS.get(label(columns[0].text()))):
+            record(key, normalize(columns[1].text()))
+    # Header table cells were handled above. A table's package text must
+    # never become part of the last header line (e.g. an adjacent </pre>).
+    for line in document.root.text(omit_tables=True).splitlines():
         match = re.match(r"^\s*([^:\t]+):\s*(.+?)\s*$", line)
         if match and label(match[1]) in HEADERS:
-            key = HEADERS[label(match[1])]
-            if key in headers and headers[key] != match[2]:
-                malformed = True
-            headers[key] = match[2]
+            record(HEADERS[label(match[1])], match[2])
+    return headers, conflicts
+
+
+def _summary_counts(document, summary_prefix):
+    counts, malformed = {}, False
     for table in document.root.descendants({"table"}):
         rows = table_rows(table)
         candidates = table_titles(table, document)
@@ -192,7 +201,7 @@ def _header_and_counts(document, summary_prefix):
                     malformed = True
                 else:
                     counts[key] = int(raw)
-    return headers, counts, malformed
+    return counts, malformed
 
 
 def parse_report(html, arch, cosmos, expected_packages=None, *, stable, settled=None, source_url=""):
@@ -205,7 +214,9 @@ def parse_report(html, arch, cosmos, expected_packages=None, *, stable, settled=
     marker = label(cosmos["report_markers"]["report"])
     if marker not in label(document.root.text()):
         raise FlowError(5, "not_a_report")
-    headers, counts, malformed = _header_and_counts(document, cosmos["report_markers"]["summary"])
+    headers, conflicts = report_headers(document)
+    counts, malformed = _summary_counts(document, cosmos["report_markers"]["summary"])
+    malformed = malformed or bool(conflicts)
     packages, inputs, issues, titles, warnings, source_rows = [], [], [], {}, [], []
     html_lines = html.splitlines()
     prefixes = {"build": cosmos["detail_table_title_prefix"],

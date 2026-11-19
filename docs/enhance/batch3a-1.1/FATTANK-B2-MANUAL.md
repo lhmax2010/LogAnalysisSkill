@@ -2,7 +2,7 @@
 
 本页仅供控制终端人工使用；ClineSR 的 SKILL 不列出 once / recover / resolve。配置原件不进仓库。下面命令尚未在真实服务上执行。
 
-## 构建机离线验收（无登录、无提交、无真实演练）
+## 构建机验收（离线套件与匿名源读取；无登录、无提交）
 
 先进入本线部署目录，PATH 指向构建机已有 run/venv（Python 3.10.12、Playwright 1.64.1、import-linter 2.3）。EXPECTED_COMMIT 必须填本次最终回报的完整提交号，不用临时读取 HEAD 替代审定值。VD_CONFIG 是构建机现有配置绝对路径；VD_CHROME 是现有 Chrome 的可执行路径。不要安装浏览器或依赖。
 
@@ -10,7 +10,7 @@
 nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome "$VD_CHROME"
 ```
 
-验收核对提交/工作区、contract、静态扫描、完整离线套件，强制真实无头浏览器测试不能因缺依赖跳过。输出在原 data_root/verification/b3a11b2-<随机号>/，result.json 和 offline-tests.txt 均先过凭据检查；不复制真实配置，不做 A/B1 的在线检查。
+验收核对提交/工作区、contract、静态扫描、完整离线套件，强制真实无头浏览器测试不能因缺依赖跳过。B2.6 新增匿名源读取：以 37376237 / 19206687 读取详情、变量和各架构报告头，使用与 once 相同的确认前校验，读取失败则验收 FAIL。只写验收产物，不写业务状态、不提示确认、不打开真实浏览器。输出在原 data_root/verification/b3a11b2-<随机号>/；result.json 的 source_preflight 只记录找到的字段名，不记录值。result.json 和 offline-tests.txt 均先过凭据检查。
 
 ## 之后由 FatTank 亲自在控制终端演练
 

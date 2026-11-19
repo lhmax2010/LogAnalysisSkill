@@ -759,3 +759,31 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 | `evidence-b25-main/cleanup-python312.txt` | `2274f33aa52b853dfac146a72866eecf09731a9b5a91b438ddd9cd15ef086340` |
 
 凭据预检：`evidence-b25-main/prepush-final.json`。
+
+## Checkpoint B2.6（设计方 2026-11-19）
+
+基线 `144e2f2`：构建机 v9 A/B2 通过，FatTank 首次实况演练在打开浏览器前返回 5 / `source_header_missing`。原专用读取器逐个文本节点找 `label: value`，无法解析实页中独立粗体标签和值。B2.6 从 `report.py` 提取共用 `report_headers`。两种调用共享段落、文本与表格头字段识别；来源读取拒绝冲突、空或缺失的必需字段，仅提取头字段，不解释汇总或包行。原有白名单回归还覆盖了紧接头字段的表格不能污染最后一个头值。
+
+### 页面解析审计
+
+范围为提交工具的 once、lookup、claim/attest 及 watch，包括 once 的浏览器 DOM。pages30 指仓库 `vd-cosmos-core/fixtures/real_pages/` 下的原匿名摘录，完整的报告夹具在 `vd-cosmos-core/fixtures/real_format/`。表中明确区分捕获页和按实测结构重建的夹具。
+
+| 页面及入口 | 解析点 | 夹具与回归 |
+|---|---|---|
+| BM 详情（once、lookup、claim、watch） | `bm_pages.detail`：状态、标签页、配置 ID、Hub Link、推广证据及汇总 | pages30 五份详情；`test_batch3a11b13.RealPagesTests.test_real_details_states_hubs_configs_and_trusted_observation`，另有 Hub Link / tab 变异负例。同一组还覆盖 `observation.detail_state` 的强身份及运行/终态。 |
+| BM overview（once 发送前观察、lookup、claim、watch） | `bm_pages.listing(..., 'overview')`：按表头找队列与构建 | pages30 `overview_4362.html`；`test_batch3a11b13.RealPagesTests.test_real_overview_history_rows_and_fixture_hash_manifest`。 |
+| BM history（无指定构建的 once、lookup、claim、watch） | `bm_pages.listing(..., 'history')`：分页范围、链接、记录 | pages30 `history_4362_p1.html`；同上；多页与锚点另由 `test_batch3a11b1.LookupTests` 合成夹具覆盖。 |
+| BM 变量（once、lookup、claim、watch） | `bm_pages.variables` / `variable_pages.parse`：身份、允许字段与三列表头 | 新增 `variables_19206687_table.html`（按 recon25 重建的三列表，值为示例）合入 pages30 `detail_19206687.html` 的身份结构；`test_batch3a11b26.SourcePreflightTests` 走实际读取路径；原始变量页未提供。 |
+| 双架构源报告（once） | `submit_source.headers_only` / `report.report_headers`（与 `parse_report` 共用） | `report_armv7l.html`、`report_x86_64.html`；`test_batch3a11b26.SourceHeadersTests` 验证七个返回值逐项一致、五个必需字段非空，覆盖缺失、空值、冲突、不合法 UTF-8。 |
+| Hub 登录检测、Dashboard、概览和编辑器（once） | `browser_scripts.py` 固定 DOM：密码元素、可见账号、公告与 Run 中心、面包屑、18 项控件与表单序列化 | pages30 不含已登录 Hub 页。以 diag32/33、recon20 实测结构及 B2.5 标签约定重建的 127.0.0.1 回归：`test_batch3a11b2_headless.HeadlessGateTests` 的密码页、账号、公告、表单/回读测试。本批扩充表单夹具断言全部控件数、填值和序列化；无头套件由构建机强制执行。 |
+
+### 构建机预检
+
+原 `verify_b3a11b2_real.sh` 命令不变，EXPECTED_COMMIT 换为本次提交。离线和静态项通过后才以匿名读取器执行 `--base-from-hub 37376237 --bm-build 19206687` 的确认前步骤：详情、选定变量、报告头及同一准备校验。复用已有不可变记录的比较，但不创建锁、状态、待办、轮次或提交记录；不进入确认或浏览器。验收 `source_preflight` 只报告字段名；缺项时保留已找到的字段名和失败架构，验收 FAIL。本地用组合夹具验证，没有访问真实服务。
+
+| 解释器 | 完整 `run_tests.sh` | 输出 SHA256 |
+|---|---|---|
+| 3.10.12 | `evidence-b26/python310.txt`：369 项，354 通过，15 跳过 | `33969a3a0e110fbc0852445a07d601ee4bbff1c073e427c99790c7b7dfbd46fd` |
+| 3.12.3 | `evidence-b26/python312.txt`：369 项，354 通过，15 跳过 | `7ce974050c91dbb71ab220aa27eecb14dcf4497589779f5194e57d55f903aab7` |
+
+跳过项是本机缺 Playwright 的无头浏览器测试，构建机仍强制运行。双解释器静态检查和 import-linter 通过；凭据预检见 `evidence-b26/prepush-final.json`。

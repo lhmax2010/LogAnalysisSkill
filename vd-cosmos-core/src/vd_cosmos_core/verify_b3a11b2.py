@@ -1,4 +1,4 @@
-"""B2 build-machine acceptance: local tests only, never live once/rehearse."""
+"""B2 acceptance: offline tests and an anonymous read-only source preflight."""
 import json
 from pathlib import Path
 import re
@@ -8,9 +8,20 @@ import uuid
 from .cli import Parser
 from .config import load_config
 from .browser_executable import resolve as resolve_browser
+from .bm_reader import Reader
+from .submit_source import prepare_source
 from .errors import FlowError
 from .files import atomic_write,json_bytes,digest
 from .verify_b3a11 import ROOTS,child_env,contracts,offline_tests,process,safe_bytes
+
+
+def source_preflight(config, evidence):
+    reader = Reader(config)
+    try:
+        prepare_source(config, '37376237', '19206687', reader, write=False, evidence=evidence)
+    finally:
+        reader.close()
+
 
 def execute(args,repo):
     head=subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True,start_new_session=True).strip()
@@ -34,6 +45,12 @@ def execute(args,repo):
         stage='offline_suite_with_required_headless'
         result['test_output']=offline_tests(config,repo,directory,env)
         result['test_sha256']=digest(Path(result['test_output']['path']).read_bytes())
+        stage='anonymous_source_preflight'
+        result['source_preflight']={'mode':'anonymous_read_only','hub_id':'37376237','build_id':'19206687',
+                                    'status':'FAIL'}
+        result['live_operations']=True
+        source_preflight(config,result['source_preflight'])
+        result['source_preflight']['status']='PASS'
     except FlowError as e:result.update(e.as_dict(),failed_stage=stage)
     result['verdict']='PASS' if result['exit_code']==0 else 'FAIL'
     result_path=atomic_write(config.data_root,directory/'result.json',safe_bytes(config,json_bytes(result)))

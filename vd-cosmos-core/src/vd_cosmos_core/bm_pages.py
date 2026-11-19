@@ -236,7 +236,7 @@ def build_target(config, candidate, values, *, require=False):
     return evidence
 
 
-def variables(data, config, build_id, names):
+def variables(data, config, build_id, names, *, write=True):
     names = set(names)
     if any(SECRET_NAME.search(n) for n in names) or not names <= set(PROPERTIES) | variable_names(config) | BUILD_TARGET_VARS | {
             e['variable'] for e in config.raw['submit']['property_map'].values() if e['variable'] not in (None, 'not_listed')}:
@@ -256,7 +256,7 @@ def variables(data, config, build_id, names):
                         'enum_display': cmp_v1(value) if cmp_v1(value).casefold() in {'', 'true', 'false', 'yes', 'no', 'on', 'off', 'full', 'partial', 'armv7l'} else None,
                         **value_shape(value)}
     remember(config, build_id, 'https://' + config.raw['cosmos']['bm_host'] + '/build/' + str(build_id) + '/variables',
-             {name: entry['value'] for name, entry in result.items()}, names)
+             {name: entry['value'] for name, entry in result.items()}, names, write=write)
     return result
 
 

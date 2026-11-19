@@ -69,8 +69,9 @@ class Reader:
             self.cache[b] = copy.deepcopy(value)
         return value
 
-    def variables(self, build, names):
-        return self.safe(bm_pages.variables(self.get('/build/' + str(build) + '/variables'), self.config, str(build), names))
+    def variables(self, build, names, *, write=True):
+        return self.safe(bm_pages.variables(self.get('/build/' + str(build) + '/variables'), self.config,
+                                            str(build), names, write=write))
 
     def clock_valid(self):
         return bool(self.samples and all(s.get('valid') for s in self.samples)

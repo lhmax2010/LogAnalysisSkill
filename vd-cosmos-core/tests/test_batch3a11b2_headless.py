@@ -201,7 +201,13 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         for breadcrumb, segments in (('root / PRODUCT &gt; fixture » RELEASE', ['root','PRODUCT','fixture','RELEASE']),
                                      ('PRODUCT › fixture\nRELEASE',['PRODUCT','fixture','RELEASE'])):
             self.page.set_content(f'<div class="breadcrumbs">{breadcrumb}</div>'+form)
-            self.assertEqual(self.driver.snapshot()['breadcrumb_segments'], segments)
+            snapshot=self.driver.snapshot()
+            self.assertEqual(snapshot['breadcrumb_segments'], segments)
+            self.assertEqual(len(snapshot['controls']),18)
+        self.driver._script('fill',index=17,value='fixture-knob')
+        submitted=dict(self.driver._script('serialize'))
+        self.assertEqual(submitted[SEED[17]['name']],'fixture-knob')
+        self.assertIn('form_hf_0',submitted)
         self.page.set_content('<div class="breadcrumb">PRODUCT / wrong / RELEASE</div>'+form)
         error=self.fails(5,self.driver.snapshot)
         self.assertEqual(error.reason,'form_unrecognized')

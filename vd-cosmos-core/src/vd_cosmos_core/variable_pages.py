@@ -1,4 +1,5 @@
 """Shared header-based variable tables and immutable, credential-checked first reads."""
+from contextlib import nullcontext
 from urllib.parse import urlsplit
 
 from .errors import FlowError
@@ -75,7 +76,7 @@ def parse(data, names):
     return result
 
 
-def remember(config, build_id, page_url, values, names):
+def remember(config, build_id, page_url, values, names, *, write=True):
     """Freeze each selected value/absence at its first read, across all callers.
 
     Only safe decoded values are stored, never HTML or unselected cells. The
@@ -88,7 +89,8 @@ def remember(config, build_id, page_url, values, names):
     scope = {'host': urlsplit(page_url).netloc.lower(), 'build_id': str(build_id)}
     key = digest(json_bytes(scope))
     folder = 'inputs/variable-first-read/' + key
-    with OperationLock(config.data_root, 'variables', key, wait_s=config.raw['poll']['lock_wait_s']):
+    lock = OperationLock(config.data_root, 'variables', key, wait_s=config.raw['poll']['lock_wait_s']) if write else nullcontext()
+    with lock:
         pending = []
         for name in sorted(names):
             value = values.get(name)
@@ -104,9 +106,11 @@ def remember(config, build_id, page_url, values, names):
                     todo = {'reason': 'variable_page_changed', 'message': '变量页已变化',
                             'build_id': str(build_id), 'variable': name,
                             'stored_sha256': old['sha256'], 'observed_sha256': record['sha256']}
-                    issue = atomic_write(config.data_root, folder + '/issues/' + digest(json_bytes(todo)) + '.json', json_bytes(todo))
-                    raise FlowError(3, 'variable_page_changed', todo=todo, issue=issue)
-            else:
+                    details = {'todo': todo}
+                    if write:
+                        details['issue'] = atomic_write(config.data_root, folder + '/issues/' + digest(json_bytes(todo)) + '.json', json_bytes(todo))
+                    raise FlowError(3, 'variable_page_changed', **details)
+            elif write:
                 pending.append((path, record))
         for path, record in pending:
             atomic_write(config.data_root, path, json_bytes(record))

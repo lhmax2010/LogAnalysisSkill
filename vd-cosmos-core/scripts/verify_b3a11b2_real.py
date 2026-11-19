@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local-only B2 build-machine acceptance entry point."""
+"""B2 build-machine acceptance with an anonymous source preflight."""
 from pathlib import Path
 import sys
 sys.dont_write_bytecode=True

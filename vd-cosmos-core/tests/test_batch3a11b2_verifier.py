@@ -1,4 +1,4 @@
-"""Verifier never calls live doctor, lookup, once or P4."""
+"""Verifier permits only anonymous source probes in addition to offline tests."""
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -20,14 +20,15 @@ class B2VerifierTests(B1Case):
     def test_wrong_head_never_reads_config_or_creates_output(self):
         with patch.object(verify.subprocess,'check_output',return_value='b'*40),patch.object(verify,'load_config') as load:
             self.fails(6,verify.execute,self.args(),REPO);load.assert_not_called()
-    def test_requires_real_browser_tests_in_fresh_root_no_live_calls(self):
+    def test_requires_real_browser_tests_in_fresh_root_before_source_probe(self):
         seen=[]
         def suite(config,repo,directory,env):
             self.assertEqual(env['VD_REQUIRE_HEADLESS'],'1');self.assertEqual(env['VD_COSMOS_CHROME'],'/opt/google/chrome/chrome');seen.append(directory)
             p=directory/'test.txt';p.write_text('Python 3.10.12\nlocal tests\n');return {'path':str(p),'sha256':'fixture'}
-        with patch.object(verify.subprocess,'check_output',side_effect=['a'*40,b'','a'*40,b'']),patch.object(verify,'contracts',return_value=[]),patch.object(verify,'process',return_value=SimpleNamespace(stdout=b'PASS',stderr=b'',returncode=0)),patch.object(verify,'offline_tests',side_effect=suite):
+        with patch.object(verify.subprocess,'check_output',side_effect=['a'*40,b'','a'*40,b'']),patch.object(verify,'contracts',return_value=[]),patch.object(verify,'process',return_value=SimpleNamespace(stdout=b'PASS',stderr=b'',returncode=0)),patch.object(verify,'offline_tests',side_effect=suite),patch.object(verify,'source_preflight') as preflight:
             first=verify.execute(self.args(),REPO);second=verify.execute(self.args(),REPO)
-        self.assertEqual(first['exit_code'],0);self.assertFalse(first['live_operations']);self.assertNotEqual(first['data_root'],second['data_root']);self.assertEqual(len(seen),2)
+        self.assertEqual(first['exit_code'],0);self.assertTrue(first['live_operations']);self.assertNotEqual(first['data_root'],second['data_root']);self.assertEqual(len(seen),2)
+        self.assertEqual(preflight.call_count,2);self.assertEqual(first['source_preflight']['status'],'PASS')
         self.assertTrue(all(p.is_relative_to(self.config.data_root) for p in seen))
     def test_missing_browser_suite_fails_and_preserves_safe_reason(self):
         with patch.object(verify.subprocess,'check_output',side_effect=['a'*40,b'']),patch.object(verify,'contracts',return_value=[]),patch.object(verify,'process',return_value=SimpleNamespace(stdout=b'PASS',stderr=b'',returncode=0)),patch.object(verify,'offline_tests',side_effect=FlowError(6,'offline_suite_failed')):

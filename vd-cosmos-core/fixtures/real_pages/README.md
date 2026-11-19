@@ -4,6 +4,8 @@ Source: designer-supplied pages30.md, captured/anonymized on the build machine b
 
 B3a11-Q10 approved 2026-11-16: whole-token replacement of the remaining Hub/BM hosts with hub.example.invalid / bm.example.invalid, in every occurrence including href and Hub Link text. No other byte changes. Tests explicitly use both placeholder hosts. `manifest.json` records incoming and committed digests; archived diagnostic scripts are not executed.
 
+`variables_19206687_table.html` is a reconstruction, not a pages30 capture. It models recon25's Name / Display Name / Value cells with empty Display Name and preformatted example values. The B2.6 tests pair it with the captured `detail_19206687.html` page for the variable reader. No variable-page values were copied from the live system.
+
 | Page | Incoming whitespace-free SHA256 | Hub replacements | BM replacements | Committed SHA256 |
 |---|---|---|---|---|
 | history_4362_p1.html | 5d6bb9f0c5710ecc7f5c2b55e22e9c2125e10360f721895921a95d9f676565d5 | 0 | 1 | ebc786b0b9866707f9043cb509edd890cd4c107471757498953624cedd8ee70e |

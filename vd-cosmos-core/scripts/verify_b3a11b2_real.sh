@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# No live service access. The supplied interpreter must already contain dev tools.
+# Offline suite plus an anonymous source preflight. Never opens the live browser.
 set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_dir="$(cd "$script_dir/../.." && pwd)"
