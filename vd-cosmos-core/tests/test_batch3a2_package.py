@@ -18,7 +18,7 @@ LOG = (b'[   12s] clang -c /BUILDROOT/example/src/main.c\n'
        b'[   14s] read the credential file\n')
 
 
-class PackageTests(unittest.TestCase):
+class PackageFixture:
     def setUp(self):
         work = tempfile.TemporaryDirectory()
         self.addCleanup(work.cleanup)
@@ -50,6 +50,8 @@ class PackageTests(unittest.TestCase):
     def prepare(self, **kwargs):
         return prepare(self.config, BUILD, '10', self.item['path'], **kwargs)
 
+
+class PackageTests(PackageFixture, unittest.TestCase):
     def test_actual_adapter_preserves_path_and_uses_patch_context_only_for_compiler(self):
         import json
         data, context = analyze_log(self.config, Path(self.item['path']), KEY, 'build_error')
