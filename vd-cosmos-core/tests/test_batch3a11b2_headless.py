@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import threading
+import time
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from unittest.mock import patch
 from helpers import REPO
@@ -51,6 +52,7 @@ class HeadlessTempTests(HeadlessWatchdog,B1Case):
 class Server(ThreadingHTTPServer):
     def __init__(self):
         super().__init__(('127.0.0.1',0),Handler);self.calls=[];self.redirect=None;self.responses={}
+        self.holds={};self.completed={}
         self.thread=threading.Thread(target=self.serve_forever,daemon=True);self.thread.start()
     @property
     def origin(self):return 'http://127.0.0.1:'+str(self.server_port)
@@ -60,10 +62,14 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,*args):pass
     def do_GET(self):
         self.server.calls.append(('GET',self.path))
+        if self.path in self.server.holds:self.server.holds[self.path].wait(5)
         status,location,body=self.server.responses.get(self.path,(200,None,b'<html><body><button id="human">human action</button><input type="password" autocomplete="current-password"></body></html>'))
         self.send_response(status)
         if location:self.send_header('Location',location)
-        self.send_header('Content-Type','text/html');self.end_headers();self.wfile.write(body)
+        self.send_header('Content-Type','text/html');self.end_headers()
+        try:self.wfile.write(body)
+        except (BrokenPipeError,ConnectionResetError):return
+        self.server.completed[self.path]=time.monotonic()
     def do_POST(self):
         body=self.rfile.read(int(self.headers.get('Content-Length','0')));self.server.calls.append(('POST',self.path))
         if self.server.redirect:self.send_response(302);self.send_header('Location',self.server.redirect)
@@ -77,6 +83,7 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         r=model.create_request(self.config,CTX,self.form(),'local browser verification');self.session=sessions.start(self.config,r,CTX,Processes())
         self.expect_pause_fault=False
         self.driver=Driver(self.config,self.session,headless=True,local_origin=self.server.origin);self.addCleanup(self.close_driver);self.driver.launch(rehearse=True)
+        self.driver.quiet_window_s=.18
         print('Chrome executable (launched): '+exe,flush=True)
         self.page=self.driver._page;url=self.server.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.driver.gate.navigation(url);self.page.goto(url,wait_until='domcontentloaded');self.page.wait_for_timeout(100)
         self.assertEqual(self.driver.gate.phase,'business');self.server.calls.clear()
@@ -247,7 +254,90 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
                               'document.querySelector("#myNav"),{attributes:true});</script>')
         e=self.fails(4,self.driver._dismiss_notice,entry)
         self.assertEqual(e.reason,'request_during_notice_dismissal')
+        record,=[r for r in e.details['request_records'] if r['path']=='/leak']
+        self.assertIn(record['resource_type'].lower(),{'xhr','fetch'})
+        self.assertEqual(record['decision'],e.reason)
         self.assertEqual(self.server.calls,[])
+
+    def slow_target(self):
+        path=self.driver.gate.overview;url=self.server.origin+path
+        image='/slow.png?v=fixture-value'
+        release=threading.Event();self.addCleanup(release.set)
+        self.server.holds[image]=release
+        self.server.responses[path]=(200,None,b'<button>Run the configuration</button><img src="/slow.png?v=fixture-value">'
+                                             b'<div id="myNav" class="overlay" style="position:fixed;inset:0"></div>')
+        self.driver.gate.static_keys.add('/slow.png')
+        self.driver.gate.navigation(url)
+        self.page.goto(url,wait_until='domcontentloaded')
+        self.assertNotIn(image,self.server.completed)
+        return url,image,release
+
+    def test_slow_static_finishes_and_target_quiet_window_precedes_dismissal(self):
+        url,image,release=self.slow_target()
+        timer=threading.Timer(.25,release.set);timer.start();self.addCleanup(timer.join)
+        self.driver._wait_for_quiet(load=True)
+        self.assertIn(image,self.server.completed)
+        self.assertGreaterEqual(time.monotonic()-self.server.completed[image],self.driver.quiet_window_s)
+        self.driver._dismiss_notice(url)
+        self.assertFalse(self.page.locator('#myNav').is_visible())
+        self.assertEqual(self.driver.gate.request_records,[])
+
+    def test_dismissal_allows_late_registered_image_and_records_only_query_key(self):
+        entry=self.page.url
+        self.driver.gate.static_keys.add('/revealed.png')
+        self.page.set_content('<button>Run the configuration</button>'
+                              '<div id="myNav" class="overlay" style="position:fixed;inset:0"></div>'
+                              '<script>new MutationObserver(()=>{const image=new Image();'
+                              'image.src="/revealed.png?v=private-fixture";document.body.append(image);}).observe('
+                              'document.querySelector("#myNav"),{attributes:true});</script>')
+        self.driver._dismiss_notice(entry)
+        self.assertEqual(self.server.calls,[('GET','/revealed.png?v=private-fixture')])
+        self.assertEqual(self.driver.gate.request_records,[{'method':'GET','resource_type':'Image','host':'127.0.0.1',
+            'path':'/revealed.png','query_keys':['v'],'decision':'allow_static'}])
+
+    def test_dismissal_wicket_timer_fails_and_preserves_redacted_shape(self):
+        entry=self.page.url
+        self.page.set_content('<button>Run the configuration</button>'
+                              '<div id="myNav" class="overlay" style="position:fixed;inset:0"></div>'
+                              '<script>new MutationObserver(()=>setTimeout(()=>{'
+                              'const x=new XMLHttpRequest();x.open("GET","/wicket/page?8-1.ILinkListener-run&v=private-fixture");'
+                              'x.setRequestHeader("Wicket-Ajax","true");x.send()},10)).observe('
+                              'document.querySelector("#myNav"),{attributes:true});</script>')
+        error=self.fails(4,self.driver._dismiss_notice,entry)
+        record,=[r for r in error.details['request_records'] if r['path']=='/wicket/page']
+        self.assertEqual((record['resource_type'].lower(),record['query_keys']),('xhr',['<ILinkListener-run>','v']))
+        self.assertEqual(record['decision'],'request_during_notice_dismissal')
+        self.assertNotIn('private-fixture',str(error.details))
+        self.assertEqual(self.server.calls,[])
+
+    def test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts(self):
+        _,_,release=self.slow_target()
+        self.driver.quiet_timeout_s=.32
+        try:
+            error=self.fails(5,self.driver._wait_for_quiet,load=True)
+        finally:
+            release.set()
+        self.assertEqual(error.reason,'target_page_not_quiet')
+        self.assertGreater(error.details['in_flight'],0)
+        self.assertGreater(error.details['requests_started'],error.details['requests_finished'])
+        self.assertIn('pause_counts',error.details)
+
+    def test_activity_after_load_times_out_before_run_recording(self):
+        entry=self.page.url
+        self.page.set_content('<button>Run the configuration</button>')
+        self.driver.gate.static_keys.add('/late.png')
+        release=threading.Event();self.addCleanup(release.set)
+        self.server.holds['/late.png']=release
+        self.page.evaluate("""()=>{const image=new Image();image.src='/late.png';document.body.append(image);}""")
+        self.driver.quiet_timeout_s=.35
+        try:
+            error=self.fails(5,self.driver._run_editor,entry,lambda _:self.fail('Run was offered before quiet'))
+        finally:
+            release.set()
+        self.assertEqual(error.reason,'target_page_not_quiet')
+        self.assertGreater(error.details['in_flight'],0)
+        self.assertFalse(self.driver.gate.capture_run)
+        self.assertFalse(self.driver.gate.run_candidates)
 
     def test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch(self):
         from html import escape

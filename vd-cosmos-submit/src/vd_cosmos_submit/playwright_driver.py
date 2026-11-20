@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core import submit_sessions, submit_flow, submit_model, browser_temp
 from vd_cosmos_core.export import check_content
-from vd_cosmos_core.submit_gate import Gate, static_key
+from vd_cosmos_core.submit_gate import Gate, address, request_evidence, static_key
 from vd_cosmos_core.submit_browser_contract import accepted_location, wire_values, verify_parts
 from vd_cosmos_core.submit_terminal import confirmation_error
 from vd_cosmos_core.files import digest, json_bytes
@@ -63,6 +63,7 @@ class Pause:
     request_id: object
     shape: dict
     deadline: float
+    evidence: dict
     timer: object = None
     task: object = None
     started: bool = False
@@ -72,12 +73,16 @@ class Pause:
 
 class Driver:
     pause_timeout_s = 10
+    quiet_window_s = 1.5
+    quiet_timeout_s = 30
 
     def __init__(self,config,session,*,headless=False,local_origin=None):
         self.config=config;self.session=session;self.headless=headless;self.local_origin=local_origin
         self._pw=None;self._context=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None;self._submission_id=None
         self._pauses={};self._paused_count=0;self._resolved_count=0;self._forced_closed=0
         self._pause_fault=False;self._closing=False;self._tearing_down=False;self._emergency_close=False;self._cancelled_on_close=0
+        self._in_flight=set();self._network_started=0;self._network_finished=0
+        self._last_activity=time.monotonic()
     def operate(self,args,request,context,confirm,reader_factory):
         self.gate=Gate(self.config,rehearse=args.rehearse,local_origin=self.local_origin)
         try:
@@ -112,6 +117,9 @@ class Driver:
                 args=['--disable-save-password-bubble','--disable-background-networking','--disable-sync','--disable-default-apps','--disable-quic','--disable-http2','--disable-session-crashed-bubble'])
             stage='new_page'
             self._page=self._context.pages[0] if self._context.pages else self._context.new_page()
+            self._page.on('request',self._request_started)
+            self._page.on('requestfinished',self._request_finished)
+            self._page.on('requestfailed',self._request_finished)
             stage='route'
             self._context.route('**/*',self._route)
             self._context.route_web_socket('**/*',self._websocket)
@@ -162,6 +170,7 @@ class Driver:
     def _operation_evidence(self):
         details={'pause_counts':self.pause_counts()}
         if self.gate is not None:
+            if self.gate.request_records:details['request_records']=self.gate.request_records
             for record in reversed(self.gate.records):
                 if 'account_check' in record:
                     details['account_check']=record['account_check']
@@ -181,14 +190,28 @@ class Driver:
             elif static_key(u.path) in self.gate.static_keys:path='registered_static'
         return {'scheme':u.scheme if u.scheme in {'http','https'} else 'other','origin':'hub' if hub else 'other',
                 'path':path,'has_query':bool(u.query)}
-    def _begin_pause(self,owner,stage,request_id,url):
+    def _request_started(self,request):
+        key=id(request._impl_obj)
+        if key not in self._in_flight:
+            self._in_flight.add(key)
+            self._network_started+=1
+            self._last_activity=time.monotonic()
+    def _request_finished(self,request):
+        key=id(request._impl_obj)
+        if key in self._in_flight:
+            self._in_flight.remove(key)
+            self._network_finished+=1
+            self._last_activity=time.monotonic()
+    def _begin_pause(self,owner,stage,request_id,url,method='GET',resource='Other'):
         key=(stage,request_id)
         if key in self._pauses:
             return None
         loop=asyncio.get_running_loop()
         try:shape=self._url_shape(url)
         except (TypeError,ValueError):shape={'path':'unrecognized'}
-        pause=Pause(owner,stage,request_id,shape,loop.time()+self.pause_timeout_s,teardown=self._tearing_down)
+        pause=Pause(owner,stage,request_id,shape,loop.time()+self.pause_timeout_s,
+                    request_evidence(url,method,resource,'paused_request_unresolved'),teardown=self._tearing_down)
+        self._last_activity=time.monotonic()
         self._paused_count+=1
         self._pauses[key]=pause
         pause.timer=loop.call_at(pause.deadline,self._expire_pause,pause)
@@ -206,6 +229,7 @@ class Driver:
     def _forget_pause(self,pause):
         self._pauses.pop((pause.stage,pause.request_id))
         pause.timer.cancel()
+        self._last_activity=time.monotonic()
     def _resolve_pause(self,pause,*,cancelled_on_close=False):
         self._forget_pause(pause)
         self._resolved_count+=1
@@ -227,6 +251,7 @@ class Driver:
         self._fatal='paused_request_unresolved'
         if not pause.reported and self.gate is not None:
             self.gate.records.append({'reason':'paused_request_unresolved','stage':pause.stage,'url_shape':pause.shape})
+            self.gate.request_records.append(pause.evidence)
         pause.reported=True
     def _fail_pause(self,pause):
         if pause.stage=='route':self._defer(pause.owner,'abort',pause=pause)
@@ -260,30 +285,42 @@ class Driver:
         # Not connecting is the mock/block operation. Even close() can deadlock
         # a sync callback; do not call it, connect_to_server(), or inspect frames.
         if self.gate is not None and self.gate.dismissing:
-            self.gate.fatal='request_during_notice_dismissal'
+            self.gate.reject_dismissal(route.url,'GET','WebSocket')
         return None
     def _new_page(self,page):
         if page!=self._page:self._defer(page,'close')
     def _route(self,route):
-        try:url=route.request.url
-        except Exception:url=''
-        pause=self._begin_pause(route,'route',id(route),url)
+        try:url,method,resource=route.request.url,route.request.method,route.request.resource_type
+        except Exception:url,method,resource='','GET','Other'
+        pause=self._begin_pause(route,'route',id(route),url,method,resource)
         if pause is None:return
         try:
-            if self._pause_fault or self._closing:self._fail_pause(pause);return
+            if self._pause_fault or self._closing:
+                if self.gate is not None and self.gate.dismissing:
+                    self.gate.record_request(url,method,resource,'gate_closed')
+                self._fail_pause(pause);return
             if self.gate is not None and self.gate.dismissing:
-                self.gate.fatal='request_during_notice_dismissal';self._fail_pause(pause);return
+                # The Fetch layer validates AJAX attribution before any send.
+                if (self.gate.fatal or route.request.frame!=self._page.main_frame
+                        or not self.gate.static_allowed(address(url),method,resource)):
+                    self.gate.reject_dismissal(url,method,resource);self._fail_pause(pause);return
             if route.request.frame!=self._page.main_frame:self._fail_pause(pause);return
             self._defer(route,'continue_',pause=pause,continuing=True)
         except Exception:
+            if self.gate is not None and self.gate.dismissing:self.gate.reject_dismissal(url,method,resource)
             self._fail_pause(pause)
     def _paused(self,event):
         rid=event['requestId'];r=event.get('request',{});url=r.get('url','');allow=False;blocked='BlockedByClient'
         response_stage='responseStatusCode' in event or 'responseErrorReason' in event
-        pause=self._begin_pause(self._cdp,'fetch_response' if response_stage else 'fetch_request',rid,url)
+        resource=event.get('resourceType','Other')
+        pause=self._begin_pause(self._cdp,'fetch_response' if response_stage else 'fetch_request',rid,url,r.get('method',''),resource)
         if pause is None:return
         try:
-            if self._pause_fault or self._closing or 'responseErrorReason' in event:
+            if self._pause_fault or self._closing:
+                if self.gate.dismissing and not response_stage:
+                    self.gate.record_request(url,r.get('method',''),resource,'gate_closed')
+                self._fail_pause(pause);return
+            if 'responseErrorReason' in event:
                 self._fail_pause(pause);return
             method=r['method']
             if response_stage:
@@ -292,7 +329,10 @@ class Driver:
                 if self.gate.sent and rid==self._submission_id:
                     self._result='accepted' if status==302 and accepted_location(self.config,url,location) else 'uncertain'
                     allow=False
-                else:allow=self.gate.response(url,status,location,main_document=event.get('frameId')==self._frame and event.get('resourceType')=='Document')
+                else:allow=self.gate.response(url,status,location,main_document=event.get('frameId')==self._frame and resource=='Document',method=method,resource=resource)
+            elif self.gate.dismissing:
+                ajax=any(k.lower()=='wicket-ajax' for k in r.get('headers',{}))
+                allow=self.gate.request(url,method,resource=resource,ajax=ajax,main_frame=event.get('frameId')==self._frame)
             else:
                 business=self.gate.phase=='business';u=urlsplit(url)
                 # Authentication values are never accessed. Only the business form endpoint is decoded.
@@ -308,11 +348,15 @@ class Driver:
             self._defer(self._cdp,'send','Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':blocked},pause=pause,continuing=allow)
         except Exception:
             self._fatal='request_gate_failed'
+            self.gate.record_request(url,r.get('method',''),resource,self._fatal)
             self._fail_pause(pause)
-    def _check(self):
+    def _check_gate(self):
         self._check_pause_fault()
+        if self._fatal or self.gate.fatal:
+            raise FlowError(4,self._fatal or self.gate.fatal,**self._operation_evidence())
+    def _check(self):
+        self._check_gate()
         self._check_manual_login()
-        if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
         u=urlsplit(self._page.url)
         if self.gate.phase!='business' or u.scheme+'://'+u.netloc!=self.gate.origin or u.path!='/wicket/page' or not u.query.isdecimal():raise FlowError(4,'business_page_required')
     def open(self,expose,confirm):
@@ -339,6 +383,7 @@ class Driver:
             self._check_manual_login()
             raise FlowError(5,'target_navigation_failed') from None
         if self._page.url!=entry or self.gate.phase!='business':raise FlowError(5,'target_navigation_failed')
+        self._wait_for_quiet(load=True)
         self._dismiss_notice(entry)
         self._run_editor(entry,confirm)
         self._check()
@@ -358,20 +403,44 @@ class Driver:
             if probe['manual_login']:raise self._manual_login_error()
     def _run_position(self,entry,operation='run_position'):
         self._check_manual_login()
-        if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+        self._check_gate()
         if self._page.url!=entry:raise FlowError(5,'target_navigation_failed')
         position=self._fixed_script(operation)
         if not position['clear']:raise FlowError(4,'run_button_obscured')
         return position['x'],position['y']
+    def _wait_for_quiet(self,*,load=False):
+        """Require a quiet window after load, counting network work between Fetch pauses."""
+        start=time.monotonic()
+        deadline=start+self.quiet_timeout_s
+        def not_quiet():
+            return FlowError(5,'target_page_not_quiet',**self._operation_evidence(),
+                             in_flight=len(self._in_flight),requests_started=self._network_started,
+                             requests_finished=self._network_finished)
+        self._check_gate()
+        try:
+            if load:
+                self._page.wait_for_load_state('load',timeout=max(1,int((deadline-time.monotonic())*1000)))
+                start=time.monotonic()
+            while True:
+                self._check_gate()
+                now=time.monotonic()
+                if now>=deadline:raise not_quiet()
+                if not self._in_flight and not self._pauses and now-max(start,self._last_activity)>=self.quiet_window_s:
+                    return
+                self._page.wait_for_timeout(min(50,max(1,int((deadline-now)*1000))))
+        except FlowError:raise
+        except Exception:
+            self._check_gate()
+            raise not_quiet() from None
     def _dismiss_notice(self,entry):
         self.gate.dismissing=True
         try:
             self._run_position(entry,'dismiss_notice')
-            self._page.wait_for_timeout(150)
-            if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+            self._wait_for_quiet()
         finally:self.gate.dismissing=False
     def _run_editor(self,entry,confirm):
         # The first click is observed but never sent. Permission is for the exact GET only.
+        self._wait_for_quiet(load=True)
         self._window('minimized')
         self.gate.capture_run=True
         try:
@@ -380,7 +449,7 @@ class Driver:
             while not self.gate.run_candidates and not (self._fatal or self.gate.fatal) and time.monotonic()<deadline:
                 self._page.wait_for_timeout(20)
         finally:self.gate.capture_run=False
-        if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
+        self._check_gate()
         if len(self.gate.run_candidates)!=1:raise FlowError(4,'run_pattern_unregistered')
         candidate={'method':'GET','path':self.gate.overview,'listener':'ILinkListener','behavior':None,'component':'run'}
         if confirm({'confirmation':'run','target':submit_model.target(self.config),'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':

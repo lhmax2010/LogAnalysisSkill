@@ -26,7 +26,7 @@ B2.5 从 Hub 根地址开始 SSO。若遇到 Hub 自己的密码登录页，工�
 nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG" --browser-input "$VD_BROWSER_INPUT"
 ```
 
-工具只以样式隐藏已识别的公告，不调用网页关闭函数。Run 按钮中心仍被遮挡，或隐藏公告期间有请求，演练会停止；不要绕过拦截。
+目标页加载完成后，工具等待请求停止至少 1.5 秒，再隐藏公告；录制 Run 前也做同样检查。若 30 秒内未达到，返回 `target_page_not_quiet`，请查看结果里的暂停与在途计数。工具只以样式隐藏公告，不调用网页关闭函数。隐藏期间仅允许符合现有静态规则的同源 GET（例如随公告消失才加载的图片）。若 Run 中心仍被遮挡，或隐藏期间出现其他请求，演练停止。失败结果的 `request_records` 列明方法、资源类型、主机、路径、查询键名和判定，没有查询值、请求体或头。
 
 ```bash
 nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse

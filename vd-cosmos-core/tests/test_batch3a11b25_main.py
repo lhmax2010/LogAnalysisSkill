@@ -91,10 +91,35 @@ class HubGateTests(B1Case):
             self.assertFalse(g.response(run,status,location))
             self.assertIsNone(g.run_response)
 
-    def test_dismissal_blocks_even_allowlisted_request_and_sets_fatal(self):
+    def test_dismissal_allows_only_registered_static_gets_and_records_decisions(self):
         g=self.gate(static_paths=['/assets/site.css']);g.phase='business';g.dismissing=True
-        self.assertFalse(g.request(self.hub+'/assets/site.css','GET',resource='Stylesheet'))
-        self.assertEqual(g.fatal,'request_during_notice_dismissal')
+        self.assertTrue(g.request(self.hub+'/assets/site.css?v=private-fixture','GET',resource='Stylesheet'))
+        self.assertEqual(g.request_records[-1],{'method':'GET','resource_type':'Stylesheet','host':'127.0.0.1',
+            'path':'/assets/site.css','query_keys':['v'],'decision':'allow_static'})
+        for path,method,kind,ajax in (
+            (self.hub+'/assets/site.css','GET','Stylesheet',True),
+            (self.hub+'/assets/site.css','POST','Stylesheet',False),
+            (self.sso+'/assets/site.css','GET','Stylesheet',False),
+            (self.hub+'/assets/site.css','GET','Worker',False),
+            (self.hub+'/assets/site.css','GET','ServiceWorker',False),
+            (self.hub+'/assets/site.css','GET','WebSocket',False),
+            (self.hub+'/assets/site.css','GET','Document',False),
+        ):
+            with self.subTest(kind=kind,method=method,ajax=ajax,url=path):
+                g.fatal=None
+                self.assertFalse(g.request(path,method,resource=kind,ajax=ajax))
+                self.assertEqual(g.fatal,'request_during_notice_dismissal')
+                self.assertEqual(g.request_records[-1]['decision'],g.fatal)
+
+    def test_fatal_callback_records_listener_shape_and_query_keys_only(self):
+        g=self.gate();g.phase='business';g.recording=False
+        self.assertFalse(g.request(self.hub+'/wicket/page?41-7.IBehaviorListener.0-widget','GET',resource='Fetch'))
+        self.assertEqual(g.request_records[-1],{'method':'GET','resource_type':'Fetch','host':'127.0.0.1',
+                         'path':'/wicket/page','query_keys':['<IBehaviorListener-widget>'],'decision':'unregistered_callback'})
+        g.dismissing=True;g.fatal=None
+        self.assertFalse(g.request(self.hub+'/wicket/page?41-7.ILinkListener-run&state=not-for-recording','GET'))
+        self.assertEqual(g.request_records[-1]['query_keys'],['<ILinkListener-run>','state'])
+        self.assertNotIn('not-for-recording',str(g.request_records))
 
 
 class WriterTests(B1Case):

@@ -166,7 +166,9 @@ class PauseReceiptTests(B1Case):
         from vd_cosmos_submit import cli
         counts={'paused':2,'resolved':1,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0}
         err=FlowError(4,'paused_request_unresolved',pause_counts=counts,gate_records=[
-            {'reason':'paused_request_unresolved','stage':'fetch_request','url_shape':{'path':'registered_static'}}])
+            {'reason':'paused_request_unresolved','stage':'fetch_request','url_shape':{'path':'registered_static'}}],
+            request_records=[{'method':'GET','resource_type':'Image','host':'hub.example.invalid',
+                              'path':'/asset.png','query_keys':['v'],'decision':'paused_request_unresolved'}])
         for outcome in (err,{'exit_code':0,'pause_counts':dict(counts,resolved=2,closed_unconfirmed=0)}):
             with self.subTest(outcome=type(outcome).__name__), redirect_stdout(io.StringIO()) as out:
                 action={'side_effect':outcome} if isinstance(outcome,FlowError) else {'return_value':outcome}
@@ -177,6 +179,7 @@ class PauseReceiptTests(B1Case):
             if isinstance(outcome,FlowError):
                 self.assertEqual((code,artifact['error'],artifact['details']['pause_counts']),(4,err.reason,counts))
                 self.assertEqual(artifact['details']['gate_records'],err.details['gate_records'])
+                self.assertEqual(artifact['details']['request_records'],err.details['request_records'])
             else:
                 self.assertEqual((code,artifact['pause_counts']),(0,outcome['pause_counts']))
 

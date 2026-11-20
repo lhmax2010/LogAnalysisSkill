@@ -1,0 +1,3663 @@
+Python 3.10.12
+Google Chrome 157.0.8103.78
+Playwright 1.64.1; test affinity 0,1; one nice 19 CPU burner on 0; 22 checks per repetition
+
+Run 01/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.654s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.637s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.109s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.761s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.242s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.627s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.095s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.237s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.763s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.232s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.617s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.081s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.716s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.572s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.587s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.725s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.636s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.216s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.064s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.438s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.723s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.686s
+
+OK
+
+Run 02/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.621s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.591s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.079s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.760s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.230s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.586s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.097s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.247s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.813s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.306s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.635s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.145s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.724s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.591s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.620s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.628s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.700s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.646s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.757s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.100s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.458s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.736s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.845s
+
+OK
+
+Run 03/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.593s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.607s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.095s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.229s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.234s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.597s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.077s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.225s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.801s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.282s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.623s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.068s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.703s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.732s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.557s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.604s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.771s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.614s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.722s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.126s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.461s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.785s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.482s
+
+OK
+
+Run 04/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.628s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.669s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.134s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.744s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.215s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.136s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.109s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.223s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.772s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.296s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.600s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.140s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.745s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.613s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.619s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.597s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.249s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.615s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.763s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.089s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.494s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.742s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.989s
+
+OK
+
+Run 05/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.596s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.615s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.123s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.749s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.264s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.605s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.106s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.230s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.771s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.268s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.595s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.140s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.706s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.606s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.606s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.618s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.735s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.653s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.739s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.136s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.450s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.739s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.842s
+
+OK
+
+Run 06/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.607s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.628s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.103s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.764s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.258s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.620s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.128s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.246s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.748s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.288s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.602s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.105s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.743s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.633s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.596s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.589s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.718s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.732s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.132s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.486s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.759s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.078s
+
+OK
+
+Run 07/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.599s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.596s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.087s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.711s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.265s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.666s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.148s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.279s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.803s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.294s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.617s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.092s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.738s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.575s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.589s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.600s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.716s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.610s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.745s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.166s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.481s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.736s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.000s
+
+OK
+
+Run 08/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.751s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.583s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.104s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.753s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.279s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.158s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.098s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.304s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.818s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.343s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.603s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.122s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.761s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.626s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.663s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.581s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.768s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.625s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.758s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.119s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.457s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.754s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.920s
+
+OK
+
+Run 09/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.626s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.606s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.154s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.749s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.267s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.636s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.153s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.240s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.842s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.271s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.644s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.090s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.710s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.634s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.596s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.603s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.718s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.617s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.757s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.115s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.454s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.746s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.062s
+
+OK
+
+Run 10/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.590s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.588s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.130s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.761s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.256s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.604s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.077s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.270s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.816s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.236s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.627s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.139s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.684s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.608s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.647s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.629s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.705s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.618s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.215s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.132s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.457s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.785s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.056s
+
+OK
+
+Run 11/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.646s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.625s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.116s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.763s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.246s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.604s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.135s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.222s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.759s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.322s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.584s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.106s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.771s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.647s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.598s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.576s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.719s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.587s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.744s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.141s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.497s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.737s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.036s
+
+OK
+
+Run 12/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.632s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.605s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.128s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.738s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.238s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.619s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.098s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.271s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.770s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.371s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.624s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.131s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.695s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.643s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.601s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.625s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.761s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.618s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.770s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.083s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.467s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.773s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.768s
+
+OK
+
+Run 13/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.666s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.622s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.128s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.759s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.252s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.623s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.080s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.258s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.758s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.234s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.590s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.087s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.673s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.575s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.584s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.243s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.595s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.751s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.098s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.435s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.759s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.242s
+
+OK
+
+Run 14/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.624s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.610s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.086s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.742s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.266s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.655s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.100s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.239s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.746s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.262s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.621s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.106s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.737s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.598s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.593s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.587s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.738s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.603s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.752s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.129s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.467s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.735s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.186s
+
+OK
+
+Run 15/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.602s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.623s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.088s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.761s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.215s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.584s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.123s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.268s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.787s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.343s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.615s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.085s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.738s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.628s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.633s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.586s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.722s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.592s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.754s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.091s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.424s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.728s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.044s
+
+OK
+
+Run 16/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.580s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.600s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.080s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.214s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.196s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.598s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.090s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.219s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.766s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.262s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.588s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.077s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.693s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.573s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.603s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.571s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.738s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.555s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.212s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.125s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.437s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.735s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 35.632s
+
+OK
+
+Run 17/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.583s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.580s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.085s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.739s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.200s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.583s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.157s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.215s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.745s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.236s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.602s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.103s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.698s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.580s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.617s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.598s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.758s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.196s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.104s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.465s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.738s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 35.988s
+
+OK
+
+Run 18/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.568s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.582s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.088s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.736s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.230s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.623s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.116s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.218s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.821s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.266s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.123s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.681s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.590s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.563s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.611s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.696s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.597s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.721s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.105s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.448s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.749s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 37.060s
+
+OK
+
+Run 19/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.575s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.579s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.074s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.746s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.216s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.583s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.101s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.204s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.747s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.284s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.578s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.072s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.679s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.567s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.612s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.574s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.739s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.590s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.201s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.110s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.435s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.743s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 35.609s
+
+OK
+
+Run 20/20
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_activity_after_load_times_out_before_run_recording (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.572s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_auth_callback_redirect_to_unregistered_business_is_blocked (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.600s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_browser_process_tree_never_disables_sandbox (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.063s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_callback_attribution_exact_field_value_count_only_two (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.729s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dashboard_account_must_match_once_before_target_navigation (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.219s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_allows_late_registered_image_and_records_only_query_key (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.594s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_dismissal_wicket_timer_fails_and_preserves_redacted_shape (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.091s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.222s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_human_get_post_navigation_popup_and_iframe_never_reach_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.760s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_manual_login_redirect_and_password_document_refuse_sso_fallback (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.279s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_mismatched_body_burns_token_and_never_sends (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.574s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_cannot_hide_other_obstructions_or_send_mutation_requests (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.101s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_notice_style_only_and_exact_run_sends_once (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.675s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_recording_callback_and_submit_both_blocked_server_counts_zero (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.617s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_same_origin_login_and_cross_origin_mfa_are_not_business_forms (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.601s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_service_worker_and_websocket_cannot_open_channels (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.592s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_slow_static_finishes_and_target_quiet_window_precedes_dismissal (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.749s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_submit_single_token_real_formdata_and_redirect_not_followed (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.614s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.735s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_undecided_subresource_expires_without_reaching_server (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.114s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_wrong_run_answer_gives_expected_word_and_never_navigates (test_batch3a11b2_headless.HeadlessGateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 1.443s
+
+OK
+.Chrome executable (selected): /opt/google/chrome/google-chrome
+Chrome executable (launched): /opt/google/chrome/google-chrome
+test_long_inherited_tmpdir_starts_with_short_browser_only_temp (test_batch3a11b2_headless.HeadlessTempTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.739s
+
+OK
+
+----------------------------------------------------------------------
+Ran 22 tests in 36.598s
+
+OK

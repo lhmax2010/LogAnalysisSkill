@@ -844,3 +844,19 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 | 3.12.3 | 380 通过、0 跳过，`evidence-b29/python312.txt` | `e4b8e0cf23371adf7980fa4a77d420b4598cd79dbeae6261740f22a6d9cda3a1` |
 
 凭据预检见 `evidence-b29/prepush-final.json`。
+
+## Checkpoint B2.10（设计方 2026-11-20）
+
+基线 `e5e02eb`（构建机 v11 A/B1/B2 PASS）。第四次实况演练的四类提示、SSO、账号核验和打开目标成功，之后隐藏公告时返回 4 / `request_during_notice_dismissal`。暂停数 341、解决数 341、在途暂停 0、正常关闭取消 1；旧产物未标明是哪一个请求。原代码在 DOMContentLoaded 后立即进入公告阶段，库存静态资源尚可能在途，当时对任意请求都判致命；尚不能从旧产物确定具体 URL。
+
+- 目标导航后、Run 首次录制前都等 load 和 1.5 秒静默（每次最多 30 秒）。记录页面请求的开始/结束和 route/Fetch 的暂停/回执，所以已继续但仍在下载的资源不算静默。超时 `target_page_not_quiet` 给出暂停计数、开始/结束数和在途数量。隐藏公告后继续在同一守卫下等静默，允许补发的合规静态资源。
+- 隐藏期间只允许同源、主框架的白名单静态 GET（已有类型、版本路径和 v/裸 hex 查询规则），Fetch 再排除 Wicket-Ajax。文档、XHR、Wicket、其他方法和外站仍阻止并判致命。没有扩大 Run 的授权形状。
+- `request_records` 记录隐藏期间的判定和其他致命请求：method、resource_type、host、path、query_keys、decision。Wicket 数字号转换为监听器形状（例如 `<ILinkListener-run>`）；不保存查询值、请求体、头、Cookie。失败时通过 FlowError details 进入 CLI 结果。回环 Chrome 可能把 `fetch()` 报为 XHR；两类均拒绝，诊断保留实际报告的类别。
+
+真实 Chrome 回归覆盖 DOMContentLoaded 后仍持有的静态下载、公告新的图片、XHR 和 Wicket 定时器阻止及脱敏、始终不能 load、load 后在途请求阻止 Run。工具级回归覆盖现有静态规则、Ajax/非 GET/外站/worker 等拒绝、非隐藏阶段致命请求的形状及 CLI 结果存档。本机只用回环模拟，不做实况演练。
+
+- Python 3.10.12、3.12.3 均为 386/386，未跳过；导入合同和静态扫描通过。Python 3.10.12 的真实无头浏览器测试在 nice 19 和并行 CPU 负载下连续运行 20 次，每次 22 项均通过。日志仅去除 Chrome 版本行行尾空格。
+  - `evidence-b210/headless-stress-python310.txt` 的 SHA256 为 `45f8a9e84de10a9420621ef0091039905d1800dfa7a0f8205d586318088442fc`。
+  - `evidence-b210/python310.txt` 的 SHA256 为 `42a80f32b1c7e90e47008e733ed619153d96321277ebd5fede301940e2a2c63a`。
+  - `evidence-b210/python312.txt` 的 SHA256 为 `c2705983c1ae213330e27d91ed1a310f777e1d292d484756581d1ae2c7533ef3`。
+- 仓库凭据预检见 `evidence-b210/prepush-final.json`。

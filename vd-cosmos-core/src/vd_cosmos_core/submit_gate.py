@@ -1,7 +1,7 @@
 """Deny-by-default request gate; transport supplies EVERY redirect hop."""
 import re
 import threading
-from urllib.parse import urlsplit, parse_qsl, unquote
+from urllib.parse import urlsplit, parse_qsl, unquote, unquote_plus, urljoin
 from .errors import FlowError
 from .submit_browser_contract import multipart, verify_parts
 
@@ -9,6 +9,35 @@ WICKET=re.compile(r'^[0-9]+-[0-9]+\.(IFormSubmitListener|ILinkListener|IBehavior
 WICKET_PREFIX=re.compile(r'^(?:[0-9]+-[0-9]+\.)?I[A-Za-z]+Listener\b')
 RUN_QUERY=re.compile(r'[0-9]+-1\.ILinkListener-run')
 STATIC_QUERY=re.compile(r'(?:v=[A-Za-z0-9._-]{1,64}|[0-9a-f]{32})')
+STATIC_RESOURCES={'script','stylesheet','image','font'}
+
+def request_evidence(url,method,resource,decision):
+    """Record only URL fields and query-key shapes, never values or userinfo."""
+    host=path=None
+    keys=[]
+    try:
+        u=urlsplit(url)
+        host,path=u.hostname,u.path[:512]
+        for part in u.query.split('&'):
+            if not part:continue
+            key,marker,_=part.partition('=')
+            key=unquote_plus(key)
+            listener=WICKET.fullmatch(key)
+            if listener:
+                keys.append('<'+listener[1]+'-'+listener[3][:96]+'>')
+            elif WICKET_PREFIX.match(key):
+                keys.append('<wicket-listener>')
+            elif marker and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_.-]{0,63}',key):
+                keys.append(key)
+            elif key in {'manual-login','redirect-url-after-sign-in'}:
+                keys.append(key)
+            else:
+                keys.append('<bare-hex>' if re.fullmatch(r'[0-9a-f]{32}',key) else '<unrecognized-key>')
+    except (TypeError,ValueError):
+        pass
+    return {'method':method if isinstance(method,str) and re.fullmatch(r'[A-Z]{1,16}',method) else 'other',
+            'resource_type':resource if isinstance(resource,str) and re.fullmatch(r'[A-Za-z]{1,32}',resource) else 'Other',
+            'host':host,'path':path,'query_keys':keys,'decision':decision}
 
 def static_key(path):
     return re.sub(r'-ver-[0-9]+', '-ver-*', path)
@@ -31,7 +60,7 @@ class Gate:
         self.auth_entry='/overview/'+self.s['target_config_id']
         self.overview='/overview/'+self.s['target_config_id']
         self.static_keys={static_key(path) for path in self.s.get('static_paths',[])}
-        self.manual_login=False;self.dismissing=False
+        self.manual_login=False;self.dismissing=False;self.request_records=[]
         self.capture_run=False;self.run_candidates=[]
     def is_hub(self,u):
         return u.scheme+'://'+u.netloc==self.origin
@@ -40,6 +69,15 @@ class Gate:
             key=='manual-login' for key,_ in parse_qsl(u.query,keep_blank_values=True))
     def auth_wicket(self,u):
         return self.is_hub(u) and bool(WICKET_PREFIX.match(unquote(u.query)))
+    def static_allowed(self,u,method,resource,*,ajax=False):
+        return (method=='GET' and resource.lower() in STATIC_RESOURCES and self.is_hub(u) and not ajax
+                and (not u.query or STATIC_QUERY.fullmatch(u.query)) and static_key(u.path) in self.static_keys)
+    def record_request(self,url,method,resource,decision):
+        self.request_records.append(request_evidence(url,method,resource,decision))
+    def reject_dismissal(self,url,method,resource):
+        self.fatal=self.fatal or 'request_during_notice_dismissal'
+        self.record_request(url,method,resource,'request_during_notice_dismissal')
+        return False
     def navigation(self,url,*,login_entry=False):
         u=address(url)
         paths={'/','/dashboard'} if login_entry and self.phase=='auth' else {self.overview}
@@ -66,26 +104,31 @@ class Gate:
     def request(self,url,method,*,resource='Document',body=b'',content_type='',ajax=False,main_frame=True):
         with self.mutex:
             try:u=address(url)
-            except FlowError:return False
+            except (FlowError,ValueError):
+                return self.reject_dismissal(url,method,resource) if self.dismissing else False
             origin=u.scheme+'://'+u.netloc
             if self.dismissing:
-                self.fatal='request_during_notice_dismissal'
-                return self.block(method,u,self.fatal)
+                if not self.fatal and main_frame and self.static_allowed(u,method,resource,ajax=ajax):
+                    self.record_request(url,method,resource,'allow_static')
+                    return True
+                return self.reject_dismissal(url,method,resource)
+            if self.fatal=='request_during_notice_dismissal':return self.block(method,u,self.fatal)
             if main_frame and resource=='Document' and self.manual_url(u):
                 self.manual_login=True
+                self.record_request(url,method,resource,'hub_manual_login_page')
                 return self.block(method,u,'hub_manual_login_page')
             if self.phase=='auth' and self.auth_wicket(u):
                 return self.block(method,u,'auth_wicket_blocked')
             if self.phase=='auth' and self.is_hub(u) and u.path=='/signin' and method!='GET':
                 self.manual_login=True
+                self.record_request(url,method,resource,'hub_manual_login_page')
                 return self.block(method,u,'hub_manual_login_page')
             # Authentication is a host/path/method allowlist. Never inspect its body or headers.
             auth=[x for x in self.s.get('auth_paths',[]) if x=={'host':u.netloc,'path':u.path,'method':method}]
             if self.phase=='auth' and auth and main_frame and (u.scheme=='https' or self.is_hub(u)):return True
             if origin!=self.origin:return self.block(method,u,'foreign_origin')
             if resource in {'WebSocket','EventSource','Worker','ServiceWorker'}:return self.block(method,u,'active_channel')
-            if (resource in {'Script','Stylesheet','Image','Font'} and method=='GET'
-                    and (not u.query or STATIC_QUERY.fullmatch(u.query)) and static_key(u.path) in self.static_keys):return True
+            if self.static_allowed(u,method,resource):return True
             if not main_frame:return self.block(method,u,'frame_or_popup')
             if self.allowed==(url,method):self.allowed=None;return True
             if self.phase=='auth' and self.auth_return and method=='GET' and resource=='Document' and u.path==self.auth_entry and not u.query:
@@ -105,28 +148,33 @@ class Gate:
             is_submit=p['listener']=='IFormSubmitListener' or p['component'].endswith('-submit') or p['component'].endswith('-ok')
             if self.recording:
                 self.records.append(dict(p,control=self.filling[0] if self.filling else None,classification='submit' if is_submit else 'callback_candidate'))
-                if is_submit:self.fatal='submission_during_recording'
+                if is_submit:
+                    self.fatal='submission_during_recording'
+                    self.record_request(url,method,resource,self.fatal)
                 return False
             if is_submit:
                 if method!='POST' or p!=self.s.get('submit_pattern') or self.submission is None or self.sent:return self.block(method,u,'submission_not_authorized')
                 expected,hidden=self.submission;self.submission=None
                 try:verify_parts(self.config,multipart(body,content_type),expected,hidden)
-                except FlowError:self.fatal='blocked_before_send';return False
+                except FlowError:
+                    self.fatal='blocked_before_send';self.record_request(url,method,resource,self.fatal);return False
                 self.sent=True;return True
             if self.filling is not None and method=='POST' and ajax and content_type.split(';')[0]=='application/x-www-form-urlencoded' and p in self.s.get('gate_patterns',[]) and p['component']==self.filling[0] and self.callback_count<2:
                 try:values=parse_qsl(body.decode('utf-8'),keep_blank_values=True,strict_parsing=True,errors='strict')
                 except (ValueError,UnicodeError):return self.block(method,u,'callback_encoding')
                 if values==[(self.filling[1],self.filling[2])]:self.callback_count+=1;return True
-            self.fatal='unregistered_callback';return self.block(method,u,'unregistered_callback')
-    def response(self,url,status,location='',*,main_document=True):
+            self.fatal='unregistered_callback';self.record_request(url,method,resource,self.fatal);return self.block(method,u,self.fatal)
+    def response(self,url,status,location='',*,main_document=True,method='GET',resource='Document'):
         """Authorize no automatic business redirect. Auth returns are exact and one-use."""
         u=address(url)
         if status in {301,302,303,307,308}:
-            from urllib.parse import urljoin
+            if self.dismissing:
+                return self.reject_dismissal(url,method,resource)
             try:v=address(urljoin(url,location))
             except FlowError:return False
             if main_document and self.manual_url(v):
                 self.manual_login=True
+                self.record_request(v.geturl(),'GET','Document','hub_manual_login_page')
                 return False
             if self.phase=='auth' and self.auth_wicket(v):return False
             if self.phase=='auth' and main_document:

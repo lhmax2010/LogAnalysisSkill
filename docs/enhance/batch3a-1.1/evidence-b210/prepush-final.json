@@ -1,0 +1,60 @@
+{
+  "allowed": true,
+  "files": [
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "sha256": "91d19b20dfb31b88c61afde39812a85831aef0d9b1233ef55fab57e0da2b8a08"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/FATTANK-B2-MANUAL.md",
+      "sha256": "c9b4e94289ac0782eae426c6e97b00dc7f7656612ab6b27626351a1a997601a5"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b210/headless-stress-python310.txt",
+      "sha256": "45f8a9e84de10a9420621ef0091039905d1800dfa7a0f8205d586318088442fc"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b210/python310.txt",
+      "sha256": "42a80f32b1c7e90e47008e733ed619153d96321277ebd5fede301940e2a2c63a"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b210/python312.txt",
+      "sha256": "c2705983c1ae213330e27d91ed1a310f777e1d292d484756581d1ae2c7533ef3"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "4758941a29c4783072e8e132051d2ce89b04276f1e082157d4254777ec62429c"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_gate.py",
+      "sha256": "04e9fdd57f03022c7fbf1e424c12967039f2dbe31e71f54f3a71010bcb729485"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b22.py",
+      "sha256": "bfc983e174851e7d3ad6204e70f366f59623665e01e4114776610d6a1dc7d8fe"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b25_main.py",
+      "sha256": "5c19b90285cc195f3ca161892c1a324d04b70d1a9f099909a842527a3c090cf1"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b2_headless.py",
+      "sha256": "5076314a2e9fb10e05446417c4dffc513366b8943f3ef2b94208993286567261"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py",
+      "sha256": "06fd6619ab65ed948efa7412238630f7541ca6a6292c5dfee744df188147769a"
+    }
+  ]
+}
