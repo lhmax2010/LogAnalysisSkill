@@ -787,3 +787,26 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 | 3.12.3 | `evidence-b26/python312.txt`：369 项，354 通过，15 跳过 | `7ce974050c91dbb71ab220aa27eecb14dcf4497589779f5194e57d55f903aab7` |
 
 跳过项是本机缺 Playwright 的无头浏览器测试，构建机仍强制运行。双解释器静态检查和 import-linter 通过；凭据预检见 `evidence-b26/prepush-final.json`。
+
+## Checkpoint B2.7（设计方 2026-11-20）
+
+构建机 v10（`35046b5`）A/B1 PASS。FatTank 补齐 `submit.form` 后 B2 PASS；第一次 `all_18_properties_required` 是预检捕获的配置缺项，不是浏览器回归。
+
+v9 的单次错误发生在 `test_mismatched_body_burns_token_and_never_sends` 的 `Page.goto` 等待 `load`，现有记录没有拦截或子资源轨迹。本地用现有 Chrome 跑未修改基线的该用例通过，不能确定 v9 是子资源未决还是负载影响。代码排查确认两处缺口：原异步决策没有按请求监督确认，CDP 的 responseErrorReason 也会误走请求政策。fixture server 原本就是 ThreadingHTTPServer；只把测试 setUp 的导航等待从 load 改成 domcontentloaded，真实驱动的导航等待不变。
+
+每个 Playwright route / CDP Fetch 阶段独立计数，CDP 请求和响应分别有记录。同一活动句柄只执行一个决定并等待回执，截止为 10 秒。尚未发送决定时，过期只发 abort/fail；若决定已发送但没有确认，不能安全重发或发送相反指令，用关闭浏览器上下文来终止剩余请求并拒绝继续。记录 `paused_request_unresolved` 和脱敏 URL 形状（不含实际主机、未登记路径、查询值或请求内容）；成功与浏览器故障的结果文件均带 `pause_counts`。
+
+首轮带负载的验证发现编辑器测试结束时，主动关闭上下文与迟到的子资源拦截并发，Playwright 明确返回 TargetClosedError。仅在主动关闭开始后收到的请求、确认随上下文终止时计入 `cancelled_on_close`（属于 resolved）；存活上下文的未确认回执仍失败并计入 `closed_unconfirmed`。结算关系为 paused = resolved + pending + closed_unconfirmed。
+
+回归：`test_batch3a11b22.CallbackTests` 检查路由唯一决定、已发送无确认、明确关闭回执和 CDP 响应错误；`PauseReceiptTests` 核对结果文件；真实浏览器 `test_undecided_subresource_expires_without_reaching_server` 故意不决定一个静态资源，断言只发失败决定、服务端零请求、错误与计数落地。其他无头用例结束时检查无未决故障或未完成计数。
+
+测试运行只访问 127.0.0.1，用 /tmp 隔离的 Playwright 1.64.1 Python 包和已有 Chrome；未安装浏览器，也未访问真实 Hub 或提交。
+
+压力测试：Python 3.10.12 + Chrome 157.0.8103.78 + Playwright 1.64.1，`VD_REQUIRE_HEADLESS=1`、`nice -n 19`，测试进程限用 CPU 0、1，另起同优先级 CPU 0 的 `yes >/dev/null`。最终 `test_batch3a11b2_headless` 20/20 轮（320 项）通过，无跳过、无 load 超时；脚本结束时清理 burner。完整记录（Chrome 版本行末尾空格已去除） `evidence-b27/headless-stress-python310.txt`，SHA256 `5b8e6072c9eca2e22d901cf7c292b1396830c6e46f3b6ed39a6af42fc74799f7`。
+
+| 解释器 | 完整套件（要求运行真实无头测试） | SHA256 |
+|---|---|---|
+| 3.10.12 | 375 通过、0 跳过，`evidence-b27/python310.txt` | `9c950d4266c59d9467cad79ebfeea1d7cd79e5354939cf4f6b82930392fef287` |
+| 3.12.3 | 375 通过、0 跳过，`evidence-b27/python312.txt` | `9684c4f39e92fa0ddb3bc6a7977c914aaba8d643934801b343f08b665d523c2d` |
+
+凭据预检见 `evidence-b27/prepush-final.json`。

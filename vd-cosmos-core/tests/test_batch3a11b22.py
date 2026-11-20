@@ -3,7 +3,7 @@ import asyncio
 import ast
 import json
 import io
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 import unittest
 import os
 from pathlib import Path
@@ -41,6 +41,7 @@ class CallbackTests(B1Case):
                 def __getattr__(self,name):raise AssertionError('sync facade called: '+name)
             route=Facade();driver._route(route);self.assertEqual(called,[])
             await asyncio.sleep(0);self.assertEqual(called,['continue'])
+            await asyncio.sleep(0)
             route.request=SimpleNamespace(frame='iframe');driver._route(route)
             driver._new_page(route);driver._websocket(route)
             driver._cdp=route;driver._frame='main'
@@ -49,6 +50,8 @@ class CallbackTests(B1Case):
             driver._paused({'requestId':'id','frameId':'other','request':{'url':'https://hub.example.invalid/blocked','method':'GET'}})
             await asyncio.sleep(0)
             self.assertEqual(called[1:3],['abort','close']);self.assertEqual(called[3][0],'Fetch.failRequest')
+            await asyncio.sleep(0)
+            self.assertEqual(driver.pause_counts(),{'paused':3,'resolved':3,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
         asyncio.run(scenario())
     def test_missing_async_bridge_and_async_failure_fail_closed(self):
         driver=Driver(self.config,{})
@@ -59,6 +62,84 @@ class CallbackTests(B1Case):
             driver._fatal=None;driver._defer(owner,'close')
             await asyncio.sleep(0);await asyncio.sleep(0)
             self.assertEqual(driver._fatal,'browser_callback_dispatch_failed')
+        asyncio.run(scenario())
+    def test_inflight_unacknowledged_decision_closes_context_without_second_command(self):
+        from vd_cosmos_core.submit_gate import Gate
+        async def scenario():
+            loop=asyncio.get_running_loop()
+            driver=Driver(self.config,{})
+            driver.gate=Gate(self.config,rehearse=True);driver.pause_timeout_s=.025
+            sent=[];closed=asyncio.Event()
+            async def send(*args):
+                sent.append(args)
+                await asyncio.Event().wait()
+            async def close():closed.set()
+            driver._cdp=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,send=send))
+            driver._context=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,close=close))
+            url=driver.gate.origin+'/overview/35367'
+            driver._frame='main';driver.gate.navigation(url)
+            event={'requestId':'fixture','frameId':'main','resourceType':'Document','request':{'url':url,'method':'GET'}}
+            driver._paused(event);driver._paused(event)
+            await asyncio.wait_for(closed.wait(),2)
+            self.assertEqual(sent,[('Fetch.continueRequest',{'requestId':'fixture'})])
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':0,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0})
+            e=self.fails(4,driver._check_pause_fault)
+            self.assertEqual(e.reason,'paused_request_unresolved')
+            self.assertEqual(e.details['gate_records'][0]['url_shape']['path'],'/overview/<id>')
+        asyncio.run(scenario())
+
+    def test_undecided_route_times_out_to_abort_only(self):
+        from vd_cosmos_core.submit_gate import Gate
+        async def scenario():
+            loop=asyncio.get_running_loop();driver=Driver(self.config,{})
+            driver.gate=Gate(self.config,rehearse=True);driver.pause_timeout_s=.015
+            sent=[];finished=asyncio.Event()
+            async def abort():
+                sent.append('abort');finished.set()
+            route=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,abort=abort))
+            driver._begin_pause(route,'route',id(route),driver.gate.origin+'/fixture?v=private')
+            await asyncio.wait_for(finished.wait(),2)
+            await asyncio.sleep(0)
+            self.assertEqual(sent,['abort'])
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
+            self.assertNotIn('private',str(self.fails(4,driver._check_pause_fault).details))
+        asyncio.run(scenario())
+    def test_late_abort_after_intentional_teardown_is_resolved_as_cancellation(self):
+        class TargetClosedError(Exception):
+            pass
+        async def scenario():
+            driver=Driver(self.config,{})
+            driver._closing=True;driver._tearing_down=True
+            calls=[];done=asyncio.Event()
+            async def abort():
+                calls.append('abort');done.set()
+                raise TargetClosedError()
+            route=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(),abort=abort),
+                                  request=SimpleNamespace(url='https://hub.example.invalid/favicon.ico'))
+            driver._route(route)
+            await asyncio.wait_for(done.wait(),2);await asyncio.sleep(0)
+            self.assertEqual(calls,['abort'])
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':1})
+            driver._check_pause_fault()
+        asyncio.run(scenario())
+
+    def test_fetch_response_error_never_reenters_request_policy(self):
+        from vd_cosmos_core.submit_gate import Gate
+        async def scenario():
+            driver=Driver(self.config,{})
+            driver.gate=Gate(self.config,rehearse=True)
+            sent=[];finished=asyncio.Event()
+            async def send(*args):
+                sent.append(args);finished.set()
+            driver._cdp=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(),send=send))
+            event={'requestId':'fixture','responseErrorReason':'Failed',
+                   'request':{'url':driver.gate.origin+'/app.js','method':'GET'}}
+            with patch.object(driver.gate,'request',side_effect=AssertionError('ran request policy')) as policy:
+                driver._paused(event)
+                await asyncio.wait_for(finished.wait(),2);await asyncio.sleep(0)
+            policy.assert_not_called()
+            self.assertEqual(sent,[('Fetch.failRequest',{'requestId':'fixture','errorReason':'BlockedByClient'})])
+            self.assertEqual(driver.pause_counts()['resolved'],1)
         asyncio.run(scenario())
     def test_registered_callbacks_have_no_sync_calls_or_websocket_connection(self):
         path=REPO/'vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py';tree=ast.parse(path.read_text())
@@ -78,6 +159,26 @@ class SandboxTests(B1Case):
         self.assertEqual(error.reason,'browser_sandbox_unavailable')
         options=api.sync_playwright().start.return_value.chromium.launch_persistent_context.call_args.kwargs
         self.assertIs(options['chromium_sandbox'],True);self.assertNotIn('--no-sandbox',options['args'])
+
+
+class PauseReceiptTests(B1Case):
+    def test_once_result_file_keeps_pause_counters_even_on_failure(self):
+        from vd_cosmos_submit import cli
+        counts={'paused':2,'resolved':1,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0}
+        err=FlowError(4,'paused_request_unresolved',pause_counts=counts,gate_records=[
+            {'reason':'paused_request_unresolved','stage':'fetch_request','url_shape':{'path':'registered_static'}}])
+        for outcome in (err,{'exit_code':0,'pause_counts':dict(counts,resolved=2,closed_unconfirmed=0)}):
+            with self.subTest(outcome=type(outcome).__name__), redirect_stdout(io.StringIO()) as out:
+                action={'side_effect':outcome} if isinstance(outcome,FlowError) else {'return_value':outcome}
+                with patch.object(cli.submit_terminal,'human_context',return_value=CTX), patch.object(cli.submit_once,'run',**action):
+                    code=cli.main(['once','--config',str(self.path),'--rehearse'])
+            result=json.loads(out.getvalue())
+            artifact=json.loads(Path(result['artifact']).read_bytes())
+            if isinstance(outcome,FlowError):
+                self.assertEqual((code,artifact['error'],artifact['details']['pause_counts']),(4,err.reason,counts))
+                self.assertEqual(artifact['details']['gate_records'],err.details['gate_records'])
+            else:
+                self.assertEqual((code,artifact['pause_counts']),(0,outcome['pause_counts']))
 
 
 class VerificationProcessTests(B1Case):

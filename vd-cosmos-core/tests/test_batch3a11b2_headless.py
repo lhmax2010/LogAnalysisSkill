@@ -75,10 +75,17 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         super().setUp();exe=browser_runtime(self)
         self.server=Server();self.addCleanup(self.server.close);self.config.raw['submit']['browser_executable']=exe
         r=model.create_request(self.config,CTX,self.form(),'local browser verification');self.session=sessions.start(self.config,r,CTX,Processes())
-        self.driver=Driver(self.config,self.session,headless=True,local_origin=self.server.origin);self.addCleanup(self.driver.close);self.driver.launch(rehearse=True)
+        self.expect_pause_fault=False
+        self.driver=Driver(self.config,self.session,headless=True,local_origin=self.server.origin);self.addCleanup(self.close_driver);self.driver.launch(rehearse=True)
         print('Chrome executable (launched): '+exe,flush=True)
-        self.page=self.driver._page;url=self.server.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.driver.gate.navigation(url);self.page.goto(url);self.page.wait_for_timeout(100)
+        self.page=self.driver._page;url=self.server.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.driver.gate.navigation(url);self.page.goto(url,wait_until='domcontentloaded');self.page.wait_for_timeout(100)
         self.assertEqual(self.driver.gate.phase,'business');self.server.calls.clear()
+    def close_driver(self):
+        self.driver.close()
+        if not self.expect_pause_fault:self.driver._check_pause_fault()
+        counts=self.driver.pause_counts()
+        self.assertEqual(counts['pending'],0)
+        self.assertEqual(counts['paused'],counts['resolved']+counts['closed_unconfirmed'])
     def wait(self):self.page.wait_for_timeout(350)
     def test_human_get_post_navigation_popup_and_iframe_never_reach_server(self):
         self.page.evaluate("""base=>{fetch(base+'/write',{method:'POST'}).catch(()=>{});fetch(base+'/run').catch(()=>{});window.open(base+'/popup');let f=document.createElement('iframe');f.src=base+'/iframe';document.body.append(f);} """,self.server.origin)
@@ -99,6 +106,30 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         gate=self.driver.gate;gate.recording=False;gate.rehearse=False;gate.arm({'field':'frozen'},'hf',intent_recorded=True)
         self.page.evaluate("""base=>{let d=new FormData();d.append('field','changed');d.append('hf','');fetch(base+'/wicket/page?1-2.IFormSubmitListener-form',{method:'POST',body:d}).catch(()=>{});}""",self.server.origin)
         self.wait();self.assertEqual(self.server.calls,[]);self.assertEqual(gate.fatal,'blocked_before_send')
+    def test_undecided_subresource_expires_without_reaching_server(self):
+        driver=self.driver;driver.pause_timeout_s=.35
+        self.expect_pause_fault=True
+        driver.gate.static_keys.add('/stalled.js')
+        before=driver.pause_counts();defer=driver._defer
+        held=[]
+        def withhold(owner,method,*args,pause=None,continuing=False):
+            if continuing and pause.stage=='fetch_request' and pause.shape['path']=='registered_static':
+                held.append(pause)
+                return
+            return defer(owner,method,*args,pause=pause,continuing=continuing)
+        with patch.object(driver,'_defer',side_effect=withhold):
+            self.page.evaluate("""()=>{let s=document.createElement('script');s.src='/stalled.js?v=private-fixture';document.head.append(s);}""")
+            self.page.wait_for_timeout(800)
+        self.assertEqual(len(held),1)
+        self.assertEqual(self.server.calls,[])
+        e=self.fails(4,driver._check_pause_fault)
+        self.assertEqual(e.reason,'paused_request_unresolved')
+        records=[r for r in driver.records() if r.get('reason')=='paused_request_unresolved']
+        self.assertEqual(records,[{'reason':'paused_request_unresolved','stage':'fetch_request',
+                'url_shape':{'scheme':'http','origin':'hub','path':'registered_static','has_query':True}}])
+        after=driver.pause_counts()
+        self.assertGreater(after['paused'],before['paused'])
+        self.assertEqual((after['paused'],after['pending'],after['closed_unconfirmed']),(after['resolved'],0,0))
     def test_same_origin_login_and_cross_origin_mfa_are_not_business_forms(self):
         other=Server();self.addCleanup(other.close)
         self.page.evaluate("""base=>{let f=document.createElement('iframe');f.src=base+'/mfa';document.body.append(f);fetch('/login').catch(()=>{});}""",other.origin)
