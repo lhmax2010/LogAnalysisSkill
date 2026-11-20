@@ -67,6 +67,7 @@ def main(argv=None):
                     reader = factory() if args.online else None
                     result = doctor(config, reader=reader)
                 elif args.command == 'lookup':
+                    submit_terminal.ancestors_allowed()
                     if not args.hub_id or not args.hub_id.isdecimal(): raise FlowError(2, 'hub_id_required')
                     reader = factory(); since = None
                     if args.since:

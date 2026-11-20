@@ -5,6 +5,7 @@ import signal
 import threading
 import uuid
 import time
+from vd_cosmos_core.analysis_projection import active_tasks, next_candidate, prepare_candidate, task_counts
 from vd_cosmos_core.commands import command_context
 from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core.files import atomic_write, digest, json_bytes, load_json
@@ -63,6 +64,8 @@ def projection(config, store, key):
     state['result_caution'] = (state['observation'] or {}).get('result_caution')
     if not ready(state['observation']) or not logs_valid(config, state['logs'], state['observation']):
         state['phase'] = '构建中'
+    if state['phase'] == '结果已拉取':
+        state['analysis'] = active_tasks(config, store, key, state['logs'])
     return state
 
 
@@ -103,6 +106,10 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
         if state.get('abandoned'):
             return {'phase': '已作废', 'exit_code': 0, 'last_event_id': store.head(), 'action': 'none'}
         step = 'observe'
+        analysis = state.get('analysis')
+        candidate = next_candidate(config, store, key, state, analysis) if analysis else None
+        if candidate:
+            step = 'analyze'
         if ready(previous) and not state['todos'] and state['phase'] != '结果已拉取':
             step = 'logs'
             if logs_valid(config, state['logs'], previous) and state['logs'].get('evaluation') == evaluation(reader, previous):
@@ -126,6 +133,10 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
                 else:
                     data = fetch_logs(reader, fresh)
                     data['evaluation'] = evaluation(reader, fresh)
+            elif step == 'analyze':
+                analysis = prepare_candidate(config, store, key, reader.build_ref.run_id, state, candidate)
+                data = {'exit_code': 0, 'analysis_phase': analysis['state'], 'tasks': task_counts(analysis)}
+                current = store.head()
             else:
                 count = len(state['logs']['logs'])
                 data = {'exit_code': 0, 'failed_package_count': count,
@@ -145,7 +156,7 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
                 data.setdefault('todos', []).append({'reason': 'report_basis_changed', 'basis_version': fingerprint(data),
                     'message': '此前待办所依据的报告已变化，已重新判定'})
         code = data.get('exit_code', 0)
-        phase = ('结果已拉取' if step == 'notify' and not code else
+        phase = ('结果已拉取' if step in {'notify', 'analyze'} and not code else
                  '停止推进' if step == 'observe' and stopped(data) else
                  '报告已完整' if step in {'logs', 'notify'} or ready(data) else '构建中')
         if step == 'observe' and ready(data) and logs_valid(config, state['logs'], data) and state['completed_evaluation'] == evaluation(reader, data):
@@ -158,16 +169,39 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
             payload['resolved_stopped_basis'] = any(t['reason']=='report_basis_changed' for t in data.get('todos', []))
             if phase == '结果已拉取':
                 payload['evaluation'] = evaluation(reader, data)
-        if step == 'notify':
+        if step in {'notify', 'analyze'}:
             payload['evaluation'] = evaluation(reader, previous)
-            if not code:
+            if not code and step == 'notify':
                 current = write_todos(store, context, current, key, data['todos'], config, retry=retry, heartbeat_retry=expected_event is None)
+        if analysis and phase == '结果已拉取':
+            handoffs = [{'reason': 'analysis_handoff_pending', 'package': row['package'],
+                         'basis_version': digest(json_bytes(row)), 'message': '转交目标无已登记任务，待人工检查'}
+                        for row in analysis['handoffs'] if row['target'] is None]
+            if handoffs:
+                current = write_todos(store, context, current, key, handoffs, config,
+                                      retry=retry, heartbeat_retry=expected_event is None)
+            previous_count = list(store.events(key, kinds=['inbox_opened']))
+            old = next((e['payload']['todo'] for e in reversed(previous_count)
+                        if e['payload']['todo']['reason'] == 'analysis_tasks_ready'), None)
+            ids = [(r['task_id'], r['attempt']) for r in analysis['pending']]
+            basis = digest(json_bytes(ids))
+            if (ids or old) and (not old or old['basis_version'] != basis):
+                current = write_todos(store, context, current, key, [{
+                    'reason': 'analysis_tasks_ready', 'count': len(ids), 'basis_version': basis,
+                    'message': f'有 {len(ids)} 个任务待分析'}],
+                    config, retry=retry, heartbeat_retry=expected_event is None)
+
         if after_action:
             after_action(step)
         current = append_retry(store, context, 'workflow_result', payload, current, operation_id=attempt, retry=retry, heartbeat_retry=expected_event is None)
         todos = monitor_todos(config, store, key, data, step=step) + state['todos']
         current = write_todos(store, context, current, key, todos, config, retry=retry, heartbeat_retry=expected_event is None)
-        return {'phase': phase, 'action': step, 'exit_code': code, 'last_event_id': current, 'artifact': artifact, 'terminal_basis': (data if step == 'observe' else previous or {}).get('effective_terminal_basis'),
+        analysis_fields = {}
+        if analysis and phase == '结果已拉取':
+            analysis_fields = {'analysis_phase': analysis['state'], 'analysis_tasks': task_counts(analysis),
+                               'analysis_handoffs': analysis['handoffs']}
+        return {'phase': phase, 'action': step, 'exit_code': code, 'last_event_id': current, 'artifact': artifact,
+                **analysis_fields, 'terminal_basis': (data if step == 'observe' else previous or {}).get('effective_terminal_basis'),
                 'watch_started_at': state.get('completed_at') if state.get('completed_evaluation') == evaluation(reader, data if step == 'observe' else previous or {}) else store.events(key, kinds=['workflow_result'], latest=True)[0]['created_at']}
 
 
@@ -245,7 +279,11 @@ def status(config, reader=None):
         state = projection(config, store, build_key(reader))
         if state['observation'] and state['completed_evaluation'] != evaluation(reader, state['observation']):
             state['phase'] = '构建中'
-        return {'phase': state['phase'], 'last_event_id': store.head(), 'todos': state['todos']}
+        analysis = state.get('analysis') if state['phase'] == '结果已拉取' else None
+        result = {'phase': state['phase'], 'last_event_id': store.head(), 'todos': state['todos']}
+        if analysis:
+            result.update(analysis_phase=analysis['state'], analysis_tasks=task_counts(analysis))
+        return result
 
 
 def inbox(config):

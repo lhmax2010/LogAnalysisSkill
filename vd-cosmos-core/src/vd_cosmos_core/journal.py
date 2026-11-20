@@ -18,8 +18,16 @@ def sorted_body(value):
 
 def write_inbox(store, config):
     closed = {e['payload'].get('todo_key') for e in store.events(kinds=['inbox_closed'])}
-    lines = ['# 待办', ''] + ['- ' + json.dumps(e['payload']['todo'], ensure_ascii=False)
-        for e in store.events(kinds=['inbox_opened']) if e['payload'].get('todo_key') not in closed]
+    ordinary, analysis = [], {}
+    for event in store.events(kinds=['inbox_opened']):
+        payload = event['payload']
+        todo = payload['todo']
+        if todo['reason'] == 'analysis_tasks_ready':
+            analysis[payload['build']] = payload
+        elif payload.get('todo_key') not in closed:
+            ordinary.append(todo)
+    ordinary.extend(p['todo'] for p in analysis.values() if p['todo']['count'] and p.get('todo_key') not in closed)
+    lines = ['# 待办', ''] + ['- ' + json.dumps(todo, ensure_ascii=False) for todo in ordinary]
     return atomic_write(config.data_root, 'inbox.md', ('\n'.join(lines) + '\n').encode())
 
 

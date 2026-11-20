@@ -3,6 +3,7 @@ import json
 import re
 import uuid
 
+from .analysis_workspace import setup_workspace, validate_skill
 from .analysis_tools import COMMAND, DIAGNOSTIC, R08, ROOT, analyze_log
 from .commands import command_context
 from .diagnosis import classify, grouping, version_source
@@ -93,6 +94,7 @@ def content_segments(log, files, fields, inputs, reference, context, category):
     yield 'template', 'analysis-template', TEMPLATE + CATEGORIES[category] + R08, None
     yield 'rules', 'HLD Appendix A', inputs['team-rules.md'], None
     yield 'template', 'vd-fix-analyze/SKILL.md', inputs['analysis-skill.md'], None
+    yield 'template', 'vd-fix-analyze/RESULT-SCHEMA.md', inputs['result-schema.md'], None
     yield 'template', 'untrusted-marker', MARKER, None
     yield 'reference', 'diagnosis-metadata', inputs['diagnosis.json'], None
     yield 'template', 'untrusted-marker', END_MARKER, None
@@ -178,6 +180,8 @@ def readonly_inputs(path):
 
 
 def checked_task(config, task):
+    if task.get('skill'):
+        validate_skill(config, task['build'], task['skill']['sha256'])
     folder = config.output(task['directory'])
     input_dir = folder / 'inputs'
     if input_dir.is_symlink() or not input_dir.is_dir():
@@ -201,7 +205,8 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
     package = item['key']
     log = checked_file(config, item)
     files, inputs = {}, {'build.log': log, 'snapshot-manifest.json': checked_file(config, snapshot_record),
-                         'team-rules.md': rule_bytes(), 'analysis-skill.md': SKILL_FILE.read_bytes()}
+                         'team-rules.md': rule_bytes(), 'analysis-skill.md': SKILL_FILE.read_bytes(),
+                         'result-schema.md': SKILL_FILE.with_name('RESULT-SCHEMA.md').read_bytes()}
     for index, entry in enumerate(snapshot.get('files', []), 1):
         if entry.get('content'):
             name = f'source/{index:03d}'
@@ -227,9 +232,11 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
     prior = [e['payload'] for e in store.events(build, kinds=['analysis_prepared'])
              if e['payload']['package'] == package and e['payload']['task_input_digest'] == binding]
     if prior and not force_new:
+        from .analysis_result import invalidated
         task = prior[-1]
-        checked_task(config, task)
-        return task
+        if not invalidated(store, task):
+            checked_task(config, task)
+            return task
     limit = config.raw['analyzer'].get('max_attempts', 2)
     if len(prior) >= limit:
         raise FlowError(4, 'analysis_attempt_limit')
@@ -238,6 +245,7 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
     base = f'tasks/{build}/{digest(json_bytes(package))}'
     folder = f'{base}/attempt-{attempt}-{task_id[:12]}-{uuid.uuid4().hex[:8]}'
     inputs.update({'TASK.md': task_body, 'segments.json': segments})
+    skill = setup_workspace(config, build, inputs['analysis-skill.md'])
     registered = {name: atomic_write(config.data_root, f'{folder}/inputs/{name}', raw)
                   for name, raw in inputs.items()}
     readonly_inputs(config.output(f'{folder}/inputs'))
@@ -246,7 +254,7 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
             'task_input_digest': binding, 'attempt': attempt, 'directory': folder,
             'inputs': registered, 'fields': fields, 'editable_sources': files,
             'final_log': item, 'snapshot': snapshot_record, 'mode': snapshot['mode'],
-            'rules_version': rules_version, 'clang_release': clang_release, 'diagnosis': diagnosis}
+            'rules_version': rules_version, 'clang_release': clang_release, 'diagnosis': diagnosis, 'skill': skill}
     ctx = command_context('analyze.prepare')
     event = append_retry(store, ctx, 'analysis_prepared', task, store.head(), retry=True)
     todos = []

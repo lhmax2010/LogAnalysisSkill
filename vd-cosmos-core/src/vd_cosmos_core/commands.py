@@ -20,6 +20,7 @@ COMMANDS = {
         "workflow.tick", "workflow.loop", "workflow.status", "workflow.inbox")},
     "analyze.snapshot": Category.GENERATE,
     "analyze.prepare": Category.GENERATE,
+    "analyze.import-diagnosis-families": Category.GENERATE,
     "analyze.accept": Category.ACCEPT,
     **{name: Category.HUMAN for name in (
         "confirm-input", "bind-base-list", "inbox.done", "confirm", "confirm-group", "confirm-bug", "confirm-terminal", "approve",
@@ -56,6 +57,8 @@ def command_context(name):
             with open("/dev/tty", "r", encoding="utf-8") as tty, open("/dev/tty", "w", encoding="utf-8") as display:
                 if not tty.isatty():
                     raise FlowError(2, "terminal_required")
+                from .submit_terminal import ancestors_allowed
+                ancestors_allowed()
                 display.write("Confirm command (yes): ")
                 display.flush()
                 confirmed = tty.readline().strip() == "yes"

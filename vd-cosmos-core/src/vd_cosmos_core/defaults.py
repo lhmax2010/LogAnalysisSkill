@@ -67,7 +67,7 @@ def configure(raw):
     positive(snapshot, 'clock_margin_s', 300)
     positive(snapshot, 'merge_timeout_s', 60)
     analyzer = raw.setdefault('analyzer', {})
-    for key, value in [('root_list_max_files', 20000), ('ambiguity_candidates_max', 50), ('clang_tabstop', 8), ('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520)]:
+    for key, value in [('root_list_max_files', 20000), ('ambiguity_candidates_max', 50), ('clang_tabstop', 8), ('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520), ('max_attempts', 2), ('result_max_bytes', 262144)]:
         positive(analyzer, key, value)
         if type(analyzer[key]) is not int:
             raise ValueError()
@@ -77,6 +77,16 @@ def configure(raw):
     analyzer.setdefault('line_mapped_exts', ['.y', '.yy', '.ypp', '.l', '.ll', '.lex', '.re', '.rl', '.gperf'])
     if not isinstance(analyzer['line_mapped_exts'], list) or not all(isinstance(x, str) and x.startswith('.') for x in analyzer['line_mapped_exts']):
         raise ValueError('invalid line mapped extensions')
+    cline = analyzer.setdefault('cline_extension', {})
+    if type(cline) is not dict or set(cline) - {'normal_skills', 'global_skills', 'canary', 'config_files'}:
+        raise ValueError('invalid clinesr configuration inventory')
+    path_keys = {'normal_skills', 'global_skills', 'canary'}
+    if any(not isinstance(cline[k], str) or not cline[k] for k in path_keys & cline.keys()):
+        raise ValueError('invalid clinesr configuration inventory')
+    files = cline.get('config_files', {})
+    if (type(files) is not dict or set(files) - {'mcp', 'global_rules', 'global_workflows', 'auto_approval'}
+            or any(not isinstance(value, str) or not value for value in files.values())):
+        raise ValueError('invalid clinesr configuration inventory')
     # An old generated default is migrated; custom user agents stay explicit.
     agent = raw.setdefault('fetch', {}).get('user_agent', '')
     if not agent or agent.startswith('VD-Cosmos-LogAnalyzer/'):

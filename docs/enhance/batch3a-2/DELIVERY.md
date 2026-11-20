@@ -29,3 +29,14 @@
 
 - B3a2-Q05 assumed: 本批无 base 仓库下载或源码包下载；精确的已获取 primary repodata 放入轮次输入（也可用 `--primary-repodata` 指定数据根下的同份文件），缺失时标未核实并开启临时升档。没有运行 sudo、chroot 或真实 diagtool。
 - B3a2-Q06 assumed: R28 的已定性真 bug 在一个包内保守拦截选项类候选；不同输入的所有定性重新判定。人工写定性命令仍属 3a-3。
+
+## C4 工作区、命令守卫、待办与 tick
+
+| HLD | 实现 | 测试 |
+|---|---|---|
+| §6.4、§4.5 | `analysis_workspace.py` 安装并登记只读独立 skill，登记可选金丝雀与全局配置摘要。接收时拒绝目录变化、额外 skill 和摘要变化，作废旧 attempt。 | `test_sealed_skill_and_modified_skill_permanently_invalidate_attempt`、`test_canary_inventory_does_not_open_existing_skill_files` |
+| §6.4、§0.5 | 人工/外部写命令和 submit lookup 走进程祖先检查。接收器仍只追加分析收/拒事件。 | `test_human_ancestor_guard_is_applied_before_prompt` 和已有 non-TTY/伪进程表测试 |
+| §6.4、§9.2 | tick 从当前最终日志与已登记快照生成一个任务；投影与读取阶段分列；登记独立的待分析任务数，分析接收后清掉已处理的提醒。 | `test_tick_projects_tasks_and_accepted_results_and_updates_inbox` |
+
+- B3a2-Q07 assumed: 扩展模式由 FatTank 负责监督，生成器只记录可复核的金丝雀存在性、清单摘要和配置摘要，默认隔离未验证。已有 round 的分析 skill 与登记不符时拒绝使用；不自动覆盖、放开目录或启用自动批准。
+- B3a2-Q08 assumed: tick 只消费已下载并验证的最终日志和已登记快照，不自动做新 P4 读取。跨包转交只关联已有可信任务；目标尚无可信输入时另列待办，不从分析者的文本制造目标快照。

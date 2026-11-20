@@ -281,6 +281,12 @@ def record(store, kind, task, **payload):
                         store.head(), retry=True)
 
 
+def invalidated(store, task):
+    return any(e['payload'].get('invalidated') is True
+               and (e['payload']['task_id'], e['payload']['attempt']) == (task['task_id'], task['attempt'])
+               for e in store.events(task['build'], kinds=['analysis_rejected']))
+
+
 def has_result(store, task):
     return any((event['payload']['task_id'], event['payload']['attempt']) ==
                (task['task_id'], task['attempt'])
@@ -293,10 +299,14 @@ def accept_result(config, build, task_id, attempt):
     with OperationLock(config.data_root, 'round', build), EventStore(config.data_root) as store:
         task = registered_task(store, build, task_id, attempt)
         try:
+            if invalidated(store, task):
+                invalid('analysis_attempt_invalidated')
             if has_result(store, task):
                 invalid('analysis_result_already_received')
             if processing_state(config, store, task) != '有效':
                 invalid('analysis_input_expired')
+            if not task.get('skill'):
+                invalid('analysis_workspace_skill_unregistered')
             raw, refs = checked_task(config, task)
             result = read_result(config, task)
             validate(result, task, raw, refs)
@@ -337,6 +347,8 @@ def accept_result(config, build, task_id, attempt):
                        'fixture': result['provenance']['analyst_type'] == 'fixture',
                        'review_state': review, 'confirmed_bug': confirmed,
                        'option_blocked_pending_review': bool(pending and plan and plan['type'] != 'code')}
+            if result['outcome'] == 'cross_package_handoff':
+                payload['handoff_target'] = result['handoff']['package']
             projection = {**payload, 'package': task['package'], 'task_id': task_id, 'attempt': attempt}
             if not payload['fixture']:
                 payload['comparison'] = build_comparison(config, store, build, projection)
@@ -344,7 +356,11 @@ def accept_result(config, build, task_id, attempt):
             return {'task_id': task_id, 'attempt': attempt, 'outcome': result['outcome'],
                     'artifact': artifact, 'last_event_id': eid}
         except FlowError as error:
-            record(store, 'analysis_rejected', task, reason=error.reason)
+            permanent = error.reason in {'analysis_workspace_skill_changed', 'analysis_workspace_extra_skill',
+                'analysis_workspace_skill_unregistered', 'task_inputs_changed',
+                'registered_input_digest_mismatch', 'registered_input_missing', 'task_segments_invalid',
+                'task_evidence_invalid'}
+            record(store, 'analysis_rejected', task, reason=error.reason, invalidated=permanent)
             raise
         except (OSError, KeyError, ValueError, TypeError, RecursionError):
             record(store, 'analysis_rejected', task, reason='analysis_receiver_invalid_input')

@@ -142,7 +142,9 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
     candidates = diagnostics(log, config.raw['analyzer'])
     if not candidates:
         adapter.login_status(require_minimum=False)
-        return {'mode': '仅诊断', 'reason': '未取得错误位置', 'files': [], 'notices': [], 'known_effect': '读取 shelve 会更新 shelveAccess'}
+        return {'mode': '仅诊断', 'reason': '未取得错误位置', 'package': package['key'],
+                'files': [], 'notices': [], 'task_notice_interface': [], 'locations': [],
+                'known_effect': '读取 shelve 会更新 shelveAccess'}
     available = set(inventory) | set(affected)
     selected, locations = [], []
     log_text = '\n'.join(normalized_lines(log, config.raw['analyzer']['log_line_prefix_regex']))
