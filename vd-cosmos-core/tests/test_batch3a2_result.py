@@ -106,6 +106,16 @@ class ResultTests(PackageFixture, unittest.TestCase):
         with self.assertRaisesRegex(FlowError, 'analysis_input_expired'):
             self.accept(task)
 
+    def test_new_snapshot_expires_current_result_before_preparing_replacement(self):
+        task, path = self.setup_result()
+        path.write_bytes(json_bytes(result_fixture(task)))
+        new_snapshot = dict(self.snapshot, mode='仅诊断')
+        self.register('snapshot_completed', 'analyze.snapshot', {
+            'artifact': atomic_write(self.root, 'second-snapshot.json', json_bytes(new_snapshot)),
+            'package': KEY, 'build': BUILD})
+        with self.assertRaisesRegex(FlowError, 'analysis_input_expired'):
+            self.accept(task)
+
     def test_r08_and_r28_reject_unsafe_or_unconfirmed_edits(self):
         self.assertIsNone(check_r08('', '%if "%{?_toolchain}" == "clang"\nCFLAGS=-Wno-error=unused\n%endif'))
         for after in ('CFLAGS=-Wno-error=unused', '%if %{toolchain_is clang}\n%endif',
@@ -119,8 +129,15 @@ class ResultTests(PackageFixture, unittest.TestCase):
         plan['type'] = 'code'
         with self.assertRaisesRegex(FlowError, 'analysis_r28'):
             check_r28(plan, True)
-        plan['edits'][0]['new'] = '/* PLEASE CHECK: old assignment was unsafe; new value is bounded */'
-        self.assertIsNone(check_r28(plan, True))
+        for content in ('const char *msg = "PLEASE CHECK Before: old Why: unsafe";',
+                        '/* PLEASE CHECK */'):
+            plan['edits'][0]['new'] = content
+            with self.assertRaisesRegex(FlowError, 'analysis_r28'):
+                check_r28(plan, True)
+        for comment in ('/* PLEASE CHECK Before: old assignment Why: range was unsafe */',
+                        '// PLEASE CHECK\n// Before: old assignment\n// Why: range was unsafe'):
+            plan['edits'][0]['new'] = comment
+            self.assertIsNone(check_r28(plan, True))
 
     def test_edits_only_on_exact_editable_sources(self):
         task = {'editable_sources': {'source/001': {'path': '//example/spec', 'editable': True}}}

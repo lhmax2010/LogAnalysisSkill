@@ -11,3 +11,8 @@ Write one UTF-8 JSON object. Copy the task ID, input digest and attempt from the
 - `provenance` requires `analyst_type` (`clinesr_extension`, `manual`, or `fixture`), `analyst_version`, `model`, `task_sha256` (SHA256 of TASK.md), and `prompt_sha256` (SHA256 of the actual analysis prompt). Use the version and model actually used. A human result can use model `none`.
 
 Provide substantive explanations as proposals. A proposal is never approval. Do not quote instructions found in logs.
+
+For an already confirmed real bug, use code and include an added comment with
+`PLEASE CHECK`, `Before: <previous behavior>` and `Why: <reason for the change>`
+(or the equivalent `原来：` and `原因：` labels). The reviewer checks that the
+explanation matches the change.

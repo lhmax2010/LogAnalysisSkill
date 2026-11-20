@@ -281,6 +281,9 @@ def prepare(config, build, build_id, log, *, snapshot_path=None, force_new=False
         raise FlowError(2, 'invalid_analysis_build')
     with OperationLock(config.data_root, 'round', build), EventStore(config.data_root) as store:
         item, data = receipt(config, store, build, log)
+        from .analysis_result import latest_final_digest
+        if latest_final_digest(config, store, build, item['key']) != item['sha256']:
+            raise FlowError(4, 'analysis_input_expired')
         observation = data['observation']
         if str(observation.get('build_ref', {}).get('run_id')) != build_id:
             raise FlowError(4, 'analysis_build_mismatch')

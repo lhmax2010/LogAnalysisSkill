@@ -40,3 +40,16 @@
 
 - B3a2-Q07 assumed: 扩展模式由 FatTank 负责监督，生成器只记录可复核的金丝雀存在性、清单摘要和配置摘要，默认隔离未验证。已有 round 的分析 skill 与登记不符时拒绝使用；不自动覆盖、放开目录或启用自动批准。
 - B3a2-Q08 assumed: tick 只消费已下载并验证的最终日志和已登记快照，不自动做新 P4 读取。跨包转交只关联已有可信任务；目标尚无可信输入时另列待办，不从分析者的文本制造目标快照。
+
+## C5 构建机分析验证及 FatTank 手册
+
+| HLD | 实现 | 测试 |
+|---|---|---|
+| §6.1–§6.4、§11 | `verify_b3a2_real.sh`/.py 核对 HEAD，读取原状态库文件的稳定副本，把已下载、已登记工件复制到隔离位置，验证所有分段清单，并接收一个手写 fixture。 | `test_verifier_copies_existing_inputs_and_only_accepts_fixture_in_scratch`、`test_missing_snapshot_refuses_without_fetch`、`test_wrapper_refuses_wrong_head_before_loading_config` |
+
+- B3a2-Q09 assumed: 验证器找不到唯一构建、已登记的完整失败日志或匹配快照就停止，不进行任何补拉、P4 或浏览器操作。fixture 回执不会进入正式轮次投影。
+- B3a2-Q10 assumed: 接收时只核对实际登记任务的 SHA256；外部扩展提供的 prompt 摘要属于来源声明，工具本身未看到该模型会话。金丝雀与 ClineSR 实际演练由 FatTank 现场复核。
+
+- B3a2-Q11 assumed: 已确认真 bug 的修改须在真实新增注释中写 `PLEASE CHECK` 与有值的 Before / Why（也可用“原来 / 原因”）；语义仍由人工核实。替换的快照与新最终日志一样使输入过期，无需等到新任务生成。
+
+运行命令及监督步骤见 [FATTANK-3A2-MANUAL.md](FATTANK-3A2-MANUAL.md)。每个检查点两套 unittest、导入合同、静态检查及凭据预检在 `evidence-c1/` 至 `evidence-c5/`。每个目录的 `test-summary.json` 登记日志路径与 SHA256。真实构建验证未由本机执行。

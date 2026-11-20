@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 第 3a-2 批 C5：离线构建机验证入口与 FatTank 人工监督手册已交付；快照替换也使旧输入过期，R28 核对实际新增注释；真实输入验收及扩展金丝雀验证待 FatTank 按 `docs/enhance/batch3a-2/FATTANK-3A2-MANUAL.md` 现场执行。
+
 - 第 3a-2 批 C4：独立 ClineSR 扩展工作区、只读 skill、祖先守卫、任务待办和 tick 投影已接入；人工监督及隔离核验方法见 `docs/enhance/batch3a-2/DELIVERY.md`。
 
 - 第 3a-2 批 C3：诊断族按 Clang 完整版本-发布号匹配，记录逐位置事实与人工定性待办，生成方案对比表；见 `docs/enhance/batch3a-2/DELIVERY.md`。

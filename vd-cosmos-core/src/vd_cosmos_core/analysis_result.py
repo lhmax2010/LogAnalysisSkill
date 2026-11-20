@@ -14,7 +14,7 @@ from .errors import FlowError
 from .files import atomic_write, digest, json_bytes
 from .locks import OperationLock
 from .state import EventStore, append_retry
-from .task_package import checked_task, verify_text
+from .task_package import checked_task, snapshot_registration, verify_text
 
 SCHEMA = 'vd-cosmos/analysis-result/v1'
 OUTCOMES = {'repair_candidate', 'diagnostic_only', 'disposition_proposal', 'cross_package_handoff'}
@@ -230,11 +230,20 @@ def edits_spec(plan, task, inputs):
     return {'schema_version': 'gbs_patch_suggest/edit-spec/v1', 'edits': edits}
 
 
+def r28_comment(text):
+    blocks = (re.findall(r'/\*.*?\*/', text, flags=re.S)
+              + re.findall(r'(?m)(?:^[ \t]*(?://|#[ \t])[^\n]*\n?)+', text))
+    return any('PLEASE CHECK' in block
+               and re.search(r'(?:\bbefore\b|原先|原来)\s*[:：]\s*[^\s:*#/]', block, re.I)
+               and re.search(r'(?:\bwhy\b|原因)\s*[:：]\s*[^\s:*#/]', block, re.I)
+               for block in blocks)
+
+
 def check_r28(plan, confirmed):
     if not plan or not confirmed:
         return
     if (plan['type'] != 'code' or any(re.search(r'-Wno-(?:error|[\w-]+)', e['new']) for e in plan['edits'])
-            or not any('PLEASE CHECK' in change['new'] for change in plan['edits'])):
+            or not any(r28_comment(change['new']) for change in plan['edits'])):
         invalid('analysis_r28')
 
 
@@ -268,6 +277,14 @@ def processing_state(config, store, task):
         return '输入已过期'
     current = latest_final_digest(config, store, task['build'], task['package'])
     if current != task['final_log']['sha256']:
+        return '输入已过期'
+    try:
+        snapshot, _ = snapshot_registration(config, store, task['build'], task['package'], current)
+    except FlowError as error:
+        if error.reason in {'registered_snapshot_required', 'snapshot_input_mismatch'}:
+            return '输入已过期'
+        raise
+    if snapshot['sha256'] != task['snapshot']['sha256']:
         return '输入已过期'
     if matching and matching[-1]['attempt'] != task['attempt']:
         return '旧尝试'
