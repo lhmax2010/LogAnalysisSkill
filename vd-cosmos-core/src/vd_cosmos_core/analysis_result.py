@@ -8,6 +8,7 @@ import stat
 import tempfile
 
 from .analysis_tools import ROOT, run_tool
+from .analysis_comparison import build_comparison
 from .commands import command_context
 from .errors import FlowError
 from .files import atomic_write, digest, json_bytes
@@ -232,7 +233,8 @@ def edits_spec(plan, task, inputs):
 def check_r28(plan, confirmed):
     if not plan or not confirmed:
         return
-    if plan['type'] != 'code' or not any('PLEASE CHECK' in change['new'] for change in plan['edits']):
+    if (plan['type'] != 'code' or any(re.search(r'-Wno-(?:error|[\w-]+)', e['new']) for e in plan['edits'])
+            or not any('PLEASE CHECK' in change['new'] for change in plan['edits'])):
         invalid('analysis_r28')
 
 
@@ -300,9 +302,21 @@ def accept_result(config, build, task_id, attempt):
             validate(result, task, raw, refs)
             plan = result['proposals'].get('recommended')
             decisions = store.events(build, kinds=['confirmed'])
-            confirmed = any(e['command'] == 'confirm-bug' and e['payload'].get('real') is True
-                            and e['payload'].get('task_input_digest') == task['task_input_digest']
-                            and e['payload'].get('package') == task['package'] for e in decisions)
+            locations = task.get('diagnosis', {}).get('locations', [])
+            decisions_by_location = {}
+            for event in decisions:
+                decision = event['payload']
+                if (event['command'] == 'confirm-bug' and type(decision.get('real')) is bool
+                        and decision.get('task_input_digest') == task['task_input_digest']
+                        and decision.get('package') == task['package']):
+                    for identity in decision.get('locations', []):
+                        decisions_by_location[identity] = decision['real']
+            confirmed = any(decisions_by_location.get(loc['location_id']) is True for loc in locations)
+            pending = any(loc['tier'] == 'mandatory' and loc['location_id'] not in decisions_by_location
+                          for loc in locations)
+            peek = any(loc['tier'] == 'peek' for loc in locations)
+            review = ('已确认真 bug' if confirmed else '待人工定性' if pending else
+                      '需看一眼' if peek else None)
             check_r28(plan, confirmed)
             spec = edits_spec(plan, task, raw)
             output = f"rounds/{build}/analysis/{task_id}/attempt-{attempt}"
@@ -319,8 +333,14 @@ def accept_result(config, build, task_id, attempt):
                               '--output', folder / 'candidate.patch', '--check'],
                              folder, 'analysis_patch_format_failed')
             artifact = atomic_write(config.data_root, f'{output}/received.json', json_bytes(result))
-            eid = record(store, 'analysis_received', task, validated=True, artifact=artifact,
-                         outcome=result['outcome'], fixture=result['provenance']['analyst_type'] == 'fixture')
+            payload = {'validated': True, 'artifact': artifact, 'outcome': result['outcome'],
+                       'fixture': result['provenance']['analyst_type'] == 'fixture',
+                       'review_state': review, 'confirmed_bug': confirmed,
+                       'option_blocked_pending_review': bool(pending and plan and plan['type'] != 'code')}
+            projection = {**payload, 'package': task['package'], 'task_id': task_id, 'attempt': attempt}
+            if not payload['fixture']:
+                payload['comparison'] = build_comparison(config, store, build, projection)
+            eid = record(store, 'analysis_received', task, **payload)
             return {'task_id': task_id, 'attempt': attempt, 'outcome': result['outcome'],
                     'artifact': artifact, 'last_event_id': eid}
         except FlowError as error:

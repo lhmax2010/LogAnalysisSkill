@@ -19,3 +19,13 @@
 
 - B3a2-Q03 assumed: 无案例检索阶段的 `knowledge_refs` 必须为空；带未知位置或不唯一原文的候选修改一律拒收。
 - B3a2-Q04 assumed: 已人工定性的真 bug 才触发 R28 拒收；结果里 AI 的是/否均无裁决权限。待定性和位置粒度在 C3 接入。
+
+## C3 诊断族、位置与方案对比
+
+| HLD | 实现 | 测试 |
+|---|---|---|
+| §6.3 诊断族、位置, §11 | `diagnosis.py` 只从编译诊断行提取规范化选项，逐位置登记上下文摘要；按 base primary repodata 的完整 Clang 版本-发布号导入清单。缺版本或清单时告警，未知的强制档子标志临时升档。 | `test_version_release_exact_match_and_prefix_only_upgrades` |
+| §6.3、§9.8 | `analysis_result.py` 按位置的人工定性与数据摘要计算状态；`analysis_comparison.py` 分列 AI 主张、批准、实际 CL 与验证。 | `test_comparison_table_labeling_and_escaped_text` |
+
+- B3a2-Q05 assumed: 本批无 base 仓库下载或源码包下载；精确的已获取 primary repodata 放入轮次输入（也可用 `--primary-repodata` 指定数据根下的同份文件），缺失时标未核实并开启临时升档。没有运行 sudo、chroot 或真实 diagtool。
+- B3a2-Q06 assumed: R28 的已定性真 bug 在一个包内保守拦截选项类候选；不同输入的所有定性重新判定。人工写定性命令仍属 3a-3。

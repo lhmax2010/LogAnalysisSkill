@@ -1,0 +1,65 @@
+{
+  "allowed": true,
+  "files": [
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-2/DELIVERY.md",
+      "sha256": "a88bce327496eada74920fa9259bed015f9ea83abf98470f7960ec374ea5d2f5"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-2/evidence-c3/python310.txt",
+      "sha256": "be6657318018dd048652fa2577331d67c897a69d2f61101ceca8509836c67ce5"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-2/evidence-c3/python312.txt",
+      "sha256": "e73630d2cad583868e405c49f774eedce03ac6c73ce33459c5be2d4870400743"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-2/evidence-c3/test-summary.json",
+      "sha256": "dff0f522cd95f35dd231a95a6cf0d571a30eed2d38731cc2295ab387d62728d1"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "daee5190b931b56026ed33c776b68553586aa660f71b3a302f37cf3a00e691af"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/scripts/generate_diagnosis_families.py",
+      "sha256": "1a4c853681178b5bb2a39f65311f7d0313d356bc4289147ee9513187bf0bfdb7"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/analysis_comparison.py",
+      "sha256": "322acd3f150ec1050e8752dd2f8ed24de7e9c06b8c5a4bfec71bd0e1d7389e59"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/analysis_result.py",
+      "sha256": "0e29d6fe20cfe6ecec73b6fdcd4f032944f11ffb63046ab6612de498919603fb"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/diagnosis.py",
+      "sha256": "809b6b9a6018cb2f1905b6ecf9c1c3800e929181f47146f2a38e24942872b06d"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/task_package.py",
+      "sha256": "48eb9c3aede700f3a62b2cc4cab012e1d9ed101dd90aa5f6cb3dd28dd8417339"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a2_diagnosis.py",
+      "sha256": "e8ac7e0b1f326dfdb75f0045b9de33d2bd1efd3f50a80a04d8e1d9b224d814c9"
+    },
+    {
+      "allowed": true,
+      "path": "vd-fix-analyze/src/vd_fix_analyze/cli.py",
+      "sha256": "e197e88eae1eece4ef27c1d0e9b5b7608e30593e5fe12048f77f116c85d4e638"
+    }
+  ]
+}

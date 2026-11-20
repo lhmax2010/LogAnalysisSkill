@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 第 3a-2 批 C3：诊断族按 Clang 完整版本-发布号匹配，记录逐位置事实与人工定性待办，生成方案对比表；见 `docs/enhance/batch3a-2/DELIVERY.md`。
+
 - 第 3a-2 批 C2：结果接收只写收/拒事件，核对输入、证据及可编辑源，对候选补丁执行 R08/R28 最小检查；见 `docs/enhance/batch3a-2/DELIVERY.md`。
 
 - 第 3a-2 批 C1：已有 LogAnalyzer / patch-suggest 适配、只读任务包和逐字节证据清单已实现；R08 骨架替代旧工具的冲突写法。边界和验证见 `docs/enhance/batch3a-2/DELIVERY.md`。

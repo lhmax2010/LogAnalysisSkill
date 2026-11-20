@@ -5,10 +5,12 @@ import uuid
 
 from .analysis_tools import COMMAND, DIAGNOSTIC, R08, ROOT, analyze_log
 from .commands import command_context
+from .diagnosis import classify, grouping, version_source
 from .errors import FlowError
 from .export import check_content
 from .files import atomic_write, digest, json_bytes, load_json
 from .locks import OperationLock
+from .journal import write_todos
 from .receipts import logs_valid, task_input_digest
 from .state import EventStore, append_retry
 
@@ -91,6 +93,9 @@ def content_segments(log, files, fields, inputs, reference, context, category):
     yield 'template', 'analysis-template', TEMPLATE + CATEGORIES[category] + R08, None
     yield 'rules', 'HLD Appendix A', inputs['team-rules.md'], None
     yield 'template', 'vd-fix-analyze/SKILL.md', inputs['analysis-skill.md'], None
+    yield 'template', 'untrusted-marker', MARKER, None
+    yield 'reference', 'diagnosis-metadata', inputs['diagnosis.json'], None
+    yield 'template', 'untrusted-marker', END_MARKER, None
     yield 'tool-evidence', 'registered-fields', json_bytes(fields), None
     diagnostics = list(DIAGNOSTIC.finditer(log))[:250]
     spans = {(m.start(1), m.end(1)) for m in diagnostics}
@@ -205,6 +210,9 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
                 raise FlowError(4, 'snapshot_content_digest_mismatch')
             files[name] = {'path': entry['depotFile'], 'sha256': entry['sha256'],
                            'editable': entry['edits_eligible'] and snapshot['mode'] == '可分析'}
+    source_binding = digest(json_bytes({'log': item['sha256'], 'snapshot': snapshot_record['sha256']}))
+    diagnosis = classify(config, log, snapshot, source_binding, clang_release)
+    inputs['diagnosis.json'] = json_bytes(diagnosis)
     fields = evidence_fields(build_id, package, snapshot.get('task_notice_interface', []))
     for raw in inputs.values():
         verify_text(config, raw)
@@ -238,13 +246,29 @@ def build_task(config, store, build, build_id, item, category, snapshot_record, 
             'task_input_digest': binding, 'attempt': attempt, 'directory': folder,
             'inputs': registered, 'fields': fields, 'editable_sources': files,
             'final_log': item, 'snapshot': snapshot_record, 'mode': snapshot['mode'],
-            'rules_version': rules_version, 'clang_release': clang_release}
-    append_retry(store, command_context('analyze.prepare'), 'analysis_prepared',
-                 task, store.head(), retry=True)
+            'rules_version': rules_version, 'clang_release': clang_release, 'diagnosis': diagnosis}
+    ctx = command_context('analyze.prepare')
+    event = append_retry(store, ctx, 'analysis_prepared', task, store.head(), retry=True)
+    todos = []
+    if diagnosis['family_state'] != 'matched':
+        todos.append({'reason': 'diagnosis_family_needs_update',
+                      'basis_version': clang_release or 'release-unverified',
+                      'message': '诊断族清单需按新版本重新生成',
+                      'clang_release': clang_release})
+    for group in grouping(task):
+        prefix_upgrade = any(r['temporary_prefix_upgrade'] for r in diagnosis['locations']
+                             if r['location_id'] in group['locations'])
+        todos.append(dict(group, package=package, reason='diagnosis_review',
+                          basis_version=digest(json_bytes({'package': package, 'flag': group['flag'],
+                                                          'input': binding})),
+                          message='待人工定性' if group['tier'] == 'mandatory' else '需看一眼',
+                          temporary_prefix_upgrade=prefix_upgrade))
+    if todos:
+        write_todos(store, ctx, event, build, todos, config, retry=True)
     return task
 
 
-def prepare(config, build, build_id, log, *, snapshot_path=None, force_new=False):
+def prepare(config, build, build_id, log, *, snapshot_path=None, force_new=False, primary=None):
     if not re.fullmatch(r'[0-9a-f]{64}', build) or not re.fullmatch(r'[0-9]+', build_id):
         raise FlowError(2, 'invalid_analysis_build')
     with OperationLock(config.data_root, 'round', build), EventStore(config.data_root) as store:
@@ -259,4 +283,5 @@ def prepare(config, build, build_id, log, *, snapshot_path=None, force_new=False
         snapshot_record, snapshot = snapshot_registration(config, store, build, item['key'],
                                                           item['sha256'], snapshot_path)
         return build_task(config, store, build, build_id, item, package['category'],
-                          snapshot_record, snapshot, force_new=force_new)
+                          snapshot_record, snapshot, force_new=force_new,
+                          clang_release=version_source(config, build, primary))
