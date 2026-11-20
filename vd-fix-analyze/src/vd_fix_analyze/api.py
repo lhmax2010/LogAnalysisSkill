@@ -130,6 +130,7 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
                     break
             review_basis(data, previous)
             data['input_binding'] = binding
+            data['final_log_sha256'] = metadata['sha256']
             artifact = atomic_write(config.data_root, folder + '/manifest.json', json_bytes(data))
             current = append('snapshot_completed', {'build': key, 'package': package['key'],
                 'attempt': attempt, 'artifact': artifact}, current)
