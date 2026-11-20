@@ -50,7 +50,11 @@ class B2bTests(B1Case):
         for snap in (dict(d.snap,target='other'),dict(d.snap,password_present=True),dict(d.snap,controls=d.snap['controls'][:-1])):self.fails(4 if snap.get('password_present') else 5,structure,self.config,snap)
         self.fails(4,arguments,'snapshot',target='x',selector='input')
     def test_confirmation_refusal_and_last_readback_change_never_click(self):
-        r,s,d=self.setup_flow();self.fails(3,flow.execute,self.config,r,s,CTX,d,lambda _:'wrong',self.reader,rehearse=True);self.assertTrue(d.closed)
+        r,s,d=self.setup_flow()
+        error=self.fails(3,flow.execute,self.config,r,s,CTX,d,lambda _:'wrong',self.reader,rehearse=True)
+        self.assertEqual(error.reason,'digest_confirmation_required')
+        self.assertEqual(error.details['todo']['expected'],r['digest'][:12])
+        self.assertTrue(d.closed)
     def test_intent_rechecks_version_session_duplicate_and_foreign_exposure(self):
         r,s,d=self.setup_flow();sessions.expose(self.config,s,CTX)
         changed=model.mutate(self.config,r['request_id'],r['version'],CTX,{'reason':'change'},kind='submit_outcome')

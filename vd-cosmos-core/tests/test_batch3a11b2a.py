@@ -97,11 +97,22 @@ class B2aTests(B1Case):
         self.args()
         for hub,build in [('501','900'),('500','19270877')]:self.fails(4,source.determine,self.config,hub,build,self.reader(),lambda _:'900',CTX)
         self.fails(5,source.determine,self.config,'500','900',self.reader(),lambda _:'900',CTX)
+    def test_wrong_source_answer_gives_exact_build_and_no_attestation(self):
+        with patch.object(source,'prepare_source',return_value=({}, {'build_id':'19206687'}, {})):
+            error=self.fails(3,source.determine,self.config,'500','19206687',self.reader(),lambda _:'确认',CTX)
+        self.assertEqual(error.reason,'source_confirmation_required')
+        self.assertEqual(error.details['todo']['expected'],'19206687')
+        self.assertIn('type 19206687 to confirm',error.details['todo']['message'])
+        self.assertFalse(self.config.data_root.exists())
     def test_duplicate_parsed_list_and_wrong_resubmit_reference(self):
         args=self.args();r=once.prepare(self.config,args,CTX,self.reader,lambda _:'yes')
         model.record_outcome(self.config,r['request_id'],CTX,'accepted')
         Path(args.base_list).write_text('\n'+BASE.rstrip()+'  \n')
         self.fails(6,once.prepare,self.config,args,CTX,self.reader,lambda _:'yes')
         args.resubmit_of='wrong';self.fails(6,once.prepare,self.config,args,CTX,self.reader,lambda _:'resubmit')
-        args.resubmit_of=r['request_id'];replacement=once.prepare(self.config,args,CTX,self.reader,lambda _:'resubmit')
+        args.resubmit_of=r['request_id']
+        error=self.fails(3,once.prepare,self.config,args,CTX,self.reader,lambda _:'yes')
+        self.assertEqual(error.reason,'resubmit_confirmation_required')
+        self.assertEqual(error.details['todo']['expected'],'resubmit')
+        replacement=once.prepare(self.config,args,CTX,self.reader,lambda _:'resubmit')
         self.assertNotEqual(replacement['request_id'],r['request_id'])

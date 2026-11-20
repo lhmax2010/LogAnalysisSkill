@@ -57,7 +57,7 @@ def main(argv=None):
             reader = None
             try:
                 if args.command == 'once':
-                    result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.ask(json.dumps(value,ensure_ascii=False)+'\n确认：'),driver_factory=(lambda c,s:FixtureDriver(c,s,args.fixture)) if args.backend=='fixture' else Driver)
+                    result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.confirm_once(config,value),driver_factory=(lambda c,s:FixtureDriver(c,s,args.fixture)) if args.backend=='fixture' else Driver)
                 elif args.command == 'recover':
                     if not args.session or not args.reason:raise FlowError(2,'recovery_arguments_required')
                     with submit_sessions.target_lock(config):

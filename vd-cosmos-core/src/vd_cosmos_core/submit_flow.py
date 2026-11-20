@@ -5,6 +5,7 @@ from .state import EventStore
 from . import submit_model as model, submit_sessions as sessions
 from .submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, structure, readback, wire_values, verify_parts
 from .submit_config import PROPERTIES
+from .submit_terminal import confirmation_error
 
 def intent(config,request,session,context,H_pre,clock):
     with model.lock(config,request['request_id']):
@@ -38,8 +39,10 @@ def execute(config,request,session,context,driver,confirm,reader_factory,*,rehea
             if stable(structure(config,snapshot))!=stable(fingerprint):raise FlowError(5,'form_changed_during_fill')
         evidence=driver.serialize_check(snapshot,request['form'],rehearse=rehearse)
         model.ensure_safe(config,{'values':values,'fingerprint':fingerprint,'serialization':evidence})
-        answer=confirm({'target':request['target'],'request':request['request_id'],'digest_prefix':request['digest'][:12],'values':values,'fingerprint':fingerprint,'serialization':evidence,'rehearse':rehearse})
-        if answer!=request['digest'][:12]:raise FlowError(3,'digest_confirmation_required')
+        prefix=request['digest'][:12]
+        answer=confirm({'confirmation':'digest','target':request['target'],'request':request['request_id'],'digest':request['digest'],
+                        'digest_prefix':prefix,'values':values,'fingerprint':fingerprint,'serialization':evidence,'rehearse':rehearse})
+        if answer!=prefix:raise confirmation_error('digest',prefix)
         with EventStore(config.data_root) as store:
             matches={r['digest'] for r in model.requests(store.events()).values() if r['digest'].startswith(answer)}
         if matches!={request['digest']}:raise FlowError(3,'digest_prefix_not_unique')

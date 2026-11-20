@@ -15,6 +15,7 @@ from vd_cosmos_core import submit_sessions, submit_flow, submit_model, browser_t
 from vd_cosmos_core.export import check_content
 from vd_cosmos_core.submit_gate import Gate, static_key
 from vd_cosmos_core.submit_browser_contract import accepted_location, wire_values, verify_parts
+from vd_cosmos_core.submit_terminal import confirmation_error
 from vd_cosmos_core.files import digest, json_bytes
 from .browser_scripts import SCRIPT, DIGEST, arguments
 
@@ -374,7 +375,8 @@ class Driver:
         if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)
         if len(self.gate.run_candidates)!=1:raise FlowError(4,'run_pattern_unregistered')
         candidate={'method':'GET','path':self.gate.overview,'listener':'ILinkListener','behavior':None,'component':'run'}
-        if confirm({'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':raise FlowError(3,'run_confirmation_required')
+        if confirm({'confirmation':'run','target':submit_model.target(self.config),'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':
+            raise confirmation_error('run','allow-run')
         position=self._run_position(entry)
         self.gate.allow_run(self.gate.run_candidates[0])
         self._page.mouse.click(*position)

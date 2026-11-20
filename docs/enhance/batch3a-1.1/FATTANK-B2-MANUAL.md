@@ -34,6 +34,17 @@ nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --
 
 该命令不由实现者执行。浏览器打开前先确认来源构建；Run 请求先阻断录制，终端确认 allow-run 后才允许完全相同的一次 GET；提交请求在演练中始终拒绝。回读全部属性后输入请求摘要前 12 位。首轮未登记编码只输出字段长度/摘要，verified=false 不等于编码确认。指纹/回调候选写入结果产物，由 FatTank 核对后人工更新本机配置，工具不自动登记。
 
+命令入口通用确认仍输入 `yes`。之后按每次提示末行输入显示的精确值：
+
+| 确认 | 终端提示示例 | 输入 |
+|---|---|---|
+| 来源构建 | 输入构建号 19206687 以确认 / type 19206687 to confirm | `19206687`；其他构建输入当次提示的构建号 |
+| 放行 Run | type allow-run to confirm | `allow-run` |
+| 请求摘要 | type the 12-character digest prefix 012345abcdef to confirm | 当次显示的 12 位摘要前缀；示例为 `012345abcdef` |
+| 重提（仅指定 `--resubmit-of`） | type resubmit to confirm | `resubmit` |
+
+终端仅显示摘要和 `Full JSON:` 路径。完整源清单、回读及历史见配置的 `data_root/submit/confirmations/` 下对应的 JSON 文件。路径以 `data_root/` 开头时相对于配置的数据根目录。答错时本次操作停止，错误的 `todo` 会重复应输入的值。输入“确认”不能代替构建号或确认词。
+
 ## 会话恢复
 
 ```bash

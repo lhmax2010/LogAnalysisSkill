@@ -1,10 +1,10 @@
 """Single-operation preparation. All actual browser effects are injected."""
-import json
 from .commands import Category
 from .errors import FlowError
 from .state import EventStore
 from . import submit_model as model, submit_sessions as sessions, submit_source
 from .submit_browser_contract import enforce_policy
+from .submit_terminal import confirmation_error
 
 
 def prepare(config, args, context, reader_factory, confirm, *, processes=None, header_reader=None):
@@ -32,9 +32,10 @@ def prepare(config, args, context, reader_factory, confirm, *, processes=None, h
         previous=[r for r in model.requests(store.events()).values() if r['digest']==sha and model.was_submitted(r)]
     if args.resubmit_of:
         if not previous or previous[-1]['request_id']!=args.resubmit_of:raise FlowError(6,'invalid_resubmit_reference')
-        display={'submissions':[{'request':r['request_id'],'at':r['created_at'],'hub':r['hub_id'],'reruns':r.get('manual_reruns',[])} for r in previous],
+        display={'confirmation':'resubmit','target':model.target(config),'resubmit_of':args.resubmit_of,'digest':sha,
+                 'submissions':[{'request':r['request_id'],'at':r['created_at'],'hub':r['hub_id'],'reruns':r.get('manual_reruns',[])} for r in previous],
                  'next_round':1+sum(1+len(r.get('manual_reruns',[])) for r in previous)}
-        if confirm(display)!='resubmit':raise FlowError(3,'resubmit_confirmation_required')
+        if confirm(display)!='resubmit':raise confirmation_error('resubmit','resubmit')
     request=model.create_request(config,context,form,args.reason,resubmit_of=args.resubmit_of)
     if basis and request.get('source')!=basis:
         request=model.mutate(config,request['request_id'],request['version'],context,{'source':basis},kind='submit_outcome')

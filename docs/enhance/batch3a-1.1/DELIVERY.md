@@ -810,3 +810,16 @@ v9 的单次错误发生在 `test_mismatched_body_burns_token_and_never_sends` �
 | 3.12.3 | 375 通过、0 跳过，`evidence-b27/python312.txt` | `9684c4f39e92fa0ddb3bc6a7977c914aaba8d643934801b343f08b665d523c2d` |
 
 凭据预检见 `evidence-b27/prepush-final.json`。
+
+## Checkpoint B2.8（设计方 2026-11-20）
+
+FatTank 在 `35046b5` 实况演练时，终端输出了约 230 KB 的源数据，最后只说“确认：”；输入“确认”得到 `source_confirmation_required`。本次统一 `once` 的来源、放行 Run、摘要及重提确认：提示最多 4096 UTF-8 字节，显示适用的编号、目标配置、头字段、计数、SHA256 或 Run 请求形状，长清单只显示数量和 SHA256。最后一行指明精确输入。完整 JSON 先经凭据检查，再以 0600 写入数据根下的 `submit/confirmations/`；终端显示其路径，极长路径使用 `data_root/` 相对表示。确认规则不变，错误 todo 的 `expected` 和说明重复所需输入。
+
+`test_batch3a11b28.ConfirmationPromptTests` 对四种提示分别核对精确文本、字节上限、无长清单泄露、完整 JSON 和文件权限，并检查凭据拒绝。源确认和重提拒绝见 `test_batch3a11b2a`，摘要拒绝见 `test_batch3a11b2b`；真实浏览器 Run 拒绝测试断言未给出正确确认词时服务端收到零个请求。四种操作提示与答案见 `FATTANK-B2-MANUAL.md`。未访问真实 Hub 或运行实况演练。
+
+| 解释器 | 完整套件（使用本地 Chrome 无头夹具） | SHA256 |
+|---|---|---|
+| 3.10.12 | 379 通过、0 跳过，`evidence-b28/python310.txt` | `73cdd8c8c31c9fafdfe6bf90d8cc69831432c1a2bec5a7fe357610976011838e` |
+| 3.12.3 | 379 通过、0 跳过，`evidence-b28/python312.txt` | `b43d9df23e7b7399175b88585e30317c914711f720b1f54ddb96cc783ce1dfd5` |
+
+凭据预检见 `evidence-b28/prepush-final.json`。

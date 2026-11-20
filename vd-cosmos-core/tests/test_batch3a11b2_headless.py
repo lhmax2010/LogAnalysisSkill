@@ -198,6 +198,15 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
             self.driver._run_editor(entry,confirm)
         self.assertEqual(self.server.calls,[('GET',run),('GET','/wicket/page?9')])
 
+    def test_wrong_run_answer_gives_expected_word_and_never_navigates(self):
+        path=self.driver.gate.overview
+        self.page.set_content(f'<a href="{path}?7-1.ILinkListener-run">Run the configuration</a>')
+        with patch.object(self.driver,'_window'):
+            error=self.fails(3,self.driver._run_editor,self.server.origin+path,lambda _:'yes')
+        self.assertEqual(error.reason,'run_confirmation_required')
+        self.assertEqual(error.details['todo']['expected'],'allow-run')
+        self.assertEqual(self.server.calls,[])
+
     def test_notice_cannot_hide_other_obstructions_or_send_mutation_requests(self):
         entry=self.page.url
         self.page.set_content('<button>Run the configuration</button>'

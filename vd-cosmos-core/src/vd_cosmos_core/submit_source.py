@@ -9,6 +9,7 @@ from .files import digest, json_bytes
 from .report import Document, report_headers
 from .state import EventStore
 from .submit_config import SECRET_NAME, PROPERTIES
+from .submit_terminal import confirmation_error
 from .transport import HTTPTransport
 
 COPY_DEFAULT = ['PACKAGE_LIST','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','BUILD_TYPE','KS_LIST','EXTRA_BUILD_PARAMETER']
@@ -105,7 +106,9 @@ def prepare_source(config, hub, build, reader, header_reader=read_headers, *, wr
 
 def determine(config, hub, build, reader, confirm, context, header_reader=read_headers):
     form, basis, display = prepare_source(config, hub, build, reader, header_reader)
-    if confirm(display)!=basis['build_id']:raise FlowError(3,'source_confirmation_required')
+    expected=basis['build_id']
+    if confirm(dict(display,confirmation='source',target=model.target(config)))!=expected:
+        raise confirmation_error('source',expected)
     with EventStore(config.data_root) as store, store.transaction():
         store.append(context,'base_source_attest',{'basis':basis,'frozen':display['variables'],'headers':display['headers'],'at':time.time(),'reason':'once --base-from-hub 回显核对'},store.head())
     return form,basis
