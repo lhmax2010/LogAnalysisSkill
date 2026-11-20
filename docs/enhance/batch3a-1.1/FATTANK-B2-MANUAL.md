@@ -18,7 +18,7 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 
 已有配置先用 `nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CONFIG"` 写入 B2.4 对应表（同时留下原配置的私有备份）。首版要求 GITURL、Product Version (ks)、rpm Add & Delete、PACKAGE_LIST (DELETE)、PACKAGE_LIST (x86 arch) 全为空；两个复选框保持勾选，Image Skip? 使用打开表单时的预选文本。工具回读确认这些要求后才继续。演练核验编码前不要更改 `property_map_confirmed`。
 
-登录后先核对 dashboard 页眉或导航中唯一可见的 `submit.account`（区分大小写），匹配后才打开目标。各操作人在自己的配置中填写账号。目标表单的面包屑逐段核对 `submit.target_config`；不符时检查结果文件中的段列表。查号和绑定以候选变量页的 `HUB_CONFIG_ID`、`HUB_CONFIG_PATH` 和已列出的 `FROM_HUB_ID` 核对目标；前两项未核验时不能绑定。
+登录后，dashboard 必须恰有一个可见的 `Sign Out` 链接或按钮（此标签不区分大小写）。从该控件向上最多三层找最近的欢迎区，`submit.account` 必须在可见文字中独立出现且大小写一致，例如 `Welcome! <account> Sign Out`。通过后才打开目标。各操作人在自己的配置中填写账号；若收到 `hub_account_mismatch`，请核对当前登录及 `account_check` 结果。结果保存控件和欢迎区的 tag/id/class；只有匹配且欢迎区文字不超过 80 字符才记录文字。目标表单的面包屑逐段核对 `submit.target_config`；不符时检查结果文件中的段列表。查号和绑定以候选变量页的 `HUB_CONFIG_ID`、`HUB_CONFIG_PATH` 和已列出的 `FROM_HUB_ID` 核对目标；前两项未核验时不能绑定。
 
 B2.5 从 Hub 根地址开始 SSO。若遇到 Hub 自己的密码登录页，工具拒绝继续；请关闭并重新走 SSO。真实允许列表及账号放在私有 JSON 中，再导入以下五个可选字段：`auth_paths`、`static_paths`、`target_config`、`target_config_id`、`account`。认证条目严格匹配 host/path/method；带显式端口的主机须作为独立条目登记。输出只列变更键，原配置备份权限为 0600。任一确认标志为 true 时不更新。
 

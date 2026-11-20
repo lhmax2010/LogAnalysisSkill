@@ -21,11 +21,22 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   return hit&&button.contains(hit)?{clear:true,x,y}:{clear:false};
  }
  if(operation==='account'){
-  const matches=[...document.querySelectorAll('header *,nav *,[role="banner"] *,[role="navigation"] *')]
-    .filter(e=>visible(e) && e.textContent.trim()===account &&
-      ![...e.querySelectorAll('*')].some(c=>visible(c) && c.textContent.trim()===account));
-  return {matched:matches.length===1, element:matches.length===1?
-    {tag:matches[0].tagName.toLowerCase(),id:matches[0].id,class:matches[0].getAttribute('class')||''}:null};
+  const info=e=>({tag:e.tagName.toLowerCase(),id:e.id,class:e.getAttribute('class')||''});
+  const matches=[...document.querySelectorAll('a,button,[role="link"],[role="button"],input[type="button"],input[type="submit"]')]
+    .filter(e=>visible(e) && (e.tagName==='INPUT'?e.value:(e.innerText||'')).trim().toLowerCase()==='sign out');
+  if(matches.length!==1)return {matched:false,element:null,container:null};
+  const token=new RegExp('(^|[\\s(:!])'+account.replace(/[.*+?^$(){}|[\]\\]/g,'\\$&')+'($|[\\s),])');
+  const element=info(matches[0]);
+  let parent=matches[0].parentElement;
+  for(let level=1;parent && level<=3;level++,parent=parent.parentElement){
+   const text=(parent.innerText||'').replace(/\s+/g,' ').trim();
+   if(token.test(text)){
+    const result={matched:true,element,container:info(parent)};
+    if([...text].length<=80)result.container_text=text;
+    return result;
+   }
+  }
+  return {matched:false,element,container:null};
  }
  const breadcrumbs=[...document.querySelectorAll('.breadcrumb,.breadcrumbs')];
  const segments=breadcrumbs.length===1 ? breadcrumbs[0].textContent.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean) : [];
@@ -68,7 +79,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='eb47681d276779b8f2a4f14d6db6c117dd603bb6cd74c839e69ab5d2d1bbd322'
+DIGEST='40c4274865973c41df730c351eaea5f0664388d322f61b1bb4f13eb5075fa960'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

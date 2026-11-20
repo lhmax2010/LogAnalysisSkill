@@ -140,8 +140,8 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.page.evaluate("""()=>fetch('/auth',{method:'POST',body:'synthetic'}).catch(()=>{})""")
         self.wait();self.assertEqual(self.server.calls,[('POST','/auth')])
     def test_dashboard_account_must_match_once_before_target_navigation(self):
-        from unittest.mock import patch
-        account=self.config.raw['submit']['account']
+        account='fixture.user';self.config.raw['submit']['account']=account
+        signout='<a id="logout" class="menu-link"> Sign Out </a>'
         self.server.calls.clear()
         self.driver.gate.phase='auth'
         self.server.responses['/']=(302,'/dashboard',b'')
@@ -151,16 +151,45 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(error.reason,'hub_account_mismatch')
         self.assertEqual(self.server.calls,[('GET','/'),('GET','/dashboard')])
         dashboard=self.server.origin+'/dashboard'
-        self.page.set_content(f'<header><nav><span id="profile" class="user">{account}</span>'
-                              '<span hidden>fixture-user</span><span>unrelated-user</span></nav></header>')
+        self.page.set_content(f'<div id="greeting" class="profile">Welcome!  {account} {signout}</div>')
         self.driver._check_account(dashboard)
         evidence=self.driver.gate.records[-1]['account_check']
-        self.assertEqual(evidence,{'matched':True,'element':{'tag':'span','id':'profile','class':'user'}})
-        self.page.set_content(f'<nav><span>{account}</span><span>{account}</span></nav>')
-        self.assertEqual(self.fails(3,self.driver._check_account,dashboard).details['account_check'],
-                         {'matched':False,'element':None})
-        self.page.set_content(f'<nav><span>{account.upper()}</span></nav><main>{account}</main>')
-        self.fails(3,self.driver._check_account,dashboard)
+        self.assertEqual(evidence,{'matched':True,'element':{'tag':'a','id':'logout','class':'menu-link'},
+                                  'container':{'tag':'div','id':'greeting','class':'profile'},
+                                  'container_text':f'Welcome! {account} Sign Out'})
+        self.page.set_content(f'<nav><span>{account}</span> <button> SIGN OUT </button>'
+                              '<button hidden>Sign Out</button></nav>')
+        self.driver._check_account(dashboard)
+        self.assertEqual(self.driver.gate.records[-1]['account_check']['container']['tag'],'nav')
+        self.page.set_content(f'<div id="outer">{account}<div id="near">({account}), {signout}</div></div>')
+        self.driver._check_account(dashboard)
+        self.assertEqual(self.driver.gate.records[-1]['account_check']['container']['id'],'near')
+        self.page.set_content(f'<div>{"x"*81} <span>{account}</span> {signout}</div>')
+        self.driver._check_account(dashboard)
+        self.assertNotIn('container_text',self.driver.gate.records[-1]['account_check'])
+
+        for label,greeting in (
+            ('trailing',f'<div>{account}x {signout}</div>'),
+            ('leading',f'<div>x{account} {signout}</div>'),
+            ('literal dot','<div>fixtureXuser '+signout+'</div>'),
+            ('wrong account',f'<div>another-user {signout}</div>'),
+            ('case-sensitive account',f'<div>{account.upper()} {signout}</div>'),
+            ('hidden account',f'<div><span hidden>{account}</span> {signout}</div>'),
+            ('too distant',f'<div>{account}<div><div><div>{signout}</div></div></div></div>'),
+            ('duplicate',f'<div>{account} {signout} <a>Sign Out</a></div>'),
+            ('no Sign Out',f'<nav>{account}</nav>'),
+            ('not a control',f'<div>{account} <span>Sign Out</span></div>'),
+        ):
+            with self.subTest(label=label):
+                self.page.set_content(greeting)
+                mismatch=self.fails(3,self.driver._check_account,dashboard)
+                self.assertEqual(mismatch.reason,'hub_account_mismatch')
+                evidence=mismatch.details['account_check']
+                self.assertFalse(evidence['matched'])
+                self.assertIsNone(evidence['container'])
+                self.assertNotIn('container_text',evidence)
+                if label in ('duplicate','no Sign Out','not a control'):
+                    self.assertIsNone(evidence['element'])
 
     def test_manual_login_redirect_and_password_document_refuse_sso_fallback(self):
         from unittest.mock import patch

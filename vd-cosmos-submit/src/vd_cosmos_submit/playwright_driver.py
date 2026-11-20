@@ -83,13 +83,13 @@ class Driver:
         try:
             result=submit_flow.execute(self.config,request,self.session,context,self,confirm,reader_factory,rehearse=args.rehearse)
             self._check_pause_fault()
-            return dict(result,pause_counts=self.pause_counts())
+            return dict(result,**self._operation_evidence())
         except FlowError as error:
             self._check_pause_fault()
-            raise FlowError(error.code,error.reason,**{**error.details,'pause_counts':self.pause_counts()}) from None
+            raise FlowError(error.code,error.reason,**{**error.details,**self._operation_evidence()}) from None
         except Exception:
             self._check_pause_fault()
-            raise FlowError(5,'browser_operation_failed',pause_counts=self.pause_counts()) from None
+            raise FlowError(5,'browser_operation_failed',**self._operation_evidence()) from None
     def launch(self,*,rehearse=True):
         settings(self.config,headless=self.headless)
         profile=submit_sessions.profile_path(self.config,self.session)
@@ -159,9 +159,17 @@ class Driver:
         return {'paused':self._paused_count,'resolved':self._resolved_count,
                 'pending':len(self._pauses),'closed_unconfirmed':self._forced_closed,
                 'cancelled_on_close':self._cancelled_on_close}
+    def _operation_evidence(self):
+        details={'pause_counts':self.pause_counts()}
+        if self.gate is not None:
+            for record in reversed(self.gate.records):
+                if 'account_check' in record:
+                    details['account_check']=record['account_check']
+                    break
+        return details
     def _check_pause_fault(self):
         if self._pause_fault:
-            raise FlowError(4,'paused_request_unresolved',pause_counts=self.pause_counts(),
+            raise FlowError(4,'paused_request_unresolved',**self._operation_evidence(),
                             gate_records=self.gate.records if self.gate is not None else [])
     def _url_shape(self,url):
         u=urlsplit(url)
@@ -390,12 +398,14 @@ class Driver:
         self._cdp.send('Browser.setWindowBounds',{'windowId':info['windowId'],'bounds':{'windowState':state}})
     def _check_account(self, dashboard):
         account=self.config.raw['submit']['account']
-        evidence={'matched':False,'element':None}
+        unmatched={'matched':False,'element':None,'container':None}
+        evidence=unmatched
         if self.gate.phase=='account' and self._page.url==dashboard and not (self._fatal or self.gate.fatal):
             evidence=self._fixed_script('account',account=account)
             if evidence.get('password_present'):raise self._manual_login_error()
+            if self._page.url!=dashboard:evidence=unmatched
         self.gate.records.append({'account_check':evidence})
-        if not evidence['matched'] or self._page.url!=dashboard:
+        if not evidence['matched']:
             raise FlowError(3,'hub_account_mismatch',account_check=evidence,
                             todo={'reason':'hub_account_mismatch','message':f'log in as {account} or change submit.account'})
     def _fixed_script(self,operation,**kw):

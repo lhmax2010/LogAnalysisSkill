@@ -45,6 +45,23 @@ class B2bTests(B1Case):
         r,s,d=self.setup_flow();result=flow.execute(self.config,r,s,CTX,d,lambda _:r['digest'][:12],self.reader,rehearse=True)
         self.assertTrue(result['rehearsed']);self.assertEqual(d.clicks,0);self.assertTrue(d.closed)
         with EventStore(self.config.data_root) as store:self.assertFalse(store.events(kinds=['click_intent']))
+    def test_browser_result_keeps_account_evidence_after_a_later_failure(self):
+        from vd_cosmos_submit.playwright_driver import Driver
+        evidence={'matched':True,'element':{'tag':'a','id':'logout','class':''},
+                  'container':{'tag':'nav','id':'profile','class':''},'container_text':'fixture-user Sign Out'}
+        for failed in (False,True):
+            driver=Driver(self.config,{})
+            def operation(*args,**kwargs):
+                driver.gate.records.append({'account_check':evidence})
+                if failed:raise FlowError(5,'form_unrecognized')
+                return {'exit_code':0}
+            with patch.object(flow,'execute',side_effect=operation):
+                args=(SimpleNamespace(rehearse=True),{},CTX,lambda _:None,self.reader)
+                if failed:
+                    result=self.fails(5,driver.operate,*args).details
+                else:
+                    result=driver.operate(*args)
+            self.assertEqual(result['account_check'],evidence)
     def test_form_extra_control_wrong_target_and_sensitive_form_rejected(self):
         r,s,d=self.setup_flow()
         for snap in (dict(d.snap,target='other'),dict(d.snap,password_present=True),dict(d.snap,controls=d.snap['controls'][:-1])):self.fails(4 if snap.get('password_present') else 5,structure,self.config,snap)

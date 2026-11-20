@@ -823,3 +823,24 @@ FatTank 在 `35046b5` 实况演练时，终端输出了约 230 KB 的源数据�
 | 3.12.3 | 379 通过、0 跳过，`evidence-b28/python312.txt` | `b43d9df23e7b7399175b88585e30317c914711f720b1f54ddb96cc783ce1dfd5` |
 
 凭据预检见 `evidence-b28/prepush-final.json`。
+
+## Checkpoint B2.7–B2.9 合并验收（设计方 2026-11-20）
+
+设计基线仍为 `35046b5`；其后 B2.7 `ec7883d`、B2.8 `300f50f` 已推送，保留其历史及实现，在其上追加 B2.9。第三次实况演练的来源确认和 SSO 已成功（SSO 约 70 秒）；旧规则把账号限定在页眉/导航中的独立元素，不能识别欢迎区的 `Welcome! <account> Sign Out`，返回 3 / `hub_account_mismatch`。
+
+| 条目 | 验证 |
+|---|---|
+| B2.7 | 保留每个 route / Fetch 阶段的完成回执、10 秒截止、脱敏诊断和结果计数。v9 的旧 `load` 超时仍无请求轨迹可定位；本地服务器原已线程化，只在测试 setUp 等待 domcontentloaded。故意悬置子资源并验证服务端零请求的回归包含在本次加载复验中。 |
+| B2.8 | 四类确认继续限 4096 UTF-8 字节，提示精确答案和私有 JSON 路径；错答 todo 重复应输入值。四类长度、文本、产物和拒绝回归包含在双解释器全量套件中；手册中的四个答案保留。 |
+| B2.9 | Dashboard 只认唯一可见、标签不区分大小写的 Sign Out 链接/按钮；从其父元素开始最多上查三层，按设计给定的左右边界和转义账号作逐字比较。失败返回 3，禁止打开目标；结果保留匹配结论及元素/容器的 tag/id/class，只有匹配且规范文字至多 80 字符才保留文字。浏览器成功或后续失败均能看到已有账号证据。 |
+
+B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立账号、最近容器、大小写、前后缀、点号转义、错账号、不可见账号、超过三层、重复或缺失 Sign Out，并核对长文字省略及失败时目标页请求为零。结果传播另由 `B2bTests.test_browser_result_keeps_account_evidence_after_a_later_failure` 覆盖。本地只访问回环夹具。
+
+合并压力复验：Python 3.10.12、Chrome 157.0.8103.78、Playwright 1.64.1。测试用 `nice -n 19`、`VD_REQUIRE_HEADLESS=1`、CPU 0/1 亲和性；另起同优先级固定在 CPU 0 的 `yes >/dev/null`。`test_batch3a11b2_headless` 20/20 轮通过，共 340 项，零跳过、零导航超时。日志 `evidence-b29/headless-stress-python310.txt`（Chrome 版本行末尾空格已去掉），SHA256 `e92be59d7c98466372913e61d58ed2d236333a6905b5d524536506da09783267`。
+
+| 解释器 | 完整套件（含真实 Chrome 回环测试） | SHA256 |
+|---|---|---|
+| 3.10.12 | 380 通过、0 跳过，`evidence-b29/python310.txt` | `f957d65a4adee2eda023376ab2c80e11b344170162e12e102858469b76636784` |
+| 3.12.3 | 380 通过、0 跳过，`evidence-b29/python312.txt` | `e4b8e0cf23371adf7980fa4a77d420b4598cd79dbeae6261740f22a6d9cda3a1` |
+
+凭据预检见 `evidence-b29/prepush-final.json`。
