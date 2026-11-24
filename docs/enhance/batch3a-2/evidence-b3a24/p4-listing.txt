@@ -1,0 +1,6 @@
+Synthetic benchmark: fixture P4 emits real-shaped marshal records. Fresh processes per row count.
+Python 3.10.12
+rows=199999 outcome=complete listing_elapsed_seconds=1.764 p4_timeout_seconds=120
+wall_seconds=1.88 max_rss_kib=113884
+rows=200000 outcome=p4_listing_limit listing_elapsed_seconds=1.690 p4_timeout_seconds=120
+wall_seconds=1.80 max_rss_kib=113864

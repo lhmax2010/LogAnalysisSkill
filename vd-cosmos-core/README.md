@@ -108,7 +108,7 @@ EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。�
 | 配置 | 默认 | 含义 |
 |---|---|---|
 | `p4.min_root_depth` | 5 | 清单包根最少目录层数；去掉 `/...` 后检查，拒绝外来通配符和版本符号 |
-| `analyzer.root_list_max_files` | 20000 | 单次 `p4 files -m N <root>/...@CL` 的结果上限；达到上限即快照失败 |
+| `analyzer.root_list_max_files` | 200000 | 单次 `p4 files -m N <root>/...@CL` 的结果上限。达到上限即快照失败。用 `vd-cosmos-submit doctor` 确认生效值，实际配置中的显式上限优先。 |
 | `analyzer.log_line_prefix_regex` | `^\[\s*\d+s\] ` | 每行只去掉一层 GBS 时间前缀，其后空白保留 |
 | `analyzer.clang_tabstop` | 8 | 日志没有明确 `-ftabstop=N` 时使用；按原始字节计数展开 |
 | `analyzer.ambiguity_candidates_max` | 50 | 受限源码行归属判断的候选上限；缺内容或超限记未核对 |

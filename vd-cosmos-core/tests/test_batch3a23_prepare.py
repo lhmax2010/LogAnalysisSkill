@@ -36,14 +36,15 @@ class ReportReader:
     def require(self, name):
         assert name == 'fetch_log'
 
-    def fetch_logs(self, packages):
+    def fetch_log(self, _, arch, package):
         self.downloads += 1
-        artifact = atomic_write(self.config.data_root, 'log.txt', b'compiler failure\n')
-        log = dict(artifact, key=packages[0]['key'], final=True,
+        filename = package['key']['name'] + '.log'
+        artifact = atomic_write(self.config.data_root, filename, b'compiler failure\n')
+        log = dict(artifact, key=package['key'], final=True,
                    binding={'report_sha256': 'fixture', 'max_log_bytes': self.config.raw['fetch']['max_log_bytes'],
                             'terminal_basis': BASIS, 'settled_basis': 'trusted_terminal'})
-        atomic_write(self.config.data_root, 'log.txt.json', json_bytes(log))
-        return [log]
+        atomic_write(self.config.data_root, filename + '.json', json_bytes(log))
+        return log
 
 
 class PrepareInputTests(unittest.TestCase):
@@ -95,6 +96,8 @@ class PrepareInputTests(unittest.TestCase):
              patch('vd_fix_analyze.api.snapshot', side_effect=snapshot):
             result = self.prepare(factory=factory, sleep=sleep)
             self.assertFalse(result['logs_reused'])
+            self.assertEqual(result['exit_code'], 0)
+            self.assertEqual(result['packages'][0]['status'], 'registered')
             self.assertEqual(result['packages'][0]['log']['size'], 17)
             self.assertEqual(result['packages'][0]['sources'][0]['size'], 15)
             with EventStore(self.config.data_root) as store:
@@ -108,6 +111,7 @@ class PrepareInputTests(unittest.TestCase):
             repeat = self.prepare()
             self.assertTrue(repeat['logs_reused'])
             self.assertTrue(repeat['packages'][0]['snapshot_reused'])
+            self.assertEqual(repeat['packages'][0]['status'], 'reused')
             with EventStore(self.config.data_root) as store:
                 self.assertEqual(store.head(), head)
             self.assertEqual(self.reader.downloads, 1)
@@ -115,6 +119,36 @@ class PrepareInputTests(unittest.TestCase):
             lists.assert_called_once()
         sleep.assert_called_once_with(self.config.raw['poll']['interval_s'])
         self.detail.close.assert_called()
+
+    def test_continues_after_snapshot_and_log_failure(self):
+        extra = [dict(PACKAGE, name=name, path=f'//depot/{name}') for name in ('bad-log', 'good')]
+        self.observation['reports']['armv7l']['packages'] += [
+            {'key': package, 'category': 'build_error'} for package in extra]
+        original = self.reader.fetch_log
+
+        def fetch(ref, arch, package):
+            if package['key']['name'] == 'bad-log':
+                raise FlowError(5, 'fixture_log_unavailable')
+            return original(ref, arch, package)
+
+        def snapshot(config, adapter, package, headers, log, folder, **kwargs):
+            if package['key'] == PACKAGE:
+                raise FlowError(5, 'p4_listing_limit')
+            return {'package': package['key'], 'mode': '仅诊断', 'notices': [], 'files': []}
+
+        with patch.object(self.reader, 'fetch_log', side_effect=fetch), \
+             patch('vd_cosmos_core.build_inputs.fetch_build_inputs', side_effect=self.frozen_inputs), \
+             patch('vd_fix_analyze.api.P4Adapter'), patch('vd_fix_analyze.api.snapshot', side_effect=snapshot):
+            result = self.prepare()
+        self.assertEqual(result['exit_code'], 5)
+        self.assertEqual([(row['package']['name'], row['status'], row.get('reason')) for row in result['packages']], [
+            ('sample', 'snapshot_failed', 'p4_listing_limit'),
+            ('bad-log', 'snapshot_failed', 'fixture_log_unavailable'),
+            ('good', 'registered', None),
+        ])
+        with EventStore(self.config.data_root) as store:
+            completed = store.events(build_key(self.reader), kinds=['snapshot_completed'])
+            self.assertEqual([event['payload']['package'] for event in completed], [extra[1]])
 
     def test_refuses_success_nonterminal_or_hub_mismatch_before_fetch_or_p4(self):
         for updates, hub, reason in [

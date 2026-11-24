@@ -52,6 +52,7 @@ def doctor(config, *, reader=None, package_probe=php_packages):
     browser = config.raw.get('browser', {}).get('executable')
     result = {'exit_code': 0, 'online': reader is not None, 'php_packages': php,
               'optional_stdlib': optional_stdlib(),
+              'root_list_max_files': config.raw['analyzer']['root_list_max_files'],
               'analysis_dependencies': analysis_dependencies(config),
               'DISPLAY_present': bool(os.environ.get('DISPLAY')), 'playwright_package_version': playwright,
               'browser_available': bool(browser and (Path(browser).is_file() or shutil.which(browser))),

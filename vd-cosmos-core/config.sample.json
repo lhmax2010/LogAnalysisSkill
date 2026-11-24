@@ -196,7 +196,7 @@
     "snapshot_max_files": 20,
     "snapshot_max_file_bytes": 2097152,
     "snapshot_max_total_bytes": 20971520,
-    "root_list_max_files": 20000,
+    "root_list_max_files": 200000,
     "log_line_prefix_regex": "^\\[\\s*\\d+s\\] ",
     "ambiguity_candidates_max": 50,
     "clang_tabstop": 8,

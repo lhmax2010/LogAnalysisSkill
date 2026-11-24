@@ -1,0 +1,41 @@
+{
+  "fake_p4_benchmark": {
+    "file": "docs/enhance/batch3a-2/evidence-b3a24/p4-listing.txt",
+    "sha256": "e7137efc76aa3fd684c0c2707e6914d88160e38bfa44d306aab1df247fe229a9"
+  },
+  "heartbeat_stress": [
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a24/heartbeat310.txt",
+      "passed": 50,
+      "sha256": "5647c4b176ffe3c0806a9eed31db90d6596b04247ef08490f7588f66b39e2d64"
+    },
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a24/heartbeat312.txt",
+      "passed": 50,
+      "sha256": "162f10f01d945bf5cd58a40431450a7dccad22a51bf8f21809697f2281456639"
+    }
+  ],
+  "minimal_disabled_backends": [
+    "_lzma",
+    "_bz2"
+  ],
+  "suite_output_whitespace": "trailing whitespace normalized",
+  "suites": [
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a24/python310.txt",
+      "interpreter": "Python 3.10.12",
+      "minimal_passed": 436,
+      "sha256": "82c4cb541f3c69448f1ec8a3983b723d7de52e0e636992eedb3cac70fd222ec2",
+      "skipped": 0,
+      "standard_passed": 436
+    },
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a24/python312.txt",
+      "interpreter": "Python 3.12.3",
+      "minimal_passed": 436,
+      "sha256": "452f970342396aababbcbe1cc6dc60e50f0dde0c3f05e2e15d8c8c6b62a0a283",
+      "skipped": 0,
+      "standard_passed": 436
+    }
+  ]
+}

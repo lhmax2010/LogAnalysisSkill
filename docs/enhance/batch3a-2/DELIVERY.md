@@ -79,3 +79,16 @@
 - `vd-fix-analyze ... prepare-inputs` 用现有观察、日志、变量清单和快照入口写入正式数据根。匿名核对构建详情和可选 Hub ID，拒绝已在工具中登记的提交请求及误提交样本；报告完整并失败才继续。日志、快照和已物化源文件按绑定与摘要复用。
 - 设计方 2026-11-24 裁定：沿用现有 P4 allow-list，含 `info`、`login -s`（仅票据状态）、`files`、`fstat`、`describe`、`print`、`change -o`。票据失效时退出并给出现有待办，FatTank 自行登录。未执行真实 P4 或构建机复验。
 - 两版标准和 minimal Python 套件、SHA256 及凭据预检见 `evidence-b3a23/`。
+
+## B3a2.4 构建机 v15 跟进
+
+设计方报告 `ee0096f` 构建机导入 80/80，B1 PASS。A 读取 19270912 并找到 16 个失败包，14 个快照成功，trustzone-tee 和 coreclr-diagnostics 快照失败。准备命令在 trustzone-tee 的 20,000 条上限处停止，C 因此缺少已登记快照。B2 有一次心跳测试失败，429/430。
+
+| 修改 | 核对测试 |
+| --- | --- |
+| 默认上限改为 200,000，doctor 报告配置生效值。已有配置中显式设置的上限照常生效。P4 列表使用原命令与原 120 秒默认时限，流式写入数据根的匿名临时文件并计算 SHA256。stdout 上限 256 MiB，stderr 上限 64 KiB。按记录解析，仅保留清单需要的字段。到达行数或字节上限、协议残缺、超时均使快照失败。 | `test_large_listing_complete_or_rejected_at_exact_cap`、`test_listing_rejects_truncation_and_enforces_byte_and_time_bounds`、`test_doctor_reports_effective_listing_limit` |
+| 准备命令逐包登记结果，`registered`、`reused` 或 `snapshot_failed`，含失败原因。有包失败返回 5，其余包仍处理。共享前置检查失败时停止该轮。票据失效继续使用现有人工登录待办。 | `test_continues_after_snapshot_and_log_failure`、`test_settles_then_registers_normal_events_and_reuses_valid_data`、`test_expired_ticket_uses_snapshot_todo_and_stops` |
+| C 逐包核对最终日志、关联快照、快照中登记的源文件。完整包进入验证，缺项包列在结果里，诊断型快照可无源文件。部分包通过验证时返回 0 和 `verdict: PARTIAL`，无可用包返回 6。 | `test_verifier_checks_complete_packages_and_lists_incomplete_packages`、`test_missing_snapshot_refuses_without_fetch`、`test_missing_registered_source_is_reported_per_package` |
+| 原心跳测试在 50 ms 间隔下假定轻载时序，调度超过 150 ms 就会产生合法中断。测试用信号确保扫描处于阻塞，按实测事件时间验证分类，等待上限取测试间隔的 60 倍。另用注入时间核对三倍间隔的边界。生产规则保持三倍阈值。 | `test_heartbeat_continues_while_scan_or_terminal_callback_waits`、`test_heartbeat_threshold_is_strict` |
+
+双版本标准和 minimal Python 测试、同核 CPU 负载下各 50 次心跳测试、假 P4 规模测量及 SHA256 见 `evidence-b3a24/`。真实 P4 的网络延迟与两个大包的快照结果待构建机复验。

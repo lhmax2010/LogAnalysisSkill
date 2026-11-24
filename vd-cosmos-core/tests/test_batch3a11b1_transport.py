@@ -148,23 +148,60 @@ class LifecycleConcurrencyTests(B1Case):
         for t in ts:t.join(5);self.assertFalse(t.is_alive())
         with EventStore(self.config.data_root) as store:self.assertEqual(len(store.events(kinds=['bind'])),1)
     def test_heartbeat_continues_while_scan_or_terminal_callback_waits(self):
-        r=self.accepted();rid=r['request_id'];entered=threading.Event();release=threading.Event();done=[]
-        data=pages();old=data['/history/4362']
-        def blocked():entered.set();release.wait(3);return old
-        data['/history/4362']=blocked
-        thread=threading.Thread(target=lambda:done.append(submit_watch.run(self.config,rid,lambda cache:self.reader(data),max_scans=1)))
-        thread.start();self.assertTrue(entered.wait(2))
-        # Wait for actual heartbeats, not an assumed scheduling interval.
-        deadline=time.monotonic()+3
-        while time.monotonic()<deadline:
-            with EventStore(self.config.data_root) as store:beats=store.events(kinds=['submit_heartbeat'])
-            if len(beats)>=4:break
-            time.sleep(.01)
-        self.assertGreaterEqual(len(beats),4)
-        current=submit_model.read(self.config,rid);submit_model.mutate(self.config,rid,current['version'],HUMAN,{'resolution_reason':'during scan'})
-        release.set();thread.join(4);self.assertFalse(thread.is_alive())
+        interval = 0.2
+        self.config.raw['poll']['watch_interval_s'] = interval
+        rid = self.accepted()['request_id']
+        entered, release = threading.Event(), threading.Event()
+        done = []
+        data = pages()
+        original = data['/history/4362']
+
+        def blocked():
+            entered.set()
+            release.wait()
+            return original
+
+        data['/history/4362'] = blocked
+        thread = threading.Thread(target=lambda: done.append(
+            submit_watch.run(self.config, rid, lambda cache: self.reader(data), max_scans=1)), daemon=True)
+        thread.start()
+        timeout = 60 * interval
+        try:
+            self.assertTrue(entered.wait(timeout))
+            # Wait for progress while the scan is provably blocked. Loaded hosts may
+            # legitimately miss a deadline, so check each classification against its gap.
+            deadline = time.monotonic() + timeout
+            beats = []
+            while time.monotonic() < deadline:
+                with EventStore(self.config.data_root) as store:
+                    beats = store.events(kinds=['submit_heartbeat'])
+                if len(beats) >= 4:
+                    break
+                time.sleep(interval / 5)
+            self.assertGreaterEqual(len(beats), 4)
+            for previous, current in zip(beats, beats[1:]):
+                previous_at = previous['payload']['at']
+                payload = current['payload']
+                interrupted = payload['at'] - previous_at > 3 * interval
+                self.assertEqual(payload['interrupted'], interrupted)
+                self.assertEqual(payload['gap_from'], previous_at if interrupted else None)
+            current = submit_model.read(self.config, rid)
+            submit_model.mutate(self.config, rid, current['version'], HUMAN, {'resolution_reason': 'during scan'})
+        finally:
+            release.set()
+            thread.join(timeout)
+        self.assertFalse(thread.is_alive())
         self.assertTrue(done[0]['scan_discarded'])
-        self.assertFalse(any(e['payload']['interrupted'] for e in beats[1:]))
+
+    def test_heartbeat_threshold_is_strict(self):
+        rid = self.accepted()['request_id']
+        self.config.raw['poll']['watch_interval_s'] = 1
+        submit_watch.heartbeat(self.config, rid, now=self.start)
+        self.assertFalse(submit_watch.heartbeat(self.config, rid, now=self.start+3)['interrupted'])
+        late = submit_watch.heartbeat(self.config, rid, now=self.start+6.01)
+        self.assertTrue(late['interrupted'])
+        self.assertEqual(late['gap_from'], self.start+3)
+
     def test_failed_build_later_new_hub_other_account_rerun_and_rebind(self):
         r=self.accepted(click=False);rid=r['request_id'];p=submit_claim.prepare_attest(self.config,rid,'900',self.reader())
         submit_claim.attest(self.config,rid,p,HUMAN,p['required_words'],'checked',self.reader())

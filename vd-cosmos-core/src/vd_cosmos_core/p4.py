@@ -1,17 +1,65 @@
 """Isolated read-only P4 access, fixed marshal protocol and structured failures."""
 from dataclasses import dataclass
+from functools import lru_cache
+from hashlib import sha256
 import io
 import marshal
 import os
 from pathlib import Path
 import re
+import selectors
 import shlex
 import subprocess
+import tempfile
+import time
 import uuid
 from .errors import FlowError
 from .files import digest, json_bytes
 from .build_inputs import validate_root
 from .export import check_content
+
+
+_LISTING_OUTPUT_MAX = 256 * 1024 * 1024
+_LISTING_STDERR_MAX = 64 * 1024
+_LISTING_FIELDS = ('depotFile', 'rev', 'type', 'action')
+
+
+def spool_listing(plan, output, timeout):
+    """Bound listing bytes on disk, with one deadline for both pipes and exit."""
+    deadline = time.monotonic() + timeout
+    checksum = sha256()
+    size = 0
+    stderr = bytearray()
+    with subprocess.Popen(plan.argv, env=plan.env, cwd=plan.cwd,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE) as child:
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(child.stdout, selectors.EVENT_READ)
+                selector.register(child.stderr, selectors.EVENT_READ)
+                while selector.get_map():
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise subprocess.TimeoutExpired(plan.argv, timeout)
+                    for key, _ in selector.select(remaining):
+                        chunk = os.read(key.fd, 64 * 1024)
+                        if not chunk:
+                            selector.unregister(key.fileobj)
+                        elif key.fileobj is child.stdout:
+                            size += len(chunk)
+                            if size > _LISTING_OUTPUT_MAX:
+                                raise FlowError(5, 'p4_listing_output_limit')
+                            checksum.update(chunk)
+                            output.write(chunk)
+                        else:
+                            stderr.extend(chunk)
+                            if len(stderr) > _LISTING_STDERR_MAX:
+                                raise FlowError(5, 'p4_listing_output_limit')
+            status = child.wait(timeout=max(0, deadline - time.monotonic()))
+        except BaseException:
+            child.kill()
+            raise
+    output.seek(0)
+    return status, size, stderr, checksum.hexdigest()
 
 
 @dataclass
@@ -111,15 +159,24 @@ class P4Adapter:
         for path in (self.config.data_root, self.config.output('tmp/p4'), self.config.output('tmp/p4-cache')):
             path.mkdir(parents=True, exist_ok=True)
         try:
-            process = subprocess.run(plan.argv, env=plan.env, cwd=plan.cwd, capture_output=True, timeout=self.p4['timeout_s'])
+            if _listing:
+                with tempfile.TemporaryFile(dir=plan.env['TMPDIR']) as stream:
+                    status, size, stderr, checksum = spool_listing(plan, stream, self.p4['timeout_s'])
+                    return self._read_output(args, stream, status, size, stderr, checksum, listing=True)
+            process = subprocess.run(plan.argv, env=plan.env, cwd=plan.cwd,
+                                     capture_output=True, timeout=self.p4['timeout_s'])
         except subprocess.TimeoutExpired:
             raise FlowError(5, 'p4_timeout') from None
         except OSError:
             raise FlowError(5, 'p4_process_start_failed') from None
-        if process.returncode < 0:
+        return self._read_output(args, io.BytesIO(process.stdout), process.returncode,
+                                 len(process.stdout), process.stderr, digest(process.stdout))
+
+    def _read_output(self, args, stream, status, size, stderr, checksum, *, listing=False):
+        if status < 0:
             raise FlowError(5, 'p4_process_signal')
-        if process.returncode != 0 and not process.stdout and process.stderr:
-            text = process.stderr.decode('utf-8', errors='replace')
+        if status != 0 and not size and stderr:
+            text = stderr.decode('utf-8', errors='replace')
             if not check_content(text.encode(), self.config)['allowed']:
                 raise FlowError(4, 'p4_stderr_credential_blocked')
             reason = ('p4_connect_failed' if re.search(r'Connect to server failed', text, re.I)
@@ -127,14 +184,29 @@ class P4Adapter:
             first = text.splitlines()[0]
             raise FlowError(5, reason, message=first,
                             todo={'reason': reason, 'message': first, 'assignee': 'FatTank'})
-        stream = io.BytesIO(process.stdout)
         records = []
+
+        @lru_cache(maxsize=256)
+        def listing_value(raw):
+            return raw.decode('utf-8', errors='surrogateescape') if isinstance(raw, bytes) else raw
+
         try:
-            while stream.tell() < len(process.stdout):
+            while stream.tell() < size:
                 record = marshal.load(stream)
                 if not isinstance(record, dict) or not (b'code' in record or 'code' in record):
                     raise ValueError()
-                records.append(decode(record))
+                if listing and record.get(b'code', record.get('code')) in {b'stat', 'stat'}:
+                    row = {'code': 'stat'}
+                    for field in _LISTING_FIELDS:
+                        value = record.get(field.encode(), record.get(field))
+                        if not isinstance(value, (str, bytes)):
+                            raise ValueError()
+                        if field == 'depotFile' and isinstance(value, bytes):
+                            value = value.decode('utf-8', errors='surrogateescape')
+                        row[field] = value if field == 'depotFile' else listing_value(value)
+                    records.append(row)
+                else:
+                    records.append(decode(record))
         except (EOFError, ValueError, TypeError, UnicodeError):
             raise FlowError(5, 'p4_incomplete_output') from None
         if not records:
@@ -146,22 +218,22 @@ class P4Adapter:
                 if not {'code0', 'fmt0', 'severity', 'generic'} <= set(record):
                     raise FlowError(5, 'p4_incomplete_output')
                 entry = table.get(str(record['code0']))
-                if not entry or str(entry['severity']) != str(record['severity']) or entry['exit_code'] != process.returncode:
+                if not entry or str(entry['severity']) != str(record['severity']) or entry['exit_code'] != status:
                     raise FlowError(5, 'p4_unclassified', message={'code0': str(record.get('code0')), 'severity': str(record.get('severity')), 'generic': str(record.get('generic'))})
                 if category not in {'ok', entry['category']}:
                     raise FlowError(5, 'p4_unclassified')
                 category = entry['category']
-        if category == 'ok' and process.returncode != 0:
+        if category == 'ok' and status != 0:
             raise FlowError(5, 'p4_unclassified')
-        self.audit.append({'command': args[0], 'exit_code': process.returncode, 'category': category,
-                           'output_sha256': digest(process.stdout), 'records': len(records)})
+        self.audit.append({'command': args[0], 'exit_code': status, 'category': category,
+                           'output_sha256': checksum, 'records': len(records)})
         if category == 'not_logged_in':
             raise FlowError(3, 'p4_not_logged_in', todo=self.login_todo())
         if category not in {'ok', 'file_missing', 'history_missing'}:
             raise FlowError(5, 'p4_' + category)
         for record in records:
             for name, value in record.items():
-                if re.fullmatch(r'(?:depotFile|movedFile)[0-9]*', name) and isinstance(value, str):
+                if (name == 'depotFile' or not listing and re.fullmatch(r'(?:depotFile|movedFile)[0-9]*', name)) and isinstance(value, str):
                     self.returned_paths.add(value)
         return {'category': category, 'records': records}
 
@@ -207,7 +279,8 @@ class P4Adapter:
         records = result['records']
         if len(records) >= limit:
             raise FlowError(5, 'p4_listing_limit')
-        if any(not r['depotFile'].startswith(depot_path(root) + '/') for r in records):
+        prefix = depot_path(root) + '/'
+        if any(not isinstance(r['depotFile'], str) or not r['depotFile'].startswith(prefix) for r in records):
             raise FlowError(5, 'p4_listing_outside_package')
         return [r for r in records if r['action'] not in {'delete', 'move/delete'}]
 

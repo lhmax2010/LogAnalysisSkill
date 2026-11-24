@@ -69,62 +69,74 @@ def locate_logs(config, source, build_id, selected=None):
     build, observation = next(iter(observations.items()))
     expected = failed_packages(observation)
     receipt = logs.get(build)
-    inputs, issues = audit_inputs(config, source, build, observation, receipt, expected)
+    inputs, usable = audit_inputs(config, source, build, observation, receipt, expected)
     details = {'candidate_count': 1, 'build_key': build, 'packages': inputs}
     if build in rejected:
         raise FlowError(4, 'analysis_verifier_latest_log_registration_invalid', **details)
-    if not expected or issues['logs']:
-        raise FlowError(6, 'analysis_verifier_final_logs_required', **details)
-    if issues['snapshots']:
-        raise FlowError(6, 'analysis_verifier_snapshot_inputs_required', **details)
-    return build, receipt, {key: package['category'] for key, package in expected.items()}
+    if not usable:
+        reason = ('analysis_verifier_snapshot_inputs_required'
+                  if any(row['registered_final_log'] == 'available' for row in inputs)
+                  else 'analysis_verifier_final_logs_required')
+        raise FlowError(6, reason, **details)
+    return build, receipt, usable, inputs
 
 
 def audit_inputs(config, source, build, observation, receipt, expected):
     by_package = {}
     for item in (receipt or {}).get('logs', []):
         by_package.setdefault(package_identity(item['key']), []).append(item)
-    issues = {'logs': set(by_package) != set(expected), 'snapshots': False}
-    rows = []
+    rows, usable = [], []
+    snapshot_keys = {package_identity(event['payload']['package'])
+                     for event in source.events(build, kinds=['snapshot_completed'])
+                     if event['payload'].get('package')}
     for identity, package in sorted(expected.items()):
         key = package['key']
         items = by_package.get(identity, [])
-        issues['logs'] |= len(items) != 1
         valid = len(items) == 1 and logs_valid(config, {'logs': items}, observation)
         row = {'package': key, 'registered_final_log': 'available' if valid else 'missing_or_invalid',
-               'snapshot': 'unchecked', 'sources': [], 'source_status': 'unchecked'}
+               'snapshot': 'unchecked', 'sources': [], 'source_status': 'unchecked', 'usable': False}
         rows.append(row)
-        issues['logs'] |= not valid
-        has_snapshot = any(event['payload'].get('package') == key for event in
-                           source.events(build, kinds=['snapshot_completed']))
         if not valid:
-            row['snapshot'] = 'unchecked_without_final_log' if has_snapshot else 'registered_snapshot_required'
-            row['source_status'] = 'unchecked_without_snapshot' if not has_snapshot else 'unchecked_without_final_log'
+            row['snapshot'] = 'unchecked_without_final_log' if identity in snapshot_keys else 'registered_snapshot_required'
+            row['source_status'] = 'unchecked_without_final_log' if identity in snapshot_keys else 'unchecked_without_snapshot'
+            continue
+        item = items[0]
+        try:
+            verify_text(config, checked_file(config, item))
+        except FlowError as error:
+            row['registered_final_log'] = error.reason
             continue
         try:
-            _, snapshot = snapshot_registration(config, source, build, key, items[0]['sha256'])
+            registered, snapshot = snapshot_registration(config, source, build, key, item['sha256'])
+            verify_text(config, checked_file(config, registered))
+            if not isinstance(snapshot.get('files'), list) or any(not isinstance(f, dict) for f in snapshot['files']):
+                raise FlowError(4, 'invalid_snapshot')
         except (FlowError, ValueError, KeyError, OSError) as error:
             row['snapshot'] = error.reason if isinstance(error, FlowError) else 'invalid_snapshot'
-            issues['snapshots'] = True
             continue
         row['snapshot'] = 'available'
-        row['source_status'] = 'available' if any(f.get('content') for f in snapshot['files']) else 'diagnostic_only_no_sources'
+        row['source_status'] = ('available' if any(f.get('content') for f in snapshot['files'])
+                                else 'diagnostic_only_no_sources')
         for entry in snapshot['files']:
             info = {'file': entry.get('depotFile')}
             if entry.get('content'):
                 try:
-                    if digest(checked_file(config, entry['content'])) != entry['sha256']:
+                    content = checked_file(config, entry['content'])
+                    if digest(content) != entry['sha256']:
                         raise FlowError(4, 'registered_input_digest_mismatch')
+                    verify_text(config, content)
                     info['status'] = 'available'
                 except (FlowError, KeyError, OSError, ValueError, TypeError) as error:
                     info['status'] = error.reason if isinstance(error, FlowError) else 'invalid_source'
-                    issues['snapshots'] = True
                     row['source_status'] = 'missing_or_invalid'
             else:
                 info['status'] = 'not_captured'
                 info['reason'] = entry.get('unavailable_reason') or 'no_registered_content'
             row['sources'].append(info)
-    return rows, issues
+        if row['source_status'] != 'missing_or_invalid':
+            row['usable'] = True
+            usable.append((item, package['category'], registered, snapshot))
+    return rows, usable
 
 
 def remediation(config_path, commit, build_id, details):
@@ -140,24 +152,17 @@ def remediation(config_path, commit, build_id, details):
     return {'next_command': prep}
 
 
-def stage_local_inputs(config, target, source, build, data, expected):
+def stage_local_inputs(config, target, data, usable):
     local_logs, snapshots = [], []
-    for index, item in enumerate(data['logs']):
+    for index, (item, category, registered, original) in enumerate(usable):
         path = f'source/{index}'
-        package = item['key']
-        category = expected[package_identity(package)]
-        raw = checked_file(config, item)
-        verify_text(config, raw)
-        artifact = atomic_write(target.data_root, path+'/build.log', raw)
+        artifact = atomic_write(target.data_root, path+'/build.log', checked_file(config, item))
         local_logs.append(dict(item, **artifact))
-        registered, original = snapshot_registration(config, source, build, package, item['sha256'])
-        verify_text(config, checked_file(config, registered))
         snapshot = dict(original, files=[], verifier_source_manifest_sha256=registered['sha256'])
         for offset, entry in enumerate(original['files']):
             copied = dict(entry)
             if entry.get('content'):
                 content = checked_file(config, entry['content'])
-                verify_text(config, content)
                 copied['content'] = atomic_write(target.data_root, f'{path}/files/{offset}', content)
             snapshot['files'].append(copied)
         cloned = atomic_write(target.data_root, path+'/manifest.json', json_bytes(snapshot))
@@ -185,8 +190,8 @@ def verify(config, build_id, workspace, *, selected=None):
     safe_analyzer = dict(config.raw['analyzer'], cline_extension={})
     target = replace(config, data_root=workspace, raw={**config.raw, 'analyzer': safe_analyzer})
     with EventStore(db_copy) as source:
-        build, original, expected = locate_logs(config, source, build_id, selected)
-        local, snapshots = stage_local_inputs(config, target, source, build, original, expected)
+        build, original, usable, inputs = locate_logs(config, source, build_id, selected)
+        local, snapshots = stage_local_inputs(config, target, original, usable)
     receipt = atomic_write(workspace, 'registered-logs.json', json_bytes(local))
     release = version_source(config, build)
     tasks = []
@@ -209,9 +214,13 @@ def verify(config, build_id, workspace, *, selected=None):
     raw_example = json_bytes(example(fixture_task))
     atomic_write(workspace, fixture_task['directory']+'/outputs/result.json', raw_example)
     accepted = accept_result(target, build, fixture_task['task_id'], fixture_task['attempt'])
-    return {'build_id': build_id, 'build_key': build, 'tasks': tasks,
+    details = {'verification_scope': 'packages_with_valid_final_log_snapshot_and_declared_sources',
+               'packages': inputs, 'packages_verified': len(tasks), 'packages_total': len(inputs)}
+    if not check_content(json_bytes(details), config)['allowed']:
+        raise FlowError(4, 'verifier_details_credential_blocked')
+    return {'build_id': build_id, 'build_key': build, 'tasks': tasks, **details,
             'fixture_receiver': {'task_id': accepted['task_id'], 'outcome': accepted['outcome'], 'fixture': True},
-            'exit_code': 0, 'verdict': 'PASS'}
+            'exit_code': 0, 'verdict': 'PASS' if len(tasks) == len(inputs) else 'PARTIAL'}
 
 
 def main(argv=None):

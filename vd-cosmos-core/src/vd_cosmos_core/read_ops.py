@@ -24,7 +24,7 @@ def observe(reader):
     return reader.observe(reader.build_ref)
 
 
-def fetch_logs(reader, observed=None):
+def fetch_logs(reader, observed=None, *, partial=False):
     observed = observed if observed is not None else observe(reader)
     if observed['observation_failed']:
         return observed
@@ -33,14 +33,27 @@ def fetch_logs(reader, observed=None):
     reader.require('fetch_log')
     packages = [p for r in observed['reports'].values() for p in r.get('packages', [])
                 if p['category'] in {'build_error', 'export_error'}]
-    if hasattr(reader, 'fetch_logs'):
+    if partial:
+        # Only explicit input preparation registers successful downloads from a mixed outcome.
+        logs, failures = [], []
+        for package in packages:
+            key = package['key']
+            try:
+                logs.append({'key': key, **reader.fetch_log(reader.build_ref, key['arch'], package)})
+            except FlowError as error:
+                failures.append({'key': key, 'reason': error.reason})
+    elif hasattr(reader, 'fetch_logs'):
         logs = reader.fetch_logs(packages)
     else:
         logs = [{'key': p['key'], **reader.fetch_log(reader.build_ref, p['key']['arch'], p)} for p in packages]
-    return {'logs': logs, 'todos': observed['todos'], 'observation': observed, 'exit_code': 0, 'evaluation': evaluation(reader, observed)}
+    result = {'logs': logs, 'todos': observed['todos'], 'observation': observed,
+              'exit_code': 0, 'evaluation': evaluation(reader, observed)}
+    if partial:
+        result['log_failures'] = failures
+    return result
 
 
-def read_action(skill, command, reader, arch=None):
+def read_action(skill, command, reader, arch=None, *, partial_logs=False):
     if skill == 'watch':
         return observe(reader)
     if command == 'base-list':
@@ -56,7 +69,7 @@ def read_action(skill, command, reader, arch=None):
             return observed
         return {**reader.read_packages(reader.build_ref, arch), 'todos': observed['todos'], 'exit_code': 0}
     if command == 'logs':
-        return fetch_logs(reader)
+        return fetch_logs(reader, partial=partial_logs)
     observed = observe(reader)
     if observed['observation_failed']:
         return observed
@@ -65,7 +78,7 @@ def read_action(skill, command, reader, arch=None):
 
 
 def register_read(config, reader, skill, command, *, arch=None, expected_event=None,
-                  precheck=None, cached=None):
+                  precheck=None, cached=None, partial_logs=False):
     """Run and register the same read for scripted and individual CLI flows."""
     context = command_context(f'{skill}.{command}')
     key = build_key(reader)
@@ -85,7 +98,7 @@ def register_read(config, reader, skill, command, *, arch=None, expected_event=N
         current = append('observation_started', {'attempt': attempt, 'build': key}, expected)
         step = 'logs' if command == 'logs' else 'observe'
         try:
-            data = read_action(skill, command, reader, arch)
+            data = read_action(skill, command, reader, arch, partial_logs=partial_logs)
         except FlowError as error:
             current = append('observation_failed', {'attempt': attempt, 'build': key,
                              'reason': error.reason, 'exit_code': error.code}, current)

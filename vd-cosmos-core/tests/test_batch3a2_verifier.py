@@ -54,6 +54,28 @@ class VerifierTests(PackageFixture, unittest.TestCase):
         self.assertEqual(caught.exception.details['candidate_count'], 1)
         self.assertEqual(caught.exception.details['packages'][0]['snapshot'], 'registered_snapshot_required')
 
+    def test_verifier_checks_complete_packages_and_lists_incomplete_packages(self):
+        build, target = self.input_run(True)
+        receipt = json.loads((self.root / 'real-logs.json').read_text())
+        absent = dict(KEY, name='missing-log', path='//depot/missing-log')
+        missing_snapshot = dict(KEY, name='missing-snapshot', path='//depot/missing-snapshot')
+        report = receipt['observation']['reports'][KEY['arch']]
+        report['packages'] += [{'key': key, 'category': 'build_error'} for key in (absent, missing_snapshot)]
+        receipt['logs'].append(dict(self.item, key=missing_snapshot))
+        self.register('observation_recorded', 'fetch.logs', {'build': build,
+                      'artifact': atomic_write(self.root, 'partial-logs.json', json_bytes(receipt))})
+
+        result = verify(self.config, '19270912', target)
+        self.assertEqual((result['verdict'], result['exit_code']), ('PARTIAL', 0))
+        self.assertEqual((result['packages_total'], result['packages_verified']), (3, 1))
+        self.assertEqual(result['verification_scope'], 'packages_with_valid_final_log_snapshot_and_declared_sources')
+        self.assertEqual([task['package'] for task in result['tasks']], [KEY])
+        rows = {row['package']['name']: row for row in result['packages']}
+        self.assertTrue(rows[KEY['name']]['usable'])
+        self.assertEqual(rows[absent['name']]['registered_final_log'], 'missing_or_invalid')
+        self.assertEqual(rows[missing_snapshot['name']]['snapshot'], 'registered_snapshot_required')
+        self.assertFalse(rows[missing_snapshot['name']]['usable'])
+
     def test_zero_candidates_reports_exact_prepare_command(self):
         import contextlib
         import io

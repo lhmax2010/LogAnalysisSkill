@@ -67,7 +67,7 @@ def configure(raw):
     positive(snapshot, 'clock_margin_s', 300)
     positive(snapshot, 'merge_timeout_s', 60)
     analyzer = raw.setdefault('analyzer', {})
-    for key, value in [('root_list_max_files', 20000), ('ambiguity_candidates_max', 50), ('clang_tabstop', 8), ('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520), ('max_attempts', 2), ('result_max_bytes', 262144)]:
+    for key, value in [('root_list_max_files', 200000), ('ambiguity_candidates_max', 50), ('clang_tabstop', 8), ('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520), ('max_attempts', 2), ('result_max_bytes', 262144)]:
         positive(analyzer, key, value)
         if type(analyzer[key]) is not int:
             raise ValueError()

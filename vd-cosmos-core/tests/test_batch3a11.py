@@ -130,11 +130,11 @@ class SnapshotFixTests(unittest.TestCase):
         f=self.f;adapter=f.adapter()
         self.assertEqual(len(adapter.list_files(f.root,'@100')),1)
         calls=[json.loads(x)['args'][7:] for x in (f.config.data_root/'fake-p4-calls.jsonl').read_text().splitlines()]
-        self.assertEqual(calls,[['files','-m','20000',f.root+'/...@100']])
+        self.assertEqual(calls,[['files','-m','200000',f.root+'/...@100']])
         f.config.raw['analyzer']['root_list_max_files']=1
         with self.assertRaises(FlowError) as e:f.adapter().list_files(f.root,'@100')
         self.assertEqual(e.exception.reason,'p4_listing_limit')
-        f.config.raw['analyzer']['root_list_max_files']=20000
+        f.config.raw['analyzer']['root_list_max_files']=200000
         path=f.root+'/src/a@b#c%d*.c'
         f.fixture['files']={path:{'@100':f.item(f.source,1)}}
         adapter=f.adapter();returned=adapter.list_files(f.root,'@100')[0]['depotFile']
@@ -143,6 +143,38 @@ class SnapshotFixTests(unittest.TestCase):
         self.assertEqual(adapter.file_size(returned,'@100',encoded=True),len(f.source))
         self.assertEqual(adapter.files(returned,'@100',encoded=True)['records'][0]['depotFile'],returned)
         with self.assertRaises(FlowError):adapter.plan(['files',f.root+'/...@100'])
+
+    def test_large_listing_complete_or_rejected_at_exact_cap(self):
+        f = self.f
+        f.fixture['listing_count'] = 199999
+        rows = f.adapter().list_files(f.root, '@100')
+        self.assertEqual(len(rows), 199999)
+        self.assertTrue(rows[-1]['depotFile'].endswith('source-199998.c'))
+        self.assertEqual(set(rows[-1]), {'code', 'action', 'depotFile', 'rev', 'type'})
+        del rows
+        f.fixture['listing_count'] = 200000
+        with self.assertRaisesRegex(FlowError, 'p4_listing_limit'):
+            f.adapter().list_files(f.root, '@100')
+
+    def test_listing_rejects_truncation_and_enforces_byte_and_time_bounds(self):
+        f = self.f
+        f.fixture['mode'] = 'truncated'
+        with self.assertRaisesRegex(FlowError, 'p4_incomplete_output'):
+            f.adapter().list_files(f.root, '@100')
+        f.fixture.pop('mode')
+        f.fixture['listing_count'] = 200000
+        with patch('vd_cosmos_core.p4._LISTING_OUTPUT_MAX', 512):
+            with self.assertRaisesRegex(FlowError, 'p4_listing_output_limit'):
+                f.adapter().list_files(f.root, '@100')
+        f.config.raw['p4']['timeout_s'] = 0.001
+        with self.assertRaisesRegex(FlowError, 'p4_timeout'):
+            f.adapter().list_files(f.root, '@100')
+
+    def test_doctor_reports_effective_listing_limit(self):
+        from vd_cosmos_core.submit_doctor import doctor
+        self.f.config.raw['analyzer']['root_list_max_files'] = 75000
+        checked = doctor(self.f.config, package_probe=lambda: {'count': 0, 'verified': True})
+        self.assertEqual(checked['root_list_max_files'], 75000)
 
     def test_final_budget_does_not_count_merge_inputs_and_conflict_count(self):
         f=self.f;shelf=f.fixture['shelves']['200']['files'][0];shelf['rev']=1

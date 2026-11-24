@@ -13,15 +13,19 @@ config="$run/config.json"
 export PATH="$run/venv/bin:$PATH"
 expected='replace-with-reviewed-full-commit'
 test "$(git -C "$repo" rev-parse HEAD)" = "$expected" &&
+nice -n 19 "$run/venv/bin/python" "$repo/vd-cosmos-submit/scripts/run.py" doctor --config "$config"
+test "$(git -C "$repo" rev-parse HEAD)" = "$expected" &&
 nice -n 19 "$run/venv/bin/python" "$repo/vd-fix-analyze/scripts/run.py" \
-  prepare-inputs --config "$config" --build 19270912 --hub-id 37491096 &&
+  prepare-inputs --config "$config" --build 19270912 --hub-id 37491096
+
+test "$(git -C "$repo" rev-parse HEAD)" = "$expected" &&
 nice -n 19 bash "$repo/vd-cosmos-core/scripts/verify_b3a2_real.sh" \
   "$expected" --config "$config" --build 19270912
 ```
 
-将 `expected` 换成审核通过的完整提交号。两条命令用同一份实际配置；如果部署的配置路径不同，把 `config` 指向现有文件。第一条以匿名读取确认构建身份、终态和失败报告，必要时等一个轮询间隔确认报告稳定，随后登记最终日志、清单和 P4 快照。通过的登记可复用。P4 只用现有票据；`p4 login -s` 只查看状态。票据失效按现有待办由 FatTank 登录，再重试第一条。
+将 `expected` 换成审核通过的完整提交号。这些命令用同一份实际配置；如果部署的配置路径不同，把 `config` 指向现有文件。先用 `doctor` 核对 `root_list_max_files`。本批默认值为 200,000；如果实际配置仍显式设置 20,000，需由 FatTank 更新后再准备。准备命令以匿名读取确认构建身份、终态和失败报告，必要时等一个轮询间隔确认报告稳定，随后登记最终日志、清单和 P4 快照。通过的登记可复用。P4 只用现有票据；`p4 login -s` 只查看状态。票据失效按现有待办由 FatTank 登录，再重试准备命令。逐包结果标为 `registered`、`reused` 或 `snapshot_failed`。有包失败时准备命令返回 5，已登记的工件可继续用于 C。
 
-第二条仅读取同一数据根已登记的工件，并在 `verification/b3a2-*/` 中验证分段清单、接收手写 fixture。失败时查看 `details.candidate_count`、`details.packages` 和 `details.next_command`。构建号对应多个实例时，从 `details.next_commands` 挑选已核实的构建键，不自动选择。回贴 stdout 中的结论和证据路径即可。
+C 验收命令仅读取同一数据根已登记的工件，并在 `verification/b3a2-*/` 中验证分段清单、接收手写 fixture。它只验证日志、快照及其登记源文件都有效的包。部分包通过时返回 0 和 `verdict: PARTIAL`，并逐包列出缺项。失败时查看 `details.candidate_count`、`details.packages` 和 `details.next_command`。构建号对应多个实例时，从 `details.next_commands` 挑选已核实的构建键，不自动选择。回贴 stdout 中的结论和证据路径即可。
 
 ## 2. 准备正式任务
 

@@ -78,6 +78,12 @@ else:
         if not dirs: error(554768759, 2, 0)
         for directory in dirs: emit({'code': 'stat', 'dir': directory})
     elif command[0] in {'files', 'fstat'}:
+        if command[0] == 'files' and '-m' in command and 'listing_count' in config:
+            limit = int(command[command.index('-m') + 1])
+            for i in range(min(limit, config['listing_count'])):
+                emit({'code': 'stat', 'depotFile': f'{escaped[:-3]}nested/tree/source-{i:06d}.c',
+                      'rev': '1', 'type': 'text', 'action': 'edit', 'change': '500', 'time': '1760000000'})
+            raise SystemExit(0)
         selected = []
         for p, versions in files.items():
             if (p == path or (path.endswith('/...') and p.startswith(path[:-3])) or (path.endswith('/*') and p.startswith(path[:-1]) and '/' not in p[len(path)-1:])) and revision in versions:

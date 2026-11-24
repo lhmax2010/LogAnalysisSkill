@@ -82,7 +82,8 @@ def summarize_snapshot(config, item, result):
             'mode': snapshot['mode'], 'sources': sources,
             'unavailable_source_count': sum(bool(f.get('unavailable_reason') and not f.get('content'))
                                             for f in snapshot['files']),
-            'snapshot_reused': bool(result.get('skipped'))}
+            'snapshot_reused': bool(result.get('skipped')),
+            'status': 'reused' if result.get('skipped') else 'registered'}
 
 
 def prepare_real_inputs(config, build, hub_id=None, *, reader_factory=None, detail_reader=Reader, sleep=time.sleep):
@@ -149,14 +150,20 @@ def prepare_real_inputs(config, build, hub_id=None, *, reader_factory=None, deta
         _, observation = register_read(config, reader, 'watch', 'observe',
                                        precheck=observe_before_fetch, cached=observe_cache)
     fetch_result, receipt = register_read(config, reader, 'fetch', 'logs', precheck=fetch_precheck,
-        cached=lambda store: cached_logs(config, store, key, observation))
+        cached=lambda store: cached_logs(config, store, key, observation), partial_logs=True)
+    if receipt.get('exit_code', 0):
+        raise FlowError(receipt['exit_code'], 'prepare_inputs_final_logs_required', build_id=build)
     expected = failed_packages(observation)
-    items = receipt.get('logs', [])
-    identities = [package_identity(item['key']) for item in items]
-    if (len(items) != len(expected) or set(identities) != set(expected)
-            or not logs_valid(config, receipt, observation)):
-        raise FlowError(6, 'prepare_inputs_final_logs_required', build_id=build,
-                        packages=[p['key'] for p in expected.values()])
+    downloaded = receipt.get('logs', [])
+    items = {package_identity(item['key']): item for item in downloaded}
+    failures = {package_identity(item['key']): item['reason'] for item in receipt.get('log_failures', [])}
+    if (len(items) != len(downloaded) or items.keys() & failures.keys()
+            or not (items.keys() | failures.keys()) <= expected.keys()):
+        raise FlowError(6, 'prepare_inputs_log_identity_mismatch', build_id=build)
+    # Validate against the observation used to authorize preparation, even if the
+    # download produced a newer observation.
+    usable = {identity: item for identity, item in items.items()
+              if logs_valid(config, {'logs': [item]}, observation)}
 
     def use_verified_base_list(store):
         path = config.output(f'rounds/{key}/inputs/build-lists/manifest.json')
@@ -167,18 +174,31 @@ def prepare_real_inputs(config, build, hub_id=None, *, reader_factory=None, deta
             checked_file(config, artifact)
         return prior if prior.get('source') == 'variables_page' else None
 
-    register_read(config, reader, 'fetch', 'base-list', precheck=fetch_precheck,
-                  cached=use_verified_base_list)
+    if usable:
+        register_read(config, reader, 'fetch', 'base-list', precheck=fetch_precheck,
+                      cached=use_verified_base_list)
     rows = []
-    for item in items:
-        package = item['key']
+    for identity, expected_package in expected.items():
+        package = expected_package['key']
+        item = usable.get(identity)
+        if not item:
+            rows.append({'package': package, 'status': 'snapshot_failed',
+                         'reason': failures.get(identity, 'prepare_inputs_final_log_required')})
+            continue
         try:
             result = create_snapshot(config, reader, package['name'], package['arch'], item['path'], reuse=True)
             rows.append(summarize_snapshot(config, item, result))
         except FlowError as error:
-            raise FlowError(error.code, error.reason, **error.details, package=package, completed=rows) from None
+            # A missing/expiring ticket is shared by every remaining package.
+            if error.reason in {'p4_not_logged_in', 'p4_ticket_expiring'}:
+                raise FlowError(error.code, error.reason, **error.details, package=package, completed=rows) from None
+            rows.append({'package': package, 'status': 'snapshot_failed', 'reason': error.reason,
+                         'details': error.details,
+                         'log': {field: item[field] for field in ('size', 'sha256')}})
+        except (OSError, KeyError, TypeError, ValueError):
+            rows.append({'package': package, 'status': 'snapshot_failed', 'reason': 'snapshot_processing_failed'})
     summary = {'build_id': build, 'build_key': key, 'hub_id': hub, 'logs_reused': fetch_result is None,
-               'packages': rows}
+               'packages': rows, 'exit_code': 5 if any(row['status'] == 'snapshot_failed' for row in rows) else 0}
     if not check_content(json_bytes(summary), config)['allowed']:
         raise FlowError(4, 'prepare_inputs_summary_credential_blocked')
     return summary
