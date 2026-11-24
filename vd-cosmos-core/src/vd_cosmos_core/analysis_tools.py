@@ -22,7 +22,7 @@ R08 = b'%if "%{?_toolchain}" == "clang"\n# Clang-only option, if justified\n%end
 
 
 STDERR_LIMIT = 4096
-ANALYZER_DEPENDENCIES = {'yaml': 'PyYAML==6.0.1'}
+ANALYZER_DEPENDENCIES = {'yaml': 'PyYAML==6.0.2'}
 IMPORT_PROBE = """import importlib
 import sys
 try:

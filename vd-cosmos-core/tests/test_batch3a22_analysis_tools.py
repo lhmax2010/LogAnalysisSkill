@@ -98,7 +98,7 @@ sys.exit(7)
         error = caught.exception
         self.assertEqual((error.code, error.reason), (6, 'log_analyzer_dependency_missing'))
         self.assertEqual(error.details['module'], 'yaml')
-        self.assertEqual(error.details['todo']['message'], 'install PyYAML==6.0.1 in the analysis venv')
+        self.assertEqual(error.details['todo']['message'], 'install PyYAML==6.0.2 in the analysis venv')
         result = doctor(config, package_probe=lambda: {'verified': True, 'count': 0})
         self.assertEqual(result['exit_code'], 0)
         self.assertEqual(result['analysis_dependencies'], {'available': False, **error.as_dict()})

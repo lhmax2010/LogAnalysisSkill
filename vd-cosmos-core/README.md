@@ -120,7 +120,7 @@ EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。�
 
 测试脚本先运行完整标准套件，再模拟缺少 `_lzma` 和 `_bz2` 运行同一套件及所有入口的 `--help` 合同。`doctor` 的 `optional_stdlib` 字段记录 `lzma`、`bz2`、`sqlite3` 和 `ssl` 的实际可用性。
 
-分析和完整测试使用本线 `run/venv`，其中安装 `PyYAML==6.0.1` 供 LogAnalyzer 使用。可选 `analyzer.python` 指向可执行解释器，LogAnalyzer 和 patch-suggest 共用；相对路径从配置文件目录解析。省略或填 `null` 时使用当前 Python。用 `vd-cosmos-submit doctor` 查看 `analysis_dependencies`。
+分析和完整测试使用本线 `run/venv`，其中安装 `PyYAML==6.0.2` 供 LogAnalyzer 使用。可选 `analyzer.python` 指向可执行解释器，LogAnalyzer 和 patch-suggest 共用；相对路径从配置文件目录解析。省略或填 `null` 时使用当前 Python。用 `vd-cosmos-submit doctor` 查看 `analysis_dependencies`。
 
 构建机只读验收：`verify_b3a11_real.sh` 先核对经审核的完整提交与 HEAD、六个本线目录干净；然后入口契约、同解释器完整测试、原 A–F、变量页 base 清单和 19091860 的 7 个失败包快照。每次创建 `data_root/verification/b3a11-<随机串>/`，旧数据不复用、不修改。stderr 打印版本、HEAD、汇总表和必要的登录命令；stdout 是单个 JSON 对象。输出过凭据模式检查；未登录只提示、不执行登录。完整操作命令及验收限制见本批 DELIVERY.md。
 

@@ -67,6 +67,6 @@
 构建机 v13 的两版 Python 均通过 78 项导入冒烟检查。A 离线套件的实际 LogAnalyzer 用例因检查 venv 缺少 PyYAML 失败。
 
 - 子进程只在内存保留 4 KiB stderr 和截断边界标记。非零退出记录 `exit_code`；保留段通过凭据检查后才附上最后一条完整诊断 `stderr_last_line`。
-- LogAnalyzer 先用实际选中的解释器检查 `yaml` 导入；缺失时退出 6、报告模块名并提示在分析 venv 安装 `PyYAML==6.0.1`。`doctor.analysis_dependencies` 汇报同一检查。
+- LogAnalyzer 先用实际选中的解释器检查 `yaml` 导入；缺失时退出 6、报告模块名并提示在分析 venv 安装 `PyYAML==6.0.2`。`doctor.analysis_dependencies` 汇报同一检查。
 - `analyzer.python` 在载入配置时核对可执行文件路径并保留 venv 链接。配置加载只验证路径；运行前的模块检查验证解释器及其环境。LogAnalyzer 与 patch-suggest 的上下文和格式化共用该设置。
 - 标准和 minimal Python 套件的日志、SHA256 及凭据预检见 `evidence-b3a22/`。
