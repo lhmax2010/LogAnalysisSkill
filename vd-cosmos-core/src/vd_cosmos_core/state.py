@@ -1,7 +1,6 @@
 """Append-only journal with global expected-head concurrency and SQL invariants."""
 import json
 from contextlib import contextmanager
-import sqlite3
 import time
 
 from .commands import authorize_event, COMMANDS, Category
@@ -72,6 +71,13 @@ BEGIN SELECT RAISE(ABORT, 'missing_identity'); END;
 
 class EventStore:
     def __init__(self, root):
+        try:
+            import sqlite3
+        except ImportError:
+            raise FlowError(6, 'sqlite3_unavailable', todo={
+                'reason': 'sqlite3_unavailable', 'message': 'use a Python built with SQLite support',
+            }) from None
+        self.sqlite = sqlite3
         path = confined(root, "state/state.db")
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -80,10 +86,10 @@ class EventStore:
             self.connection.execute("PRAGMA busy_timeout=2000")
             self.connection.execute("PRAGMA journal_mode=WAL")
             self.connection.executescript(SCHEMA)
-        except sqlite3.Error as error:
+        except self.sqlite.Error as error:
             if hasattr(self, "connection"):
                 self.connection.close()
-            raise FlowError(6, classify(error)) from None
+            raise FlowError(6, classify(error, self.sqlite)) from None
 
     def close(self):
         self.connection.close()
@@ -97,8 +103,8 @@ class EventStore:
     def head(self):
         try:
             return self.connection.execute("SELECT COALESCE(MAX(id),0) FROM events").fetchone()[0]
-        except sqlite3.Error as error:
-            raise FlowError(6, classify(error)) from None
+        except self.sqlite.Error as error:
+            raise FlowError(6, classify(error, self.sqlite)) from None
 
     def events(self, build_key=None, *, after=0, kinds=None, latest=False):
         query, values = 'SELECT * FROM events WHERE id > ?', [after]
@@ -111,8 +117,8 @@ class EventStore:
         query += ' ORDER BY id ' + ('DESC LIMIT 1' if latest else 'ASC')
         try:
             return [dict(row) | {'payload': json.loads(row['payload'])} for row in self.connection.execute(query, values)]
-        except (sqlite3.Error, ValueError) as error:
-            raise FlowError(6, classify(error)) from None
+        except (self.sqlite.Error, ValueError) as error:
+            raise FlowError(6, classify(error, self.sqlite)) from None
 
     @contextmanager
     def transaction(self):
@@ -134,10 +140,10 @@ class EventStore:
                         self.connection.execute('RELEASE '+name)
                     else:
                         self.connection.execute('ROLLBACK')
-            except sqlite3.Error:
+            except self.sqlite.Error:
                 raise FlowError(6, 'corrupt') from None
-            if isinstance(error, sqlite3.Error):
-                raise FlowError(6, classify(error)) from None
+            if isinstance(error, self.sqlite.Error):
+                raise FlowError(6, classify(error, self.sqlite)) from None
             raise
 
     def append(self, context, kind, payload, expected_previous, *, request_id=None,
@@ -173,7 +179,7 @@ class EventStore:
             return ids
 
 
-def classify(error):
+def classify(error, sqlite3):
     code = getattr(error, 'sqlite_errorcode', 0) & 255
     # Python 3.10 does not expose sqlite_errorcode on every build.
     if code in {getattr(sqlite3, 'SQLITE_BUSY', 5), getattr(sqlite3, 'SQLITE_LOCKED', 6)} or str(error) in {'database is locked', 'database table is locked'}:

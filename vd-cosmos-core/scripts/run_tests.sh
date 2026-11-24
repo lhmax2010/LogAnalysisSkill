@@ -20,4 +20,9 @@ else
 fi
 python3 -c 'from importlib.metadata import version; assert version("import-linter") == "2.3", "import-linter==2.3 required"'
 python3 "$lint_command" --config "$core_dir/.importlinter" --no-cache
+printf '\nStandard Python suite\n'
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+printf '\nMinimal Python suite (_lzma and _bz2 unavailable)\n'
+export PYTHONPATH="$core_dir/tests/minimal_python:$PYTHONPATH"
+python3 -c 'import sys; assert all(n in sys.modules and sys.modules[n] is None for n in ("_lzma", "_bz2")), "minimal Python hook inactive"'
 python3 -m unittest discover -s tests -p 'test_*.py' -v

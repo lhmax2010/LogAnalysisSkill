@@ -2,7 +2,6 @@
 """Install the approved property map or import local browser settings."""
 import argparse
 from datetime import datetime, timezone
-import fcntl
 import json
 import os
 from pathlib import Path
@@ -82,6 +81,10 @@ def sync_write(stream, data):
 
 
 def apply(path, browser_input=None):
+    try:
+        import fcntl
+    except ImportError:
+        raise FlowError(6, 'fcntl_unavailable') from None
     if path.is_symlink() or not path.is_file():
         raise FlowError(2, 'existing_regular_config_required')
     path = path.resolve()

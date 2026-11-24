@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Launch only the configured existing browser; watch the owning CLI process."""
-import ctypes
 import os
 from pathlib import Path
 import signal
@@ -12,6 +11,11 @@ def identity(pid):
     except (OSError,IndexError):return None
 
 def main():
+    try:
+        import ctypes
+    except ImportError:
+        return 6
+
     owner=int(os.environ.pop('VD_BROWSER_OWNER'));start=os.environ.pop('VD_BROWSER_START');exe=os.environ.pop('VD_BROWSER_EXECUTABLE')
     if not Path(exe).is_file() or identity(owner)!=start:return 6
     if os.getpgrp()!=os.getpid():os.setsid()

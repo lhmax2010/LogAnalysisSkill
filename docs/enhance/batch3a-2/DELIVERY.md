@@ -53,3 +53,11 @@
 - B3a2-Q11 assumed: 已确认真 bug 的修改须在真实新增注释中写 `PLEASE CHECK` 与有值的 Before / Why（也可用“原来 / 原因”）；语义仍由人工核实。替换的快照与新最终日志一样使输入过期，无需等到新任务生成。
 
 运行命令及监督步骤见 [FATTANK-3A2-MANUAL.md](FATTANK-3A2-MANUAL.md)。每个检查点两套 unittest、导入合同、静态检查及凭据预检在 `evidence-c1/` 至 `evidence-c5/`。每个目录的 `test-summary.json` 登记日志路径与 SHA256。真实构建验证未由本机执行。
+
+## B3a2.1 构建机 v12 复测修补
+
+`e7bdf9b` 的构建机 Python 3.10.12 缺少 `_lzma`。诊断模块在 CLI 启动时导入该扩展，A/B1/B2 在合同阶段退出 5，C 在模块加载时退出 1。
+
+- repodata 解码器按后缀载入所需模块。常规输入继续用 `.gz`；读取 `.xz` 而 LZMA 不可用时退出 6，并带待办 `use the .gz repodata or a Python built with liblzma`。BZip2 缺失也有独立待办。SQLite、TLS、文件锁和浏览器子进程的可选扩展在操作边界处理。
+- 合同失败记录 `stage`、`command`、`exception_type` 和通过凭据预检的 `first_line`。`doctor.optional_stdlib` 报告 `lzma`、`bz2`、`sqlite3`、`ssl` 能否实际导入。
+- `run_tests.sh` 先执行标准套件，再禁用 `_lzma` 和 `_bz2` 执行完整套件。测试也向每一个 CLI 合同子进程传入禁用扩展的钩子。详细输出和摘要见 `evidence-b3a21/`。

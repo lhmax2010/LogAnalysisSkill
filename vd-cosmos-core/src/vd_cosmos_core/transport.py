@@ -7,13 +7,11 @@ import posixpath
 import queue
 import re
 import socket
-import ssl
 import threading
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import unquote, urljoin, urlsplit
-from urllib.request import (Request, ProxyHandler, HTTPRedirectHandler, HTTPHandler,
-                            HTTPSHandler, build_opener)
+from urllib.request import Request, ProxyHandler, HTTPRedirectHandler, HTTPHandler, build_opener
 from .errors import FlowError
 from .files import digest
 
@@ -181,13 +179,25 @@ class NoRedirect(HTTPRedirectHandler):
 class HTTPTransport:
     def __init__(self, config):
         self.config, self.network = config, config.raw.get('network', {})
-        self.context = ssl.create_default_context()
+        try:
+            import ssl
+        except ImportError:
+            ssl = None
+        self.tls_certificate_errors = (ssl.SSLCertVerificationError,) if ssl else ()
+        self.context = ssl.create_default_context() if ssl else None
         if self.network.get('ca_file'):
+            self.require_tls()
             try:
                 self.context.load_verify_locations(cafile=str(config.source(self.network['ca_file'])))
             except (OSError, ssl.SSLError):
                 raise FlowError(2, 'invalid_ca_file') from None
         self.requests = []
+
+    def require_tls(self):
+        if self.context is None:
+            raise FlowError(6, 'ssl_unavailable', todo={
+                'reason': 'ssl_unavailable', 'message': 'use a Python built with OpenSSL support',
+            })
 
     def proxy_request(self, request):
         proxy = self.network.get('proxy')
@@ -202,27 +212,33 @@ class HTTPTransport:
                 super().__init__(*args, **kwargs)
                 self._create_connection = lambda address, timeout=None, source_address=None: connection(address, deadline, source_address)
 
-        class HTTPSConnection(http.client.HTTPSConnection):
-            response_class = StrictResponse
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self._create_connection = lambda address, timeout=None, source_address=None: connection(address, deadline, source_address)
-
-            def connect(self):
-                http.client.HTTPConnection.connect(self)
-                self.sock.settimeout(deadline.timeout())
-                target = self._tunnel_host or self.host
-                self.sock = TimedSocket(self._context.wrap_socket(self.sock, server_hostname=target), deadline)
-
         class HTTP(HTTPHandler):
             def http_open(self, request):
                 return self.do_open(HTTPConnection, request)
 
-        class HTTPS(HTTPSHandler):
-            def https_open(self, request):
-                return self.do_open(HTTPSConnection, request, context=self._context)
+        handlers = [ProxyHandler({}), NoRedirect(), HTTP()]
+        if self.context is not None:
+            from urllib.request import HTTPSHandler
 
-        return build_opener(ProxyHandler({}), NoRedirect(), HTTP(), HTTPS(context=self.context))
+            class HTTPSConnection(http.client.HTTPSConnection):
+                response_class = StrictResponse
+
+                def __init__(self, *args, **kwargs):
+                    super().__init__(*args, **kwargs)
+                    self._create_connection = lambda address, timeout=None, source_address=None: connection(address, deadline, source_address)
+
+                def connect(self):
+                    http.client.HTTPConnection.connect(self)
+                    self.sock.settimeout(deadline.timeout())
+                    target = self._tunnel_host or self.host
+                    self.sock = TimedSocket(self._context.wrap_socket(self.sock, server_hostname=target), deadline)
+
+            class HTTPS(HTTPSHandler):
+                def https_open(self, request):
+                    return self.do_open(HTTPSConnection, request, context=self._context)
+
+            handlers.append(HTTPS(context=self.context))
+        return build_opener(*handlers)
 
     def get(self, url, limit, *, truncate=False, report_url=None):
         deadline = Deadline(self.config.raw['fetch']['deadline_s'], self.config.raw['fetch']['timeout_s'])
@@ -240,6 +256,8 @@ class HTTPTransport:
                 req = Request(url, headers={'Cache-Control': 'no-cache', 'Pragma': 'no-cache',
                                             'User-Agent': self.config.raw['fetch']['user_agent']})
                 self.proxy_request(req)
+                if parsed.scheme == 'https' or req.type == 'https':
+                    self.require_tls()
                 try:
                     response = self.opener(deadline).open(req, timeout=deadline.timeout())
                 except HTTPError as error:
@@ -289,7 +307,7 @@ class HTTPTransport:
                     reason, code, details = error.reason, error.code, error.details
                 else:
                     details, code = {}, 5
-                    reason = ('tls_verify' if isinstance(underlying, ssl.SSLCertVerificationError) else
+                    reason = ('tls_verify' if isinstance(underlying, self.tls_certificate_errors) else
                               'dns' if isinstance(underlying, socket.gaierror) else
                               ('deadline' if time.monotonic() >= deadline.end else 'timeout') if isinstance(underlying, TimeoutError) else
                               'incomplete_body' if isinstance(underlying, http.client.HTTPException) or response is not None else 'connect')

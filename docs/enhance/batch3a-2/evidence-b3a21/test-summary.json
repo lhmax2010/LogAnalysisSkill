@@ -1,0 +1,25 @@
+{
+  "minimal_disabled_backends": [
+    "_lzma",
+    "_bz2"
+  ],
+  "suites": [
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a21/python310.txt",
+      "interpreter": "Python 3.10.12",
+      "minimal_passed": 411,
+      "sha256": "0e63cdc5329632ab2fd368b3ae0f058fa2e7ddc3032e3ed476c50c21a6d471a4",
+      "skipped": 0,
+      "standard_passed": 411
+    },
+    {
+      "file": "docs/enhance/batch3a-2/evidence-b3a21/python312.txt",
+      "interpreter": "Python 3.12.3",
+      "minimal_passed": 411,
+      "sha256": "f235d351c973bde8ac6f272fd26e33b67c1558b3256795bf0e80f332209e72fb",
+      "skipped": 0,
+      "standard_passed": 411
+    }
+  ],
+  "whitespace": "trailing whitespace normalized"
+}

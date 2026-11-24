@@ -1,4 +1,5 @@
 """Local checks by default; optional anonymous management clock self-check."""
+import importlib
 import importlib.metadata
 import os
 from pathlib import Path
@@ -19,12 +20,25 @@ def php_packages():
     return {'verified': True, 'count': sum('php' in name.casefold() for name in installed)}
 
 
+def optional_stdlib():
+    facts = {}
+    for name in ('lzma', 'bz2', 'sqlite3', 'ssl'):
+        try:
+            importlib.import_module(name)
+        except ImportError:
+            facts[name] = False
+        else:
+            facts[name] = True
+    return facts
+
+
 def doctor(config, *, reader=None, package_probe=php_packages):
     php = package_probe()
     try: playwright = importlib.metadata.version('playwright')
     except importlib.metadata.PackageNotFoundError: playwright = None
     browser = config.raw.get('browser', {}).get('executable')
     result = {'exit_code': 0, 'online': reader is not None, 'php_packages': php,
+              'optional_stdlib': optional_stdlib(),
               'DISPLAY_present': bool(os.environ.get('DISPLAY')), 'playwright_package_version': playwright,
               'browser_available': bool(browser and (Path(browser).is_file() or shutil.which(browser))),
               'browser_version': config.raw.get('browser', {}).get('version_held'),

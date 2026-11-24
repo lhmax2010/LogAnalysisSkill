@@ -1,5 +1,4 @@
 """Acceptance-only proof that configured real endpoints are remote and direct."""
-import fcntl
 import ipaddress
 from pathlib import Path
 import socket
@@ -15,6 +14,10 @@ def address(value):
 
 
 def local_addresses():
+    try:
+        import fcntl
+    except ImportError:
+        raise FlowError(6, 'fcntl_unavailable') from None
     found = {address('127.0.0.1'), address('::1')}
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         for _, name in socket.if_nameindex():

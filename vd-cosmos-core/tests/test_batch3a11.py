@@ -238,8 +238,38 @@ class AcceptanceScriptTests(unittest.TestCase):
         run=subprocess.run(['bash',str(CORE/'scripts/verify_b3a11_real.sh'),'0'*40,'--config','missing'],capture_output=True,text=True)
         self.assertEqual(run.returncode,6);self.assertEqual(json.loads(run.stdout)['error'],'expected_commit_mismatch')
         self.assertIn('Python',run.stderr)
+        if '_lzma' in sys.modules and sys.modules['_lzma'] is None:
+            # The verifier normally supplies a clean PYTHONPATH to its children.
+            # Carry just the test hook into these real CLI contract subprocesses.
+            self.env['PYTHONPATH'] = str(CORE / 'tests/minimal_python')
+            probe = 'import sys; assert all(n in sys.modules and sys.modules[n] is None for n in ("_lzma", "_bz2"))'
+            subprocess.run([sys.executable, '-c', probe], env=self.env, check=True)
         result=verify.contracts(self.config,REPO,self.config.data_root,self.env)
         self.assertEqual({x['skill'] for x in result},set(verify.ROOTS))
+
+    def test_cli_contract_failure_names_command_and_exception(self):
+        repo = self.root / 'broken-repo'
+        script = repo / 'vd-example/scripts/run.py'
+        script.parent.mkdir(parents=True)
+        script.write_text('import missing_cli_contract_dependency\n')
+        with self.assertRaises(FlowError) as caught:
+            verify.contracts(self.config, repo, self.config.data_root, self.env)
+        self.assertEqual(caught.exception.reason, 'acceptance_cli_contract_failed')
+        self.assertEqual(caught.exception.details, {
+            'stage': 'contracts', 'command': 'vd-example --help',
+            'exception_type': 'ModuleNotFoundError',
+            'first_line': "ModuleNotFoundError: No module named 'missing_cli_contract_dependency'",
+        })
+
+    def test_cli_contract_missing_commands_has_nonempty_details(self):
+        with patch.object(verify, 'process', return_value=subprocess.CompletedProcess([], 0, b'{}', b'')):
+            with self.assertRaises(FlowError) as caught:
+                verify.contracts(self.config, REPO, self.config.data_root, self.env)
+        self.assertEqual(caught.exception.reason, 'acceptance_cli_contract_failed')
+        self.assertEqual(caught.exception.details, {
+            'stage': 'contracts', 'command': 'vd-cosmos-core --help',
+            'exception_type': 'ValueError', 'first_line': 'help response has no valid command list',
+        })
 
     def test_offline_suite_same_interpreter_owned_tmp_and_output_gate(self):
         good=subprocess.CompletedProcess([],0,b'Python 3.10.12\nOK\n',b'')

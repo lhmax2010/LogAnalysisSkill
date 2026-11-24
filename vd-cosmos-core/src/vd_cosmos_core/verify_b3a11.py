@@ -51,16 +51,46 @@ def child_env(directory):
     return env
 
 
+def contract_error(config, stage, command_name, exception_type, first_line, stderr=b''):
+    for line in reversed(stderr.decode('utf-8', 'replace').splitlines()):
+        match = re.fullmatch(r'((?:[A-Za-z_]\w*\.)*[A-Za-z_]\w*(?:Error|Exception|Exit|Interrupt))(?:: (.*))?', line)
+        if match:
+            exception_type = match[1]
+            first_line = line
+            break
+    details = {'stage': stage, 'command': command_name, 'exception_type': exception_type,
+               'first_line': first_line[:500]}
+    safe_bytes(config, json_bytes(details))
+    return FlowError(5, 'acceptance_cli_contract_failed', **details)
+
+
 def command(config, repo, directory, env, skill, args):
-    run = process([sys.executable, '-B', str(repo / skill / 'scripts/run.py'), *args], directory, env, config=config, artifact=directory / ('command-'+uuid.uuid4().hex+'.txt'))
+    is_help = args == ['--help']
+    stage = 'contracts' if is_help else 'skill'
+    command_name = f'{skill} {args[0]}' if args else skill
+    try:
+        run = process([sys.executable, '-B', str(repo / skill / 'scripts/run.py'), *args],
+                      directory, env, config=config, artifact=directory / ('command-'+uuid.uuid4().hex+'.txt'))
+    except FlowError as error:
+        if is_help and error.reason in {'acceptance_process_start_failed', 'acceptance_process_timeout'}:
+            raise contract_error(config, stage, command_name, 'FlowError', error.reason) from None
+        raise
     safe_bytes(config, run.stdout)
     safe_bytes(config, run.stderr)
     try:
         value = json.loads(run.stdout)
         if not isinstance(value, dict):
-            raise ValueError()
-    except (ValueError, UnicodeError):
-        raise FlowError(5, 'acceptance_cli_contract_failed') from None
+            raise ValueError('expected a JSON object')
+    except (ValueError, UnicodeError) as error:
+        message = str(error).splitlines()[0] if isinstance(error, json.JSONDecodeError) else 'expected a UTF-8 JSON object'
+        raise contract_error(config, stage, command_name, type(error).__name__, message, run.stderr) from None
+    if is_help:
+        if run.returncode or value.get('exit_code', 0):
+            raise contract_error(config, stage, command_name, 'CLIExitError',
+                                 f'help exited with status {run.returncode or value["exit_code"]}', run.stderr)
+        commands = value.get('commands')
+        if not isinstance(commands, list) or not commands or not all(isinstance(name, str) and name for name in commands):
+            raise contract_error(config, stage, command_name, 'ValueError', 'help response has no valid command list')
     if run.returncode or value.get('exit_code', 0):
         code = run.returncode if run.returncode in {2, 3, 4, 5, 6} else 5
         raise FlowError(code, 'acceptance_skill_failed', skill=skill,
@@ -74,8 +104,6 @@ def contracts(config, repo, directory, env):
     result = []
     for skill in sorted(p.parent.parent.name for p in repo.glob('vd-*/scripts/run.py')):
         value = command(config, repo, directory, env, skill, ['--help'])
-        if not value.get('commands'):
-            raise FlowError(5, 'acceptance_cli_contract_failed')
         result.append({'skill': skill, 'commands': value['commands'], 'verdict': 'PASS'})
     return result
 

@@ -1,7 +1,4 @@
 """Compiler-emitted flags, versioned family membership and location facts."""
-import bz2
-import gzip
-import lzma
 import re
 from xml.etree import ElementTree
 
@@ -63,8 +60,32 @@ def compiler_locations(log, prefix_regex, snapshot, input_digest):
     return sorted(found, key=lambda row: (row['log_line'], row['flag']))
 
 
+def repodata_opener(suffix):
+    try:
+        if suffix == '.xz':
+            import lzma
+            return lzma.open, (lzma.LZMAError,)
+        if suffix == '.bz2':
+            import bz2
+            return bz2.open, ()
+        if suffix == '.gz':
+            import gzip
+            import zlib
+            return gzip.open, (zlib.error,)
+    except ImportError:
+        module, advice = {
+            '.xz': ('lzma', 'use the .gz repodata or a Python built with liblzma'),
+            '.bz2': ('bz2', 'use the .gz repodata or a Python built with libbz2'),
+            '.gz': ('zlib', 'use uncompressed repodata or a Python built with zlib'),
+        }[suffix]
+        reason = module + '_unavailable'
+        raise FlowError(6, reason, todo={'reason': reason, 'message': advice}) from None
+    return open, ()
+
+
 def clang_release(path):
-    opener = {'.gz': gzip.open, '.xz': lzma.open, '.bz2': bz2.open}.get(path.suffix, open)
+    opener, codec_errors = repodata_opener(path.suffix)
+    invalid = (OSError, ValueError, KeyError, ElementTree.ParseError, EOFError) + codec_errors
     namespace = '{http://linux.duke.edu/metadata/common}'
     try:
         with opener(path, 'rb') as stream:
@@ -83,7 +104,7 @@ def clang_release(path):
         if not RELEASE.fullmatch(release):
             raise ValueError
         return release
-    except (OSError, ValueError, KeyError, ElementTree.ParseError, EOFError, lzma.LZMAError):
+    except invalid:
         raise FlowError(4, 'clang_primary_repodata_invalid') from None
 
 

@@ -1,5 +1,4 @@
 """OS locks, released on process death; never delete a lock inode."""
-import fcntl
 import os
 import time
 from .errors import FlowError
@@ -15,6 +14,11 @@ class OperationLock:
         self.stream = None
 
     def __enter__(self):
+        try:
+            import fcntl
+        except ImportError:
+            raise FlowError(6, 'fcntl_unavailable') from None
+        self._fcntl = fcntl
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.stream = self.path.open("a+b")
         deadline = time.monotonic() + self.wait_s
@@ -37,6 +41,6 @@ class OperationLock:
 
     def __exit__(self, *args):
         if self.stream:
-            fcntl.flock(self.stream.fileno(), fcntl.LOCK_UN)
+            self._fcntl.flock(self.stream.fileno(), self._fcntl.LOCK_UN)
             self.stream.close()
             self.stream = None
