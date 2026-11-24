@@ -355,7 +355,7 @@ def accept_result(config, build, task_id, attempt):
                 with tempfile.TemporaryDirectory(prefix='format-', dir=folder) as temporary:
                     for name in {edit['file'] for edit in spec['edits']}:
                         atomic_write(temporary, name, raw[name])
-                    run_tool(ROOT / 'tizen-gbs-patch-suggest/scripts/run_patch_suggest.py',
+                    run_tool(config, ROOT / 'tizen-gbs-patch-suggest/scripts/run_patch_suggest.py',
                              ['format-patch', '--src-root', temporary, '--edit-spec', checked['path'],
                               '--output', folder / 'candidate.patch', '--check'],
                              folder, 'analysis_patch_format_failed')

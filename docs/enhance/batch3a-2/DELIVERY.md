@@ -61,3 +61,12 @@
 - repodata 解码器按后缀载入所需模块。常规输入继续用 `.gz`；读取 `.xz` 而 LZMA 不可用时退出 6，并带待办 `use the .gz repodata or a Python built with liblzma`。BZip2 缺失也有独立待办。SQLite、TLS、文件锁和浏览器子进程的可选扩展在操作边界处理。
 - 合同失败记录 `stage`、`command`、`exception_type` 和通过凭据预检的 `first_line`。`doctor.optional_stdlib` 报告 `lzma`、`bz2`、`sqlite3`、`ssl` 能否实际导入。
 - `run_tests.sh` 先执行标准套件，再禁用 `_lzma` 和 `_bz2` 执行完整套件。测试也向每一个 CLI 合同子进程传入禁用扩展的钩子。详细输出和摘要见 `evidence-b3a21/`。
+
+## B3a2.2 构建机 v13 复测修补
+
+构建机 v13 的两版 Python 均通过 78 项导入冒烟检查。A 离线套件的实际 LogAnalyzer 用例因检查 venv 缺少 PyYAML 失败。
+
+- 子进程只在内存保留 4 KiB stderr 和截断边界标记。非零退出记录 `exit_code`；保留段通过凭据检查后才附上最后一条完整诊断 `stderr_last_line`。
+- LogAnalyzer 先用实际选中的解释器检查 `yaml` 导入；缺失时退出 6、报告模块名并提示在分析 venv 安装 `PyYAML==6.0.1`。`doctor.analysis_dependencies` 汇报同一检查。
+- `analyzer.python` 在载入配置时核对可执行文件路径并保留 venv 链接。配置加载只验证路径；运行前的模块检查验证解释器及其环境。LogAnalyzer 与 patch-suggest 的上下文和格式化共用该设置。
+- 标准和 minimal Python 套件的日志、SHA256 及凭据预检见 `evidence-b3a22/`。

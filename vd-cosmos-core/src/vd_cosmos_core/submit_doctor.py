@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import tempfile
 
+from .analysis_tools import ANALYZER_DEPENDENCIES, check_analysis_dependencies
 from .errors import FlowError
 from .p4 import validate_config
 
@@ -32,6 +34,17 @@ def optional_stdlib():
     return facts
 
 
+def analysis_dependencies(config):
+    try:
+        with tempfile.TemporaryDirectory(prefix='analysis-doctor-') as work:
+            check_analysis_dependencies(config, work)
+    except FlowError as error:
+        return {'available': False, **error.as_dict()}
+    except OSError:
+        return {'available': False, 'error': 'analysis_doctor_workspace_unavailable'}
+    return {'available': True, 'modules': list(ANALYZER_DEPENDENCIES)}
+
+
 def doctor(config, *, reader=None, package_probe=php_packages):
     php = package_probe()
     try: playwright = importlib.metadata.version('playwright')
@@ -39,6 +52,7 @@ def doctor(config, *, reader=None, package_probe=php_packages):
     browser = config.raw.get('browser', {}).get('executable')
     result = {'exit_code': 0, 'online': reader is not None, 'php_packages': php,
               'optional_stdlib': optional_stdlib(),
+              'analysis_dependencies': analysis_dependencies(config),
               'DISPLAY_present': bool(os.environ.get('DISPLAY')), 'playwright_package_version': playwright,
               'browser_available': bool(browser and (Path(browser).is_file() or shutil.which(browser))),
               'browser_version': config.raw.get('browser', {}).get('version_held'),

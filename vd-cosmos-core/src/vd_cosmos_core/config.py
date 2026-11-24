@@ -70,6 +70,25 @@ class Config:
         return (path if path.is_absolute() else self.source_dir / path).resolve()
 
 
+def normalize_analysis_python(raw, directory):
+    analyzer = raw['analyzer']
+    value = analyzer.get('python')
+    if value is None:
+        return
+    try:
+        if not isinstance(value, str) or not value.strip() or any(c in value for c in '\x00\r\n'):
+            raise ValueError()
+        path = Path(value).expanduser()
+        if not path.is_absolute():
+            path = directory / path
+        if not path.is_file() or not os.access(path, os.X_OK):
+            raise ValueError()
+    except (OSError, RuntimeError, ValueError):
+        raise FlowError(2, 'invalid_analyzer_python') from None
+    # Keep the final symlink name so Python still discovers the venv's pyvenv.cfg.
+    analyzer['python'] = str(path)
+
+
 def load_config(path):
     path = Path(path).resolve()
     raw = load_json(path)
@@ -166,6 +185,7 @@ def load_config(path):
                 raise ValueError()
             re.compile(pattern)
         configure(raw)
+        normalize_analysis_python(raw, path.parent)
         if raw.get("budget", {}).get("disk_warning_bytes", 0) < 0:
             raise ValueError()
     except (KeyError, TypeError, ValueError, re.error):

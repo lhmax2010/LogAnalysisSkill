@@ -2,7 +2,9 @@
 
 ## 1. 核对部署与已有输入
 
-在独立的构建机 clone 里核对完整提交号和 Python 版本。使用本线 `run/venv` 的解释器。LogAnalyzer 照旧使用该环境中已有的 PyYAML。
+在独立的构建机 clone 里核对完整提交号和 Python 版本。分析、验收和本线测试都使用 `run/venv` 的解释器。在该 venv 安装 LogAnalyzer 依赖 `PyYAML==6.0.1`。`vd-cosmos-submit doctor` 的 `analysis_dependencies` 可核对解释器是否能导入 `yaml`。
+
+`analyzer.python` 可为 LogAnalyzer 和 patch-suggest 指定独立的解释器，例如 `/path/to/run/venv/bin/python`。相对路径以配置文件所在目录为基准；留空为 JSON `null` 或省略时使用当前解释器。验收的离线测试使用默认解释器，因此测试 venv 也需要 PyYAML。
 
 ```bash
 export PATH="/path/to/run/venv/bin:$PATH"

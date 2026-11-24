@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- B3a2.2：分析工具保留凭据检查后的末行诊断；LogAnalyzer 预检 PyYAML，doctor 报告可用性，并支持独立的 `analyzer.python`。验证见 `docs/enhance/batch3a-2/DELIVERY.md`。
+
 - B3a2.1：修复缺少 liblzma 的 pyenv 启动回归；可选模块按需载入、CLI 合同失败附命令及异常摘要，`doctor` 报告可用性。双版本标准和 minimal 工件见 `docs/enhance/batch3a-2/DELIVERY.md`。
 
 - 第 3a-2 批 C5：离线构建机验证入口与 FatTank 人工监督手册已交付；快照替换也使旧输入过期，R28 核对实际新增注释；真实输入验收及扩展金丝雀验证待 FatTank 按 `docs/enhance/batch3a-2/FATTANK-3A2-MANUAL.md` 现场执行。

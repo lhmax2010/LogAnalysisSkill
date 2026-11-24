@@ -166,7 +166,9 @@ def main(argv=None):
         result = verify(config, args.build, workspace)
     except FlowError as error:
         result = {'verdict': 'FAIL', 'exit_code': error.code, 'error': error.reason}
-        if error.reason in {'lzma_unavailable', 'bz2_unavailable', 'zlib_unavailable', 'sqlite3_unavailable'}:
+        if error.reason in {'lzma_unavailable', 'bz2_unavailable', 'zlib_unavailable', 'sqlite3_unavailable',
+                            'log_analyzer_dependency_missing', 'log_analyzer_dependency_probe_failed',
+                            'log_analyzer_failed', 'patch_context_failed', 'analysis_patch_format_failed'}:
             result['details'] = error.details
     except (OSError, KeyError, ValueError, TypeError):
         result = {'verdict': 'FAIL', 'exit_code': 5, 'error': 'analysis_verifier_processing_failed'}
