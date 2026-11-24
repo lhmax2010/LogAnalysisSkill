@@ -10,6 +10,7 @@ from vd_cosmos_core.locks import OperationLock
 from vd_cosmos_core.p4 import P4Adapter
 from vd_cosmos_core.receipts import logs_valid
 from vd_cosmos_core.state import EventStore, append_retry
+from vd_cosmos_core.task_package import checked_file, snapshot_registration
 from vd_cosmos_core.versions import build_key
 from .snapshot import snapshot
 
@@ -67,7 +68,7 @@ def review_basis(data, previous):
         'pending': [f['depotFile'] for f in data.get('files', []) if f.get('basis_review') == '待复核']}
 
 
-def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None, tickets_override=None):
+def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None, tickets_override=None, reuse=False):
     key, context = build_key(reader), command_context('analyze.snapshot')
     with OperationLock(config.data_root, 'round', key), EventStore(config.data_root) as store:
         expected = store.head() if expected_event is None else expected_event
@@ -83,10 +84,7 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
         count = unclassified_count(store.events(key), package['key'])
         if count >= config.raw['p4']['unclassified_retry_limit']:
             raise FlowError(3, 'p4_unclassified_retry_exhausted')
-        attempt = uuid.uuid4().hex
-        folder = f'rounds/{key}/snapshots/{attempt}'
-        current = append('snapshot_started', {'build': key, 'package': package['key'], 'attempt': attempt}, expected)
-        try:
+        def inputs():
             path = config.output(log_path)
             metadata = load_json(str(path)+'.json') if config.output(str(path)+'.json').exists() else {}
             if not metadata:
@@ -100,19 +98,45 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
                     if digest(config.output(artifact['path']).read_bytes()) != artifact['sha256']:
                         raise FlowError(4, 'immutable_input_digest_mismatch')
             confirmations = [e['payload']['shelve_digest'] for e in store.events(key, kinds=['input_confirmed']) if e['payload'].get('package')==package['key']]
-            binding = digest(json_bytes({'log': digest(path.read_bytes()), 'lists': (lists or {}).get('digests'),
+            binding = digest(json_bytes({'log': metadata['sha256'], 'lists': (lists or {}).get('digests'),
                 'confirmations': confirmations, 'snapshot_code': digest(json_bytes({p.name: digest(p.read_bytes()) for p in Path(__file__).parent.glob('*.py')}))}))
-            prior = store.events(key, kinds=['snapshot_completed'])
-            for event in reversed(prior):
-                if event['payload'].get('package') != package['key']:
-                    continue
-                saved = event['payload'].get('artifact')
-                if saved and digest(config.output(saved['path']).read_bytes()) == saved['sha256']:
-                    old = load_json(saved['path'])
-                    if old.get('historical_input_unrecoverable') and old.get('input_binding') == binding:
-                        current = append('snapshot_completed', {'build': key, 'package': package['key'], 'attempt': attempt, 'artifact': saved, 'reused': True}, current)
-                        return {'artifact': saved, 'mode': '仅诊断', 'skipped': True, 'last_event_id': current, 'exit_code': 0}
-                break
+            return path, metadata, lists, confirmations, binding
+
+        def reusable(binding, log_sha):
+            try:
+                saved, data = snapshot_registration(config, store, key, package['key'], log_sha)
+                if data.get('input_binding') != binding or data.get('final_log_sha256') != log_sha:
+                    return None
+                for source in data['files']:
+                    if source.get('content'):
+                        if digest(checked_file(config, source['content'])) != source['sha256']:
+                            return None
+                return {'artifact': saved, 'mode': data['mode'], 'skipped': True,
+                        'last_event_id': store.head(), 'exit_code': 0}
+            except (FlowError, OSError, ValueError, KeyError):
+                return None
+
+        prepared = inputs() if reuse else None
+        if prepared:
+            saved = reusable(prepared[-1], prepared[1]['sha256'])
+            if saved:
+                return saved
+        attempt = uuid.uuid4().hex
+        folder = f'rounds/{key}/snapshots/{attempt}'
+        current = append('snapshot_started', {'build': key, 'package': package['key'], 'attempt': attempt}, expected)
+        try:
+            path, metadata, lists, confirmations, binding = prepared or inputs()
+            if not reuse:
+                for event in reversed(store.events(key, kinds=['snapshot_completed'])):
+                    if event['payload'].get('package') != package['key']:
+                        continue
+                    saved = event['payload'].get('artifact')
+                    if saved and digest(config.output(saved['path']).read_bytes()) == saved['sha256']:
+                        old = load_json(saved['path'])
+                        if old.get('historical_input_unrecoverable') and old.get('input_binding') == binding:
+                            current = append('snapshot_completed', {'build': key, 'package': package['key'], 'attempt': attempt, 'artifact': saved, 'reused': True}, current)
+                            return {'artifact': saved, 'mode': '仅诊断', 'skipped': True, 'last_event_id': current, 'exit_code': 0}
+                    break
             if isinstance(reader, FixtureReportReader) and reader.manifest.get('p4_fixture'):
                 from vd_cosmos_core.files import confined
                 atomic_write(config.data_root, 'fake-p4.json', confined(reader.base, reader.manifest['p4_fixture']).read_bytes())
@@ -125,8 +149,10 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
             for old_event in reversed(store.events(kinds=['snapshot_completed'])):
                 if old_event['payload'].get('package') == package['key']:
                     saved = old_event['payload'].get('artifact')
-                    if saved and digest(config.output(saved['path']).read_bytes()) == saved['sha256']:
-                        previous = load_json(saved['path'])
+                    if saved:
+                        path = config.output(saved['path'])
+                        if path.is_file() and digest(path.read_bytes()) == saved['sha256']:
+                            previous = load_json(path)
                     break
             review_basis(data, previous)
             data['input_binding'] = binding

@@ -7,14 +7,21 @@
 `analyzer.python` 可为 LogAnalyzer 和 patch-suggest 指定独立的解释器，例如 `/path/to/run/venv/bin/python`。相对路径以配置文件所在目录为基准；留空为 JSON `null` 或省略时使用当前解释器。验收的离线测试使用默认解释器，因此测试 venv 也需要 PyYAML。
 
 ```bash
-export PATH="/path/to/run/venv/bin:$PATH"
-repo=/path/to/run/src
-config=/path/to/data/config.json
-expected='replace-with-deployed-full-commit'
-nice -n 19 bash "$repo/vd-cosmos-core/scripts/verify_b3a2_real.sh" "$expected" --config "$config"
+run=/home1/chengkai/vd-cosmos/run
+repo="$run/src"
+config="$run/config.json"
+export PATH="$run/venv/bin:$PATH"
+expected='replace-with-reviewed-full-commit'
+test "$(git -C "$repo" rev-parse HEAD)" = "$expected" &&
+nice -n 19 "$run/venv/bin/python" "$repo/vd-fix-analyze/scripts/run.py" \
+  prepare-inputs --config "$config" --build 19270912 --hub-id 37491096 &&
+nice -n 19 bash "$repo/vd-cosmos-core/scripts/verify_b3a2_real.sh" \
+  "$expected" --config "$config" --build 19270912
 ```
 
-把 `expected` 填成已部署的完整提交号。默认验证 19270912。换构建时加 `--build <构建号>`。验证器只读已登记并核验的最终失败日志和快照，在数据根下独立的 `verification/b3a2-*/` 生成任务、验证全部分段清单，并用明确标为 fixture 的手写结果验证接收器。回贴 stdout 中的结论和证据路径即可。缺输入时先用既有读取与快照流程补齐并登记，再重新运行验证器。
+将 `expected` 换成审核通过的完整提交号。两条命令用同一份实际配置；如果部署的配置路径不同，把 `config` 指向现有文件。第一条以匿名读取确认构建身份、终态和失败报告，必要时等一个轮询间隔确认报告稳定，随后登记最终日志、清单和 P4 快照。通过的登记可复用。P4 只用现有票据；`p4 login -s` 只查看状态。票据失效按现有待办由 FatTank 登录，再重试第一条。
+
+第二条仅读取同一数据根已登记的工件，并在 `verification/b3a2-*/` 中验证分段清单、接收手写 fixture。失败时查看 `details.candidate_count`、`details.packages` 和 `details.next_command`。构建号对应多个实例时，从 `details.next_commands` 挑选已核实的构建键，不自动选择。回贴 stdout 中的结论和证据路径即可。
 
 ## 2. 准备正式任务
 

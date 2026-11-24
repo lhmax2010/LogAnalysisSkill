@@ -2,20 +2,16 @@
 import argparse
 import json
 import sys
-import uuid
 from pathlib import Path
 
-from .read_ops import make_reader, read_action
+from .read_ops import make_reader, register_read
 from .commands import COMMANDS, Category, command_context
 from .config import load_config
 from .errors import FlowError, unsupported
 from .export import export_file
 from .archive_precheck import check_file as repository_precheck
-from .files import atomic_write, digest, json_bytes
 from .locks import OperationLock
-from .journal import write_todos as _todos, monitor_todos, monitoring_fields
-from .versions import evaluation
-from .state import EventStore, append_retry
+from .state import EventStore
 
 
 class Parser(argparse.ArgumentParser):
@@ -74,38 +70,9 @@ def execute(skill, args):
         with EventStore(config.data_root) as store:
             return {"last_event_id": store.head(), "events": len(store.events())}
     reader = make_reader(config, args.backend, build_id=args.build_id, manifest=args.manifest, expected_rows=args.expected_rows)
-    build_key = digest(json_bytes(reader.build_ref.to_dict()))
-    with OperationLock(config.data_root, "round", build_key), EventStore(config.data_root) as store:
-        expected = args.expected_event if args.expected_event is not None else store.head()
-        def append(kind, payload, expected):
-            return append_retry(store, context, kind, payload, expected, heartbeat_retry=args.expected_event is None)
-        attempt = uuid.uuid4().hex
-        current = append("observation_started", {"attempt": attempt, "build": build_key}, expected)
-        try:
-            data = read_action(skill, args.command, reader, args.arch)
-        except FlowError as error:
-            current = append("observation_failed", {"attempt": attempt, "build": build_key,
-                         "reason": error.reason, "exit_code": error.code}, current)
-            error_data = {'exit_code': error.code, 'todos': [error.details['todo']] if error.details.get('todo') else []}
-            todos = monitor_todos(config, store, build_key, error_data, step='logs' if args.command == 'logs' else 'observe')
-            _todos(store, context, current, build_key, todos, config, heartbeat_retry=args.expected_event is None)
-            raise
-        if skill == "watch":
-            data["evaluation"] = evaluation(reader, data)
-        exit_code = data.get("exit_code", 0)
-        path = f"rounds/{build_key}/attempt-{attempt}/{skill}-{args.command}.json"
-        artifact = atomic_write(config.data_root, path, json_bytes(data))
-        payload = {"build": build_key, "attempt": attempt, "artifact": artifact,
-                   "report_state": data.get("report_state"), "result_state": data.get("result_state"),
-                   "header_consistency": data.get("header_consistency"), "package_coverage": data.get("package_coverage"), "exit_code": exit_code}
-        if skill == "watch":
-            payload.update(monitoring_fields(data))
-        current = append("observation_failed" if exit_code else "observation_recorded", payload, current)
-        todos = monitor_todos(config, store, build_key, data, step="logs" if args.command == "logs" else "observe")
-        current = _todos(store, context, current, build_key, todos, config, heartbeat_retry=args.expected_event is None)
-        return {"artifact": artifact, "last_event_id": current, "exit_code": exit_code,
-                **{key: data[key] for key in ("execution_state", "report_state", "result_state", "header_consistency", "package_coverage") if key in data}}
-
+    result, _ = register_read(config, reader, skill, args.command, arch=args.arch,
+                              expected_event=args.expected_event)
+    return result
 
 def main(skill, argv=None):
     argv = sys.argv[1:] if argv is None else argv

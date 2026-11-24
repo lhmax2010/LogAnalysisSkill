@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- B3a2.3：新增已有失败构建的只读输入准备入口及 C 逐包诊断；构建机 v14 B1/B2 已通过，C 待登记正式输入后复验，A 等待读取侧失败证据。见 `docs/enhance/batch3a-2/DELIVERY.md`。
+
 - B3a2.2：分析工具保留凭据检查后的末行诊断；LogAnalyzer 预检 PyYAML，doctor 报告可用性，并支持独立的 `analyzer.python`。验证见 `docs/enhance/batch3a-2/DELIVERY.md`。
 
 - B3a2.1：修复缺少 liblzma 的 pyenv 启动回归；可选模块按需载入、CLI 合同失败附命令及异常摘要，`doctor` 报告可用性。双版本标准和 minimal 工件见 `docs/enhance/batch3a-2/DELIVERY.md`。

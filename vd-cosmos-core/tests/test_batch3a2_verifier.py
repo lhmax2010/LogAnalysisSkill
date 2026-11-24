@@ -1,11 +1,12 @@
 from pathlib import Path
 import subprocess
+import json
 import unittest
 
 from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core.files import atomic_write, digest, json_bytes
 from vd_cosmos_core.state import EventStore
-from vd_cosmos_core.verify_b3a2 import verify
+from vd_cosmos_core.verify_b3a2 import main, verify
 from test_batch3a2_package import KEY, PackageFixture, ROOT
 
 
@@ -48,8 +49,65 @@ class VerifierTests(PackageFixture, unittest.TestCase):
 
     def test_missing_snapshot_refuses_without_fetch(self):
         _, target = self.input_run(False)
-        with self.assertRaisesRegex(FlowError, 'registered_snapshot_required'):
+        with self.assertRaisesRegex(FlowError, 'analysis_verifier_snapshot_inputs_required') as caught:
             verify(self.config, '19270912', target)
+        self.assertEqual(caught.exception.details['candidate_count'], 1)
+        self.assertEqual(caught.exception.details['packages'][0]['snapshot'], 'registered_snapshot_required')
+
+    def test_zero_candidates_reports_exact_prepare_command(self):
+        import contextlib
+        import io
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            code = main(['--verified-commit', '0'*40, '--config', str(self.root / 'config.json')])
+        result = json.loads(stdout.getvalue())
+        self.assertEqual(code, 6)
+        self.assertEqual(result['details']['candidate_count'], 0)
+        self.assertIn('prepare-inputs --config ', result['details']['next_command'])
+        self.assertTrue(result['details']['next_command'].endswith('--build 19270912'))
+
+    def test_watch_only_reports_missing_log_and_snapshot_per_package(self):
+        _, target = self.input_run(False)
+        old = json.loads((self.root / 'real-logs.json').read_text())
+        build_ref = dict(old['observation']['build_ref'], run_id='19270913')
+        observation = dict(old['observation'], build_ref=build_ref)
+        other_key = digest(json_bytes(build_ref))
+        self.register('observation_recorded', 'watch.observe', {'build': other_key,
+                      'artifact': atomic_write(self.root, 'watch-only.json', json_bytes(observation))})
+        with self.assertRaisesRegex(FlowError, 'analysis_verifier_final_logs_required') as caught:
+            verify(self.config, '19270913', target)
+        package = caught.exception.details['packages'][0]
+        self.assertEqual(package['registered_final_log'], 'missing_or_invalid')
+        self.assertEqual(package['snapshot'], 'registered_snapshot_required')
+
+    def test_multiple_candidates_are_reported_without_auto_selection(self):
+        build, target = self.input_run(True)
+        old = json.loads((self.root / 'real-logs.json').read_text())
+        different = dict(old['observation']['build_ref'], instance_id='https://other.example.invalid')
+        second_key = digest(json_bytes(different))
+        observation = dict(old['observation'], build_ref=different)
+        self.register('observation_recorded', 'watch.observe', {'build': second_key,
+                      'artifact': atomic_write(self.root, 'other-observation.json', json_bytes(observation))})
+        with self.assertRaisesRegex(FlowError, 'analysis_verifier_unique_build_required') as caught:
+            verify(self.config, '19270912', target)
+        self.assertEqual(caught.exception.details['candidate_count'], 2)
+        self.assertCountEqual(caught.exception.details['build_keys'], [build, second_key])
+        selected = target / 'selected'
+        selected.mkdir()
+        self.assertEqual(verify(self.config, '19270912', selected, selected=build)['verdict'], 'PASS')
+
+    def test_missing_registered_source_is_reported_per_package(self):
+        build, target = self.input_run(False)
+        missing = {'path': str(self.root / 'deleted-source.txt'), 'sha256': 'unavailable', 'size': 5}
+        snapshot = dict(self.snapshot, files=[{'depotFile': '//depot/fixture.c', 'content': missing}])
+        self.register('snapshot_completed', 'analyze.snapshot', {'build': build, 'package': KEY,
+                      'artifact': atomic_write(self.root, 'missing-source-snapshot.json', json_bytes(snapshot))})
+        with self.assertRaisesRegex(FlowError, 'analysis_verifier_snapshot_inputs_required') as caught:
+            verify(self.config, '19270912', target)
+        package = caught.exception.details['packages'][0]
+        self.assertEqual(package['registered_final_log'], 'available')
+        self.assertEqual(package['snapshot'], 'available')
+        self.assertEqual(package['sources'], [{'file': '//depot/fixture.c', 'status': 'registered_input_missing'}])
 
     def test_wrapper_refuses_wrong_head_before_loading_config(self):
         result = subprocess.run(['bash', str(ROOT / 'scripts/verify_b3a2_real.sh'),

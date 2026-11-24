@@ -70,3 +70,12 @@
 - LogAnalyzer 先用实际选中的解释器检查 `yaml` 导入；缺失时退出 6、报告模块名并提示在分析 venv 安装 `PyYAML==6.0.2`。`doctor.analysis_dependencies` 汇报同一检查。
 - `analyzer.python` 在载入配置时核对可执行文件路径并保留 venv 链接。配置加载只验证路径；运行前的模块检查验证解释器及其环境。LogAnalyzer 与 patch-suggest 的上下文和格式化共用该设置。
 - 标准和 minimal Python 套件的日志、SHA256 及凭据预检见 `evidence-b3a22/`。
+
+## B3a2.3 构建机 v14 跟进
+
+设计方报告 `29753dd` 配合 PyYAML 6.0.2 时，双版本导入冒烟 78/78，A/B1/B2 离线 411/411，B1 和 B2 PASS（含 B2 实际来源预检）。C 的正式数据根没有登记构建 19270912。A 的 19091860 读取侧失败另等 `read-side/result.json`。
+
+- C 报告候选数量和已登记输入的逐包检查。无需联网即可区分未登记日志、缺少快照和损坏源文件。零候选或缺输入时给出准备命令；多候选时按已登记构建键给出可选的精确复验命令。
+- `vd-fix-analyze ... prepare-inputs` 用现有观察、日志、变量清单和快照入口写入正式数据根。匿名核对构建详情和可选 Hub ID，拒绝已在工具中登记的提交请求及误提交样本；报告完整并失败才继续。日志、快照和已物化源文件按绑定与摘要复用。
+- 设计方 2026-11-24 裁定：沿用现有 P4 allow-list，含 `info`、`login -s`（仅票据状态）、`files`、`fstat`、`describe`、`print`、`change -o`。票据失效时退出并给出现有待办，FatTank 自行登录。未执行真实 P4 或构建机复验。
+- 两版标准和 minimal Python 套件、SHA256 及凭据预检见 `evidence-b3a23/`。
