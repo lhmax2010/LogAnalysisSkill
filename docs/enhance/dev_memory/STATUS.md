@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- B2.11 / A-aging：浏览器收敛为单一 HTTP 拦截并记录暂停时间线；A 独立保留 19091860 离线基线，可选择实时构建并报告确认的退役状态。见 `docs/enhance/batch3a-1.1/DELIVERY.md`。
+
 - B3a2.3：新增已有失败构建的只读输入准备入口及 C 逐包诊断；构建机 v14 B1/B2 已通过，C 待登记正式输入后复验，A 等待读取侧失败证据。见 `docs/enhance/batch3a-2/DELIVERY.md`。
 
 - B3a2.2：分析工具保留凭据检查后的末行诊断；LogAnalyzer 预检 PyYAML，doctor 报告可用性，并支持独立的 `analyzer.python`。验证见 `docs/enhance/batch3a-2/DELIVERY.md`。

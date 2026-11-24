@@ -73,9 +73,22 @@ def html_log(data):
     return not_a_log(data, 'text/html' if text.lstrip().lower().startswith('<html') else '')
 
 
-def run(args, config, directory, result, repo, config_path):
+def retired(observation):
+    execution = observation.get('execution_evidence') or {}
+    reports = observation.get('reports', {})
+    def confirmed_missing(report):
+        return (report.get('http_status') == 404 and report.get('index', {}).get('verified')
+                and report.get('index_response', {}).get('http_status') == 200)
+
+    return bool(execution.get('identity_match') and observation.get('effective_execution_state') == '已结束'
+                and not observation.get('observation_failed') and reports
+                and any(confirmed_missing(report) for report in reports.values())
+                and all(report.get('http_status') == 200 or confirmed_missing(report) for report in reports.values()))
+
+
+def run(args, config, directory, result, repo, config_path, *, independent_live=False):
     saved = Path(args.saved_dir)
-    rows, links = read_baselines(Path(args.rows).read_bytes(), Path(args.links).read_bytes())
+    rows, links = (None, None) if independent_live else read_baselines(Path(args.rows).read_bytes(), Path(args.links).read_bytes())
     counts = REAL_COUNTS
     if args.mode == 'fixture':
         if not args.fixture_counts:
@@ -87,31 +100,47 @@ def run(args, config, directory, result, repo, config_path):
     if getattr(args, 'budget_s', None) is not None and args.budget_s < required_budget:
         raise FlowError(6, 'acceptance_budget_insufficient', required_seconds=required_budget)
     result['time_budget_seconds'] = required_budget
-    reader = HTTPReportReader(config, args.build_id, args.rows)
+    reader = HTTPReportReader(config, args.build_id, None if independent_live else args.rows)
     first = reader.observe(reader.build_ref)
     atomic_write(config.data_root, directory / 'A-first.json', json_bytes(first))
+    if independent_live and retired(first) and all(peer_is_remote(r) for r in reader.transport.requests):
+        result.update(exit_code=0, verdict='RETIRED', build_id=args.build_id,
+                      reports={arch: {'http_status': r['http_status'],
+                                      'index_verified': (r.get('index') or {}).get('verified', False)}
+                               for arch, r in first['reports'].items()})
+        return
     time.sleep(config.raw['poll']['settle_s'] if first.get('effective_execution_state') == '未知' else config.raw['poll']['interval_s'])
-    reader = HTTPReportReader(config, args.build_id, args.rows)
+    reader = HTTPReportReader(config, args.build_id, None if independent_live else args.rows)
     second = reader.observe(reader.build_ref)
     target = config.output(directory / 'A');target.mkdir()
     part = {'stability_simulated': False}
     try:
         if second['observation_failed']:
             raise FlowError(5, 'A_observation_failed')
-        evaluate(reader, rows, links, counts, config, target, part)
-        part['saved_page_comparison'] = {}
-        for arch, report in second['reports'].items():
-            saved_sha = digest((saved / ('report_' + arch + '.html')).read_bytes())
-            actual_sha = report.get('evidence', {}).get('sha256')
-            part['saved_page_comparison'][arch] = {'saved_sha256': saved_sha, 'http_sha256': actual_sha,
-                                                  'result': '相同' if saved_sha == actual_sha else '不同'}
-        if any(r['result'] != '相同' for r in part['saved_page_comparison'].values()):
-            part.update(verdict(False))
+        if independent_live:
+            counts = {arch: report['counts'] for arch, report in second['reports'].items()
+                      if report.get('report_state') == '完整'}
+            failed = sum(c['build_error'] + c['export_error'] for c in counts.values())
+            part.update(verdict(bool(counts and len(counts) == len(second['reports'])
+                 and second['header_consistency'] == '一致' and failed
+                 and second['effective_execution_state'] == '已结束'), counts=counts))
+        else:
+            evaluate(reader, rows, links, counts, config, target, part)
+            part['saved_page_comparison'] = {}
+            for arch, report in second['reports'].items():
+                saved_sha = digest((saved / ('report_' + arch + '.html')).read_bytes())
+                actual_sha = report.get('evidence', {}).get('sha256')
+                part['saved_page_comparison'][arch] = {'saved_sha256': saved_sha, 'http_sha256': actual_sha,
+                                                      'result': '相同' if saved_sha == actual_sha else '不同'}
+            if any(r['result'] != '相同' for r in part['saved_page_comparison'].values()):
+                part.update(verdict(False))
     except (FlowError, KeyError) as error:
         part.update(verdict(False), error=error.reason if isinstance(error, FlowError) else 'A_missing_report')
     result['A'] = part
     logs = []
     try:
+        if independent_live and part['verdict'] != 'PASS':
+            raise FlowError(6, 'B_report_unavailable')
         data = fetch_logs(reader, second)
         if data.get('exit_code'):
             raise FlowError(data['exit_code'], 'B_report_unavailable')
@@ -122,20 +151,22 @@ def run(args, config, directory, result, repo, config_path):
         for log in logs:
             content = Path(log['path']).read_bytes()
             checks.append(not log.get('skipped') and log.get('transfer_complete') and not log['truncated']
-                          and not html_log(content) and digest(content) == log['sha256'])
+                          and (not independent_live or log.get('final')) and not html_log(content)
+                          and digest(content) == log['sha256'])
         result['B'] = verdict(all(checks) and actual_counts == expected_counts,
                               counts=actual_counts, expected_counts=expected_counts, logs=logs, log_checks=checks)
     except FlowError as error:
         result['B'] = verdict(False, error=error.reason)
-    target = config.output(directory / 'C');target.mkdir()
-    saved_args = SimpleNamespace(mode=args.mode, fixture_counts=args.fixture_counts, run_id=args.build_id,
-        arm_report=str(saved / 'report_armv7l.html'), x86_report=str(saved / 'report_x86_64.html'),
-        detail_page=str(saved / 'probe_3bed7e8c.html'), rows=args.rows, links=args.links)
-    result['C'] = {}
-    try:
-        verify_saved(saved_args, config, target, result['C'])
-    except FlowError as error:
-        result['C'] = verdict(False, error=error.reason)
+    if not independent_live:
+        target = config.output(directory / 'C');target.mkdir()
+        saved_args = SimpleNamespace(mode=args.mode, fixture_counts=args.fixture_counts, run_id=args.build_id,
+            arm_report=str(saved / 'report_armv7l.html'), x86_report=str(saved / 'report_x86_64.html'),
+            detail_page=str(saved / 'probe_3bed7e8c.html'), rows=args.rows, links=args.links)
+        result['C'] = {}
+        try:
+            verify_saved(saved_args, config, target, result['C'])
+        except FlowError as error:
+            result['C'] = verdict(False, error=error.reason)
     if args.live_build_id:
         live = HTTPReportReader(config, args.live_build_id)
         observed = live.observe(live.build_ref)
@@ -149,7 +180,9 @@ def run(args, config, directory, result, repo, config_path):
     # is visible. B and E intentionally share this run's freshly downloaded logs.
     script = repo / 'vd-cosmos-workflow/scripts/run.py'
     command = [sys.executable, '-B', str(script), 'loop', '--config', str(config_path), '--backend', 'real',
-               '--build-id', args.build_id, '--expected-rows', args.rows, '--max-ticks', '3']
+               '--build-id', args.build_id, '--max-ticks', '3']
+    if not independent_live:
+        command.extend(['--expected-rows', args.rows])
     if result['A']['verdict'] == 'PASS' and result['B']['verdict'] == 'PASS':
         try:
             budget = required_budget
@@ -188,7 +221,8 @@ def run(args, config, directory, result, repo, config_path):
     f.update(verdict(f['index'].get('http_status') == 200 and f['index'].get('fingerprint', {}).get('verified')
         and f['detail_identity_match'] and not f['redirect_responses']
         and (args.mode == 'fixture' or all(peer_is_remote(r) for r in reader.transport.requests))))
-    result.update(verdict(all(result[part]['verdict'] == 'PASS' for part in ['A', 'B', 'C', 'E', 'F'])))
+    required = ('A', 'B', 'E', 'F') if independent_live else ('A', 'B', 'C', 'E', 'F')
+    result.update(verdict(all(result[part]['verdict'] == 'PASS' for part in required)))
 
 
 def main(argv=None):

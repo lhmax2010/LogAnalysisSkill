@@ -1,0 +1,95 @@
+{
+  "allowed": true,
+  "files": [
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "sha256": "c0f5c0cbb8c69b0da3f3b2b459dc56d95bc16b397ed00869184e446b2d0c0201"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b211/headless-stress.txt",
+      "sha256": "442dc7586e7fd7f651a4cff6f28ec5657013c6e72e515bb3a943d42d8751e578"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b211/python310.txt",
+      "sha256": "e05ff186fab16f6d6ef445802c43bedcc177af5f5318d67eafaa7d2fb53205f3"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b211/python312.txt",
+      "sha256": "52f95c48374cb72713923adc2fff98c2aecc94c69245361ef3c6946a82ca5f6c"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/batch3a-1.1/evidence-b211/test-summary.json",
+      "sha256": "907a95f6a4904ac19d7ff9d8f827f15eacf6c542dabe88f9c406e1a8bd37fbf1"
+    },
+    {
+      "allowed": true,
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "a395de2dc21204ec04b1525130c6b308e648cc1d4cbe7fc88051c771affdca9c"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/README.md",
+      "sha256": "f9900b95fb1714c417a41f5eee8287770779317e635a60fd6f7c7747df378442"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/config.sample.json",
+      "sha256": "fa0dbef19730c3e2f38b9c5760b5eceb5b20dbe2ecd78913f6657bb22d14a680"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/scripts/check_submit_boundary.py",
+      "sha256": "d789f760b003cc14d7b19f56736d4e5e037788b53e0df1d4c98400205ee8d1c3"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_sessions.py",
+      "sha256": "e20311fcb2c877d465bdc294d39b50ba327f913a3ec92cd582c0f6eb382a8146"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "sha256": "7aed6e17af2706a7e010a51666659ce318b5f2bbe0733f29f0642356638939e0"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11.py",
+      "sha256": "aece01fd338e8d17991694d5bebf81fefd75e077757e98632b745df8bf3fd3f1"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11a_aging.py",
+      "sha256": "6271a4d6f830691b2498bb69b9f68643d39070d37fc7d59aea838a0727d76aae"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b21.py",
+      "sha256": "7e0ec65629133b9bbfc8890498af14e9951177d04e674158d1c691cf96f31e94"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b22.py",
+      "sha256": "7c149e77a4873cfbf8ea82eedfb4b22d042766212061bb822f49da27109569e6"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-core/tests/test_batch3a11b2_headless.py",
+      "sha256": "3e8547e9249a7249fd6ac846be112c742efd08238e00ea6a371f98a07bf4524b"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-submit/scripts/browser_child.py",
+      "sha256": "db0537248c4b41f04f59ee4d89b48c579b14c648c82a58eaf8555832bf16eab1"
+    },
+    {
+      "allowed": true,
+      "path": "vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py",
+      "sha256": "fd547cf40acfb8fe3705e1598d3861b302656a15e6b4270725cbd0d688f71d73"
+    }
+  ]
+}

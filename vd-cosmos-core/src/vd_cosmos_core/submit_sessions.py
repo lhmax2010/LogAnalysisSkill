@@ -1,4 +1,5 @@
 """Target-scoped browser leases and conservative crash recovery; no browser APIs."""
+import json
 import os
 from pathlib import Path
 import shutil
@@ -19,24 +20,44 @@ class Processes:
         try:
             fields=(Path('/proc')/str(pid)/'stat').read_text().rsplit(')',1)[1].split()
             return fields[19]
-        except FileNotFoundError: return None
+        except (FileNotFoundError,ProcessLookupError): return None
         except (OSError,IndexError,ValueError): raise FlowError(6,'holder_unverified') from None
 
     def matching(self, profile):
-        found=[]
+        found={}
+        marker=Path(profile)/'active-browser.json'
+        if marker.is_symlink():raise FlowError(6,'browser_holder_unverified')
+        if marker.exists():
+            try:
+                entry=json.loads(marker.read_text())
+                pid,start=entry['pid'],entry['start_time']
+                if type(pid) is not int or pid<=1 or not isinstance(start,str) or not start.isdecimal():
+                    raise ValueError()
+                proc=Path('/proc')/str(pid)
+                if self.identity(pid)==start and proc.stat().st_uid==os.getuid():
+                    fields=(proc/'stat').read_text().rsplit(')',1)[1].split()
+                    if fields[0]!='Z':found[pid]=start
+            except (FileNotFoundError,ProcessLookupError):
+                pass
+            except (OSError,ValueError,KeyError,IndexError,TypeError):
+                raise FlowError(6,'browser_holder_unverified') from None
         for item in Path('/proc').iterdir():
             if not item.name.isdecimal(): continue
             try: args=(item/'cmdline').read_bytes().split(b'\0')
-            except FileNotFoundError: continue
-            except PermissionError: continue
+            except (FileNotFoundError,ProcessLookupError,PermissionError): continue
             if ('--user-data-dir='+str(profile)).encode() in args:
-                found.append((int(item.name),self.identity(int(item.name))))
-        return found
+                pid=int(item.name)
+                start=self.identity(pid)
+                if start is not None:found[pid]=start
+        return list(found.items())
 
     def close(self, profile):
         for pid, start in self.matching(profile):
-            if self.identity(pid)!=start: raise FlowError(6,'browser_identity_changed')
-            os.kill(pid,signal.SIGTERM)
+            current=self.identity(pid)
+            if current is None:continue
+            if current!=start:raise FlowError(6,'browser_identity_changed')
+            try:os.kill(pid,signal.SIGTERM)
+            except ProcessLookupError:continue
         deadline=time.monotonic()+5
         while self.matching(profile):
             if time.monotonic()>deadline: raise FlowError(6,'browser_cleanup_unverified')

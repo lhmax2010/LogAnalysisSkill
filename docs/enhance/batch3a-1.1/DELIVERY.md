@@ -860,3 +860,10 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
   - `evidence-b210/python310.txt` 的 SHA256 为 `42a80f32b1c7e90e47008e733ed619153d96321277ebd5fede301940e2a2c63a`。
   - `evidence-b210/python312.txt` 的 SHA256 为 `c2705983c1ae213330e27d91ed1a310f777e1d292d484756581d1ae2c7533ef3`。
 - 仓库凭据预检见 `evidence-b210/prepush-final.json`。
+
+## B2.11 与 A-aging 构建机跟进
+
+- Rehearsal 5（`29753dd`）在账户检查后出现 `paused_request_unresolved`。同一流量曾同时经过 Playwright HTTP route 与自管 Fetch，并全量暂停响应。现在 HTTP 只由一个自管 CDP Fetch 会话拦截。静态资源仅暂停请求；需要核验跳转和提交收据的请求才请求响应暂停，响应使用 `Fetch.continueResponse`。未获跳转许可的新请求照常拒绝。
+- 浏览器级 CDP 隔离新页面目标；主文档响应附加禁止 popup 的沙箱策略，文档创建时用固定脚本关闭 window.open，防止新目标事件晚于首请求；WebSocket 和 service worker 仍走原有拒绝边界。每条暂停证据记录阶段及单调时钟的接收、决定、发送和确认时间；身份路径保留注册形状。关闭前收敛延迟命令，关闭后清理剩余任务。浏览器启动器在私有 profile 内记录主进程 PID 与启动标识，供关闭校验和恢复使用。
+- A 的保存页面仍独立核对 19091860 和原始基线（构建机报告 2244/2244、6/6）。实时构建支持 `--live-build`，默认按 `cosmos.acceptance_live_builds` 从新到旧选。报告 HTTP 404、有可验证的桶索引且详情证实终态才记为 `RETIRED`，后续候选可继续；其他观察失败正常报错。实时 A/B/E/F 与源码快照基于同一个选定构建。
+- 两版标准和 minimal Python、凭据预检及 CPU 负载下 50 轮 Chrome 静态资源回归见 `evidence-b211/`。本机使用回环夹具，真实 Hub 重演和真实 A 复验待构建机。

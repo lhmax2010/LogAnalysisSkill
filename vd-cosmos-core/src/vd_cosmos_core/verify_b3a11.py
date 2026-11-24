@@ -124,22 +124,57 @@ def offline_tests(config, repo, directory, env):
     return artifact
 
 
+def live_candidates(config, override):
+    candidates = [override] if override else config.raw['cosmos'].get('acceptance_live_builds', ['19270912', '19091860'])
+    if (not isinstance(candidates, list) or not 1 <= len(candidates) <= 10
+            or any(not isinstance(item, str) or not re.fullmatch(r'[1-9][0-9]*', item)
+                   or item == '19270877' for item in candidates)):
+        raise FlowError(2, 'invalid_acceptance_live_builds')
+    return sorted(set(candidates), key=int, reverse=True)
+
+
 def read_side(args, config, directory, repo, config_path):
-    options = SimpleNamespace(**vars(args), build_id='19091860', mode='real', fixture_counts=None)
-    verify_b2.check_source(options, config, repo)
-    result = {'mode': 'real'}
     target = directory / 'read-side'
     target.mkdir()
-    verify_b2.run(options, config, target, result, repo, config_path)
-    atomic_write(config.data_root, target / 'result.json', safe_bytes(config, json_bytes(result)))
+    result = {'mode': 'real', 'saved_build_id': '19091860', 'C': {}, 'live_attempts': []}
+    saved = Path(args.saved_dir)
+    offline = target / 'saved-19091860'
+    offline.mkdir()
+    saved_args = SimpleNamespace(mode='real', fixture_counts=None, run_id='19091860',
+        arm_report=str(saved / 'report_armv7l.html'), x86_report=str(saved / 'report_x86_64.html'),
+        detail_page=str(saved / 'probe_3bed7e8c.html'), rows=args.rows, links=args.links)
+    try:
+        verify_b2.verify_saved(saved_args, config, offline, result['C'])
+    except FlowError as error:
+        result['C'] = verify_b2.verdict(False, error=error.reason)
+
+    candidates = live_candidates(config, getattr(args, 'live_build_id', None))
+    result.update(exit_code=0, verdict='RETIRED')
+    for build in candidates:
+        options = SimpleNamespace(**{**vars(args), 'build_id': build, 'mode': 'real',
+                                     'fixture_counts': None, 'live_build_id': None})
+        verify_b2.check_source(options, config, repo)
+        live = {'build_id': build}
+        live_target = target / build
+        live_target.mkdir()
+        verify_b2.run(options, config, live_target, live, repo, config_path, independent_live=True)
+        result['live_attempts'].append({'build_id': build, 'verdict': live['verdict'],
+                                        **({'reports': live['reports']} if 'reports' in live else {})})
+        result.update(live, live_build_id=build)
+        if live['verdict'] != 'RETIRED':
+            break
+    if result['C']['verdict'] != 'PASS':
+        result.update(verify_b2.verdict(False))
+    artifact = atomic_write(config.data_root, target / 'result.json', safe_bytes(config, json_bytes(result)))
     if result.get('exit_code'):
-        raise FlowError(result['exit_code'], 'read_side_acceptance_failed')
+        raise FlowError(result['exit_code'], 'read_side_acceptance_failed',
+                        read_side_result=artifact, live_build_id=result['live_build_id'])
     return result
 
 
-def snapshots(config, repo, directory, env, config_path, logs):
-    if len(logs) != 7 or len({json.dumps(x['key'], sort_keys=True) for x in logs}) != 7:
-        raise FlowError(6, 'expected_seven_failed_packages')
+def snapshots(config, repo, directory, env, config_path, logs, build_id='19091860'):
+    if not logs or len({json.dumps(x['key'], sort_keys=True) for x in logs}) != len(logs):
+        raise FlowError(6, 'unique_failed_packages_required')
     # Check authentication before reading variables or attempting package work.
     try:
         adapter = P4Adapter(config)
@@ -147,7 +182,7 @@ def snapshots(config, repo, directory, env, config_path, logs):
         adapter.login_status()
     except FlowError as error:
         raise FlowError(error.code, error.reason, **error.details, stage='p4_preflight') from None
-    common = ['--config', str(config_path), '--backend', 'real', '--build-id', '19091860']
+    common = ['--config', str(config_path), '--backend', 'real', '--build-id', build_id]
     command(config, repo, directory, env, 'vd-cosmos-fetch', ['base-list', *common])
     rows = []
     for log in logs:
@@ -215,7 +250,12 @@ def execute(args, repo):
         result['contracts'] = contracts(config, repo, directory, env)
         result['offline_tests'] = offline_tests(config, repo, directory, env)
         result['read_side'] = read_side(args, config, directory, repo, config_path)
-        result['summary'] = snapshots(config, repo, directory, env, config_path, result['read_side']['B']['logs'])
+        side = result['read_side']
+        if side.get('verdict') == 'RETIRED':
+            result['verdict'] = 'RETIRED'
+        else:
+            build = side.get('live_build_id', '19091860')
+            result['summary'] = snapshots(config, repo, directory, env, config_path, side['B']['logs'], build)
         failed = [r['exit_code'] for r in result['summary'] if r['exit_code']]
         if failed:
             result.update(exit_code=failed[0], verdict='FAIL')
@@ -243,6 +283,8 @@ def execute(args, repo):
         print(todo['command'], file=sys.stderr)
     return {'commit': head, 'python': result['python'], 'exit_code': result['exit_code'],
             'verdict': result['verdict'], 'summary': result['summary'], 'result_file': artifact,
+            **{field: result['read_side'][field] for field in ('live_build_id', 'live_attempts')
+               if field in result.get('read_side', {})},
             **({'todo': todo} if todo else {}),
             **({k: result[k] for k in ('error', 'details') if k in result})}
 
@@ -251,7 +293,7 @@ def main(argv=None):
     parser = Parser(description=__doc__)
     for name in ('verified-commit', 'config', 'saved-dir', 'rows', 'links'):
         parser.add_argument('--'+name, required=True)
-    parser.add_argument('--live-build-id')
+    parser.add_argument('--live-build', '--live-build-id', dest='live_build_id')
     parser.add_argument('--budget-s', type=float)
     try:
         args = parser.parse_args(argv)

@@ -20,6 +20,31 @@ from vd_cosmos_core.files import digest, json_bytes
 from .browser_scripts import SCRIPT, DIGEST, arguments
 
 
+POPUP_SANDBOX = 'sandbox allow-scripts allow-forms allow-same-origin'
+POPUP_GUARD = """(() => {
+    const opensWindow = target => !["", "_self", "_top", "_parent"].includes((target || "").toLowerCase());
+    const baseTarget = () => document.querySelector("base[target]")?.target;
+    Object.defineProperty(window, "open", {
+        value: () => null, configurable: false, writable: false
+    });
+    const preventNewWindow = event => {
+        const target = event.composedPath().find(node => node instanceof HTMLAnchorElement
+            || node instanceof HTMLAreaElement);
+        if (target && (opensWindow(target.target || baseTarget())
+            || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1)) {
+            event.preventDefault();
+        }
+    };
+    window.addEventListener("click", preventNewWindow, true);
+    window.addEventListener("auxclick", preventNewWindow, true);
+    window.addEventListener("submit", event => {
+        if (opensWindow(event.submitter?.formTarget || event.target.target || baseTarget())) {
+            event.preventDefault();
+        }
+    }, true);
+})();"""
+
+
 def environment(config,profile,temp_dir=None):
     # DEBUG can cause protocol traffic to be printed by the driver itself.
     env={k:v for k,v in os.environ.items() if not any(x in k.upper() for x in ('DEBUG','TRACE','HAR','PLAYWRIGHT','PW_'))}
@@ -66,6 +91,7 @@ class Pause:
     evidence: dict
     timer: object = None
     task: object = None
+    timeline: dict = None
     started: bool = False
     reported: bool = False
     teardown: bool = False
@@ -78,9 +104,10 @@ class Driver:
 
     def __init__(self,config,session,*,headless=False,local_origin=None):
         self.config=config;self.session=session;self.headless=headless;self.local_origin=local_origin
-        self._pw=None;self._context=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None;self._submission_id=None
-        self._pauses={};self._paused_count=0;self._resolved_count=0;self._forced_closed=0
+        self._pw=None;self._context=None;self._browser=None;self._targets=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None;self._submission_id=None
+        self._pauses={};self._seen_pauses=set();self._paused_count=0;self._resolved_count=0;self._forced_closed=0
         self._pause_fault=False;self._closing=False;self._tearing_down=False;self._emergency_close=False;self._cancelled_on_close=0
+        self._deferred=set();self._pause_timeline=[];self._response_redirects=set()
         self._in_flight=set();self._network_started=0;self._network_finished=0
         self._last_activity=time.monotonic()
     def operate(self,args,request,context,confirm,reader_factory):
@@ -110,31 +137,37 @@ class Driver:
         try:
             self._pw=sync_playwright().start()
             wrapper=Path(__file__).resolve().parents[2]/'scripts/browser_child.py'
-            stage='launch_persistent_context'
-            self._context=self._pw.chromium.launch_persistent_context(str(profile),executable_path=str(wrapper),headless=self.headless,chromium_sandbox=True,
-                env=environment(self.config,profile,temp_dir),service_workers='block',accept_downloads=False,
+            stage='launch'
+            self._browser=self._pw.chromium.launch(executable_path=str(wrapper),headless=self.headless,chromium_sandbox=True,
+                env={**environment(self.config,profile,temp_dir),'VD_BROWSER_PROFILE':str(profile)},
                 ignore_default_args=['--password-store=basic','--use-mock-keychain'],
                 args=['--disable-save-password-bubble','--disable-background-networking','--disable-sync','--disable-default-apps','--disable-quic','--disable-http2','--disable-session-crashed-bubble'])
+            self._context=self._browser.new_context(service_workers='block',accept_downloads=False)
+            self._context.add_init_script(script=POPUP_GUARD)
             stage='new_page'
             self._page=self._context.pages[0] if self._context.pages else self._context.new_page()
             self._page.on('request',self._request_started)
             self._page.on('requestfinished',self._request_finished)
             self._page.on('requestfailed',self._request_finished)
             stage='route'
-            self._context.route('**/*',self._route)
             self._context.route_web_socket('**/*',self._websocket)
             self._context.on('page',self._new_page)
             stage='cdp'
             self._cdp=self._context.new_cdp_session(self._page)
             self._frame=self._cdp.send('Page.getFrameTree')['frameTree']['frame']['id']
+            self._target_id=self._cdp.send('Target.getTargetInfo')['targetInfo']['targetId']
             self._cdp.on('Fetch.requestPaused',self._paused)
+            self._targets=self._browser.new_browser_cdp_session()
+            self._targets.on('Target.attachedToTarget',self._attached_target)
+            self._targets.send('Target.setAutoAttach',{'autoAttach':True,'waitForDebuggerOnStart':True,
+                'flatten':True,'filter':[{'type':'page'}]})
             stage='fetch_enable'
-            self._cdp.send('Fetch.enable',{'patterns':[{'urlPattern':'*','requestStage':'Request'},{'urlPattern':'*','requestStage':'Response'}]})
+            self._cdp.send('Fetch.enable',{'patterns':[{'urlPattern':'*','requestStage':'Request'}]})
         except Exception as error:
             details=launch_diagnostic(self.config,error,stage)
             try:self.close()
             except FlowError:details['cleanup']='unverified; recovery required'
-            if stage=='launch_persistent_context' and re.search(r'(?i)sandbox|zygote_host_impl_linux|operation not permitted.*user.?namespace',str(error)):
+            if stage=='launch' and re.search(r'(?i)sandbox|zygote_host_impl_linux|operation not permitted.*user.?namespace',str(error)):
                 raise FlowError(6,'browser_sandbox_unavailable',**details) from None
             raise FlowError(5,'browser_start_failed',**details) from None
     def _defer(self, owner, method, *args, pause=None, continuing=False):
@@ -145,14 +178,16 @@ class Driver:
         """
         coroutine=None
         try:
-            if method not in {'abort','continue_','close','send'}:raise ValueError()
+            if method not in {'close','send'}:raise ValueError()
             impl=owner._impl_obj;function=getattr(impl,method)
             if not inspect.iscoroutinefunction(function) or not impl._loop.is_running():raise ValueError()
             coroutine=function(*args) if pause is None else self._dispatch_pause(pause,function,args,continuing)
             task=impl._loop.create_task(coroutine)
+            self._deferred.add(task)
             if pause is None:
                 task.add_done_callback(self._deferred_done)
             else:
+                pause.timeline['decision_at']=time.monotonic()
                 pause.task=task
                 task.add_done_callback(lambda done:self._pause_done(pause,done))
         except Exception:
@@ -161,14 +196,15 @@ class Driver:
             elif continuing:self._expire_pause(pause)
             else:self._lose_pause(pause)
     def _deferred_done(self,task):
+        self._deferred.discard(task)
         if task.cancelled():return
-        if task.exception() is not None:self._fatal='browser_callback_dispatch_failed'
+        if task.exception() is not None and not self._closing:self._fatal='browser_callback_dispatch_failed'
     def pause_counts(self):
         return {'paused':self._paused_count,'resolved':self._resolved_count,
                 'pending':len(self._pauses),'closed_unconfirmed':self._forced_closed,
                 'cancelled_on_close':self._cancelled_on_close}
     def _operation_evidence(self):
-        details={'pause_counts':self.pause_counts()}
+        details={'pause_counts':self.pause_counts(),'pause_timeline':self._pause_timeline}
         if self.gate is not None:
             if self.gate.request_records:details['request_records']=self.gate.request_records
             for record in reversed(self.gate.records):
@@ -204,13 +240,21 @@ class Driver:
             self._last_activity=time.monotonic()
     def _begin_pause(self,owner,stage,request_id,url,method='GET',resource='Other'):
         key=(stage,request_id)
-        if key in self._pauses:
+        if key in self._seen_pauses:
             return None
+        self._seen_pauses.add(key)
         loop=asyncio.get_running_loop()
         try:shape=self._url_shape(url)
         except (TypeError,ValueError):shape={'path':'unrecognized'}
         pause=Pause(owner,stage,request_id,shape,loop.time()+self.pause_timeout_s,
                     request_evidence(url,method,resource,'paused_request_unresolved'),teardown=self._tearing_down)
+        label=shape['path']
+        if label=='registered_static':
+            label=pause.evidence['path']
+        pause.timeline={'paused_at':time.monotonic(),'decision_at':None,'sent_at':None,
+                        'acked_at':None,'stage':stage,'path':label,'origin':shape.get('origin','other'),
+                        'method':pause.evidence['method'],'resource_type':pause.evidence['resource_type']}
+        self._pause_timeline.append(pause.timeline)
         self._last_activity=time.monotonic()
         self._paused_count+=1
         self._pauses[key]=pause
@@ -225,7 +269,9 @@ class Driver:
                 self._fail_pause(pause)
                 return
         pause.started=True
+        pause.timeline.update(sent_at=time.monotonic(), command=args[0])
         await function(*args)
+        pause.timeline['acked_at']=time.monotonic()
     def _forget_pause(self,pause):
         self._pauses.pop((pause.stage,pause.request_id))
         pause.timer.cancel()
@@ -235,11 +281,13 @@ class Driver:
         self._resolved_count+=1
         if cancelled_on_close:self._cancelled_on_close+=1
     def _pause_done(self,pause,task):
+        self._deferred.discard(task)
+        error=None if task.cancelled() else task.exception()
         if self._pauses.get((pause.stage,pause.request_id)) is not pause or pause.task is not task:
             return
         if task.cancelled():
             self._lose_pause(pause)
-        elif error:=task.exception():
+        elif error:
             if pause.teardown and type(error).__name__=='TargetClosedError':
                 self._resolve_pause(pause,cancelled_on_close=True)
             else:
@@ -254,8 +302,7 @@ class Driver:
             self.gate.request_records.append(pause.evidence)
         pause.reported=True
     def _fail_pause(self,pause):
-        if pause.stage=='route':self._defer(pause.owner,'abort',pause=pause)
-        else:self._defer(pause.owner,'send','Fetch.failRequest',{'requestId':pause.request_id,'errorReason':'BlockedByClient'},pause=pause)
+        self._defer(pause.owner,'send','Fetch.failRequest',{'requestId':pause.request_id,'errorReason':'BlockedByClient'},pause=pause)
     def _expire_pause(self,pause):
         if self._pauses.get((pause.stage,pause.request_id)) is not pause:return
         if pause.task is not None and pause.task.done() and not pause.task.cancelled():
@@ -276,39 +323,21 @@ class Driver:
         self._forget_pause(pause)
         self._forced_closed+=1
         if pause.task is not None and not pause.task.done() and not pause.task.get_loop().is_closed():pause.task.cancel()
-        # An acknowledgement can be lost after the decision was delivered.
-        # Never send a competing decision on that handle. Tear down its context.
-        if not self._emergency_close and self._context is not None:
-            self._emergency_close=True
-            self._defer(self._context,'close')
+        # An acknowledgement can be lost after delivery. The main flow
+        # closes the context rather than issuing another decision on this ID.
+        self._emergency_close=True
     def _websocket(self,route):
-        # Not connecting is the mock/block operation. Even close() can deadlock
-        # a sync callback; do not call it, connect_to_server(), or inspect frames.
+        # Not connecting is the mock/block operation.
         if self.gate is not None and self.gate.dismissing:
             self.gate.reject_dismissal(route.url,'GET','WebSocket')
-        return None
     def _new_page(self,page):
         if page!=self._page:self._defer(page,'close')
-    def _route(self,route):
-        try:url,method,resource=route.request.url,route.request.method,route.request.resource_type
-        except Exception:url,method,resource='','GET','Other'
-        pause=self._begin_pause(route,'route',id(route),url,method,resource)
-        if pause is None:return
-        try:
-            if self._pause_fault or self._closing:
-                if self.gate is not None and self.gate.dismissing:
-                    self.gate.record_request(url,method,resource,'gate_closed')
-                self._fail_pause(pause);return
-            if self.gate is not None and self.gate.dismissing:
-                # The Fetch layer validates AJAX attribution before any send.
-                if (self.gate.fatal or route.request.frame!=self._page.main_frame
-                        or not self.gate.static_allowed(address(url),method,resource)):
-                    self.gate.reject_dismissal(url,method,resource);self._fail_pause(pause);return
-            if route.request.frame!=self._page.main_frame:self._fail_pause(pause);return
-            self._defer(route,'continue_',pause=pause,continuing=True)
-        except Exception:
-            if self.gate is not None and self.gate.dismissing:self.gate.reject_dismissal(url,method,resource)
-            self._fail_pause(pause)
+    def _attached_target(self,event):
+        # Related targets are paused before executing page/worker code. Keep
+        # them fail-closed, including their initial network request.
+        target=event['targetInfo']
+        if target['type']=='page' and target['targetId']!=self._target_id:
+            self._defer(self._targets,'send','Target.closeTarget',{'targetId':target['targetId']})
     def _paused(self,event):
         rid=event['requestId'];r=event.get('request',{});url=r.get('url','');allow=False;blocked='BlockedByClient'
         response_stage='responseStatusCode' in event or 'responseErrorReason' in event
@@ -323,6 +352,11 @@ class Driver:
             if 'responseErrorReason' in event:
                 self._fail_pause(pause);return
             method=r['method']
+            previous=event.get('redirectedRequestId')
+            if previous and previous not in self._response_redirects and not response_stage:
+                if self.gate.dismissing:self.gate.reject_dismissal(url,method,resource)
+                self._fail_pause(pause);return
+            if previous and not response_stage:self._response_redirects.discard(previous)
             if response_stage:
                 status=event['responseStatusCode']
                 location=next((x['value'] for x in event.get('responseHeaders',[]) if x['name'].lower()=='location'),'')
@@ -330,6 +364,7 @@ class Driver:
                     self._result='accepted' if status==302 and accepted_location(self.config,url,location) else 'uncertain'
                     allow=False
                 else:allow=self.gate.response(url,status,location,main_document=event.get('frameId')==self._frame and resource=='Document',method=method,resource=resource)
+                if allow and status in {301,302,303,307,308}:self._response_redirects.add(rid)
             elif self.gate.dismissing:
                 ajax=any(k.lower()=='wicket-ajax' for k in r.get('headers',{}))
                 allow=self.gate.request(url,method,resource=resource,ajax=ajax,main_frame=event.get('frameId')==self._frame)
@@ -345,7 +380,26 @@ class Driver:
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=run_ajax or headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
                 if len(self.gate.run_candidates)>captured:blocked='Aborted'
                 if allow and self.gate.sent and self._submission_id is None:self._submission_id=rid
-            self._defer(self._cdp,'send','Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':blocked},pause=pause,continuing=allow)
+            if not allow:
+                self._defer(self._cdp,'send','Fetch.failRequest',
+                            {'requestId':rid,'errorReason':blocked},pause=pause)
+            elif response_stage:
+                options={'requestId':rid}
+                if (event['responseStatusCode']==200 and resource=='Document'
+                        and event.get('frameId')==self._frame):
+                    # Chrome enforces this even if a popup would start its first
+                    # navigation before the target attachment notification.
+                    # Return original headers unchanged. No values are logged.
+                    headers=[*event.get('responseHeaders',[]),
+                        {'name':'Content-Security-Policy','value':POPUP_SANDBOX}]
+                    options.update(responseCode=200,responsePhrase=event.get('responseStatusText') or 'OK',
+                                   responseHeaders=headers)
+                self._defer(self._cdp,'send','Fetch.continueResponse',options,pause=pause,continuing=True)
+            else:
+                options={'requestId':rid}
+                if resource=='Document' or rid==self._submission_id:
+                    options['interceptResponse']=True
+                self._defer(self._cdp,'send','Fetch.continueRequest',options,pause=pause,continuing=True)
         except Exception:
             self._fatal='request_gate_failed'
             self.gate.record_request(url,r.get('method',''),resource,self._fatal)
@@ -515,28 +569,39 @@ class Driver:
         while not self._result and not self.gate.fatal and not self._pause_fault and time.monotonic()<deadline:self._page.wait_for_timeout(50)
         self._check_pause_fault()
         return 'blocked_before_send' if self.gate.fatal=='blocked_before_send' else self._result or 'uncertain'
+    async def _join_deferred(self):
+        tasks=tuple(self._deferred)
+        if tasks:
+            for task in tasks:task.cancel()
+            await asyncio.gather(*tasks,return_exceptions=True)
+
     def close(self):
-        failed=False;closed=False
+        failed=False
         self._closing=True
         try:
             deadline=time.monotonic()+2*self.pause_timeout_s
-            while self._pauses and self._page is not None and time.monotonic()<deadline:
+            while self._deferred and self._page is not None and time.monotonic()<deadline:
                 try:self._page.wait_for_timeout(20)
                 except Exception:break
             self._tearing_down=True
             if self._context:
+                if self._deferred:self._context._sync(self._join_deferred())
                 self._context.close()
-                closed=True
+                if self._deferred:self._context._sync(self._join_deferred())
         except Exception:
             failed=True
         finally:
             self._context=None
+            if self._browser:
+                try:self._browser.close()
+                except Exception:failed=True
+                self._browser=None
             if self._pw:
                 try:self._pw.stop()
                 except Exception:failed=True
                 self._pw=None
             for pause in tuple(self._pauses.values()):
-                if closed and pause.teardown:self._resolve_pause(pause,cancelled_on_close=True)
+                if not failed and pause.teardown:self._resolve_pause(pause,cancelled_on_close=True)
                 else:self._lose_pause(pause)
         profile=submit_sessions.profile_path(self.config,self.session)
         # Process identity/shutdown must be checked before deleting socket files.

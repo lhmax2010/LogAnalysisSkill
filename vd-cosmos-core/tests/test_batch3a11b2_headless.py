@@ -52,7 +52,7 @@ class HeadlessTempTests(HeadlessWatchdog,B1Case):
 class Server(ThreadingHTTPServer):
     def __init__(self):
         super().__init__(('127.0.0.1',0),Handler);self.calls=[];self.redirect=None;self.responses={}
-        self.holds={};self.completed={}
+        self.holds={};self.delays={};self.completed={}
         self.thread=threading.Thread(target=self.serve_forever,daemon=True);self.thread.start()
     @property
     def origin(self):return 'http://127.0.0.1:'+str(self.server_port)
@@ -63,6 +63,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.server.calls.append(('GET',self.path))
         if self.path in self.server.holds:self.server.holds[self.path].wait(5)
+        if self.path in self.server.delays:time.sleep(self.server.delays[self.path])
         status,location,body=self.server.responses.get(self.path,(200,None,b'<html><body><button id="human">human action</button><input type="password" autocomplete="current-password"></body></html>'))
         self.send_response(status)
         if location:self.send_header('Location',location)
@@ -94,8 +95,29 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(counts['pending'],0)
         self.assertEqual(counts['paused'],counts['resolved']+counts['closed_unconfirmed'])
     def wait(self):self.page.wait_for_timeout(350)
+    def test_sixty_static_files_with_slow_response_have_one_pause_each(self):
+        paths=[f'/asset/fixture-{index}.png' for index in range(60)]
+        self.driver.gate.static_keys.update(paths)
+        slow=paths[-1]
+        self.server.delays[slow]=2
+        target='/overview/'+self.config.raw['submit']['target_config_id']
+        self.driver.gate.navigation(self.server.origin+target)
+        self.server.responses[target]=(200,None,('<html><body>' +
+            ''.join(f'<img src="{path}">' for path in paths) + '</body></html>').encode())
+        start=len(self.driver._pause_timeline)
+        self.page.reload(wait_until='load',timeout=20000)
+        self.driver._wait_for_quiet(load=True)
+        timeline=[r for r in self.driver._pause_timeline[start:] if r['path'] in paths]
+        self.assertCountEqual([r['path'] for r in timeline],paths)
+        self.assertTrue(all(r['stage']=='fetch_request' and r['command']=='Fetch.continueRequest'
+            and r['paused_at']<=r['decision_at']<=r['sent_at']<=r['acked_at'] for r in timeline))
+        self.assertCountEqual([path for method,path in self.server.calls if path in paths],paths)
+        self.assertEqual(self.driver.pause_counts()['closed_unconfirmed'],0)
+        self.assertEqual(self.driver.pause_counts()['pending'],0)
+
     def test_human_get_post_navigation_popup_and_iframe_never_reach_server(self):
-        self.page.evaluate("""base=>{fetch(base+'/write',{method:'POST'}).catch(()=>{});fetch(base+'/run').catch(()=>{});window.open(base+'/popup');let f=document.createElement('iframe');f.src=base+'/iframe';document.body.append(f);} """,self.server.origin)
+        self.assertFalse(self.page.evaluate('Object.getOwnPropertyDescriptor(window, "open").writable'))
+        self.page.evaluate("""base=>{fetch(base+'/write',{method:'POST'}).catch(()=>{});fetch(base+'/run').catch(()=>{});window.open(base+'/popup');let a=document.createElement('a');a.target='_blank';a.href=base+'/popup-link';document.body.append(a);a.click();let f=document.createElement('iframe');f.src=base+'/iframe';document.body.append(f);} """,self.server.origin)
         self.wait();self.assertEqual(self.server.calls,[])
     def test_recording_callback_and_submit_both_blocked_server_counts_zero(self):
         self.page.evaluate("""base=>{fetch(base+'/wicket/page?1-2.IBehaviorListener.0-form-field',{method:'POST',body:'field=x'}).catch(()=>{});fetch(base+'/wicket/page?1-3.IFormSubmitListener-form',{method:'POST',body:'field=x'}).catch(()=>{});} """,self.server.origin)

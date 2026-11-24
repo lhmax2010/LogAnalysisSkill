@@ -1,0 +1,30 @@
+{
+  "headless_stress": {
+    "file": "docs/enhance/batch3a-1.1/evidence-b211/headless-stress.txt",
+    "rounds": 50,
+    "sha256": "442dc7586e7fd7f651a4cff6f28ec5657013c6e72e515bb3a943d42d8751e578"
+  },
+  "minimal_disabled_backends": [
+    "_lzma",
+    "_bz2"
+  ],
+  "suites": [
+    {
+      "file": "docs/enhance/batch3a-1.1/evidence-b211/python310.txt",
+      "interpreter": "Python 3.10.12",
+      "minimal_passed": 430,
+      "sha256": "e05ff186fab16f6d6ef445802c43bedcc177af5f5318d67eafaa7d2fb53205f3",
+      "skipped": 0,
+      "standard_passed": 430
+    },
+    {
+      "file": "docs/enhance/batch3a-1.1/evidence-b211/python312.txt",
+      "interpreter": "Python 3.12.3",
+      "minimal_passed": 430,
+      "sha256": "52f95c48374cb72713923adc2fff98c2aecc94c69245361ef3c6946a82ca5f6c",
+      "skipped": 0,
+      "standard_passed": 430
+    }
+  ],
+  "whitespace": "trailing whitespace normalized"
+}

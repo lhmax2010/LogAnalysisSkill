@@ -39,19 +39,18 @@ class CallbackTests(B1Case):
                 _impl_obj=Impl()
                 request=SimpleNamespace(frame='main')
                 def __getattr__(self,name):raise AssertionError('sync facade called: '+name)
-            route=Facade();driver._route(route);self.assertEqual(called,[])
-            await asyncio.sleep(0);self.assertEqual(called,['continue'])
-            await asyncio.sleep(0)
-            route.request=SimpleNamespace(frame='iframe');driver._route(route)
+            route=Facade()
             driver._new_page(route);driver._websocket(route)
             driver._cdp=route;driver._frame='main'
             from vd_cosmos_core.submit_gate import Gate
             driver.gate=Gate(self.config,rehearse=True);driver.gate.phase='business'
             driver._paused({'requestId':'id','frameId':'other','request':{'url':'https://hub.example.invalid/blocked','method':'GET'}})
+            self.assertEqual(called,[])
             await asyncio.sleep(0)
-            self.assertEqual(called[1:3],['abort','close']);self.assertEqual(called[3][0],'Fetch.failRequest')
+            self.assertEqual(called[0],'close')
+            self.assertEqual(called[1][0],'Fetch.failRequest')
             await asyncio.sleep(0)
-            self.assertEqual(driver.pause_counts(),{'paused':3,'resolved':3,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
         asyncio.run(scenario())
     def test_missing_async_bridge_and_async_failure_fail_closed(self):
         driver=Driver(self.config,{})
@@ -69,38 +68,37 @@ class CallbackTests(B1Case):
             loop=asyncio.get_running_loop()
             driver=Driver(self.config,{})
             driver.gate=Gate(self.config,rehearse=True);driver.pause_timeout_s=.025
-            sent=[];closed=asyncio.Event()
+            sent=[]
             async def send(*args):
                 sent.append(args)
                 await asyncio.Event().wait()
-            async def close():closed.set()
             driver._cdp=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,send=send))
-            driver._context=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,close=close))
             url=driver.gate.origin+'/overview/35367'
             driver._frame='main';driver.gate.navigation(url)
             event={'requestId':'fixture','frameId':'main','resourceType':'Document','request':{'url':url,'method':'GET'}}
             driver._paused(event);driver._paused(event)
-            await asyncio.wait_for(closed.wait(),2)
-            self.assertEqual(sent,[('Fetch.continueRequest',{'requestId':'fixture'})])
+            await asyncio.sleep(.05)
+            self.assertTrue(driver._emergency_close)
+            self.assertEqual(sent,[('Fetch.continueRequest',{'requestId':'fixture','interceptResponse':True})])
             self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':0,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0})
             e=self.fails(4,driver._check_pause_fault)
             self.assertEqual(e.reason,'paused_request_unresolved')
             self.assertEqual(e.details['gate_records'][0]['url_shape']['path'],'/overview/<id>')
         asyncio.run(scenario())
 
-    def test_undecided_route_times_out_to_abort_only(self):
+    def test_undecided_fetch_times_out_to_fail_only(self):
         from vd_cosmos_core.submit_gate import Gate
         async def scenario():
             loop=asyncio.get_running_loop();driver=Driver(self.config,{})
             driver.gate=Gate(self.config,rehearse=True);driver.pause_timeout_s=.015
             sent=[];finished=asyncio.Event()
-            async def abort():
-                sent.append('abort');finished.set()
-            route=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,abort=abort))
-            driver._begin_pause(route,'route',id(route),driver.gate.origin+'/fixture?v=private')
+            async def send(command,options):
+                sent.append(command);finished.set()
+            cdp=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=loop,send=send))
+            driver._begin_pause(cdp,'fetch_request','one',driver.gate.origin+'/fixture?v=private')
             await asyncio.wait_for(finished.wait(),2)
             await asyncio.sleep(0)
-            self.assertEqual(sent,['abort'])
+            self.assertEqual(sent,['Fetch.failRequest'])
             self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
             self.assertNotIn('private',str(self.fails(4,driver._check_pause_fault).details))
         asyncio.run(scenario())
@@ -111,14 +109,15 @@ class CallbackTests(B1Case):
             driver=Driver(self.config,{})
             driver._closing=True;driver._tearing_down=True
             calls=[];done=asyncio.Event()
-            async def abort():
-                calls.append('abort');done.set()
+            async def send(command,options):
+                calls.append(command);done.set()
                 raise TargetClosedError()
-            route=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(),abort=abort),
-                                  request=SimpleNamespace(url='https://hub.example.invalid/favicon.ico'))
-            driver._route(route)
+            driver._cdp=SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(),send=send))
+            from vd_cosmos_core.submit_gate import Gate
+            driver.gate=Gate(self.config,rehearse=True)
+            driver._paused({'requestId':'fixture','request':{'url':driver.gate.origin+'/favicon.ico','method':'GET'}})
             await asyncio.wait_for(done.wait(),2);await asyncio.sleep(0)
-            self.assertEqual(calls,['abort'])
+            self.assertEqual(calls,['Fetch.failRequest'])
             self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':1})
             driver._check_pause_fault()
         asyncio.run(scenario())
@@ -140,10 +139,13 @@ class CallbackTests(B1Case):
             policy.assert_not_called()
             self.assertEqual(sent,[('Fetch.failRequest',{'requestId':'fixture','errorReason':'BlockedByClient'})])
             self.assertEqual(driver.pause_counts()['resolved'],1)
+            driver._paused(event)
+            await asyncio.sleep(0)
+            self.assertEqual(len(sent),1)
         asyncio.run(scenario())
     def test_registered_callbacks_have_no_sync_calls_or_websocket_connection(self):
         path=REPO/'vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py';tree=ast.parse(path.read_text())
-        names={'_route','_paused','_new_page','_websocket','_deferred_done'}
+        names={'_paused','_new_page','_websocket','_deferred_done','_attached_target'}
         for method in (n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name in names):
             for call in (n for n in ast.walk(method) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)):
                 self.assertNotIn(call.func.attr,{'send','close','abort','continue_','connect_to_server','_sync'})
@@ -153,12 +155,22 @@ class SandboxTests(B1Case):
     def test_launch_enables_sandbox_and_known_sandbox_failure_is_exit_6(self):
         self.config.raw['submit']['browser_executable']='/bin/true'
         r=model.create_request(self.config,CTX,self.form(),'fixture');s=sessions.start(self.config,r,CTX,Processes())
-        helper=diagnostics.LaunchDiagnosticTests();api=helper.fake_api('launch_persistent_context','No usable sandbox!')
+        helper=diagnostics.LaunchDiagnosticTests();api=helper.fake_api('launch','No usable sandbox!')
         with patch.dict(sys.modules,{'playwright':MagicMock(),'playwright.sync_api':api}):
             error=self.fails(6,Driver(self.config,s,headless=True).launch)
         self.assertEqual(error.reason,'browser_sandbox_unavailable')
-        options=api.sync_playwright().start.return_value.chromium.launch_persistent_context.call_args.kwargs
+        options=api.sync_playwright().start.return_value.chromium.launch.call_args.kwargs
         self.assertIs(options['chromium_sandbox'],True);self.assertNotIn('--no-sandbox',options['args'])
+
+
+class ProcessRaceTests(B1Case):
+    def test_disappearing_proc_entry_is_ignored_during_browser_cleanup(self):
+        proc=MagicMock()
+        proc.name='123'
+        proc.__truediv__.return_value.read_bytes.side_effect=ProcessLookupError
+        profile=self.root/'test-profile'
+        with patch.object(Path,'iterdir',return_value=[proc]):
+            self.assertEqual(sessions.Processes().matching(profile),[])
 
 
 class PauseReceiptTests(B1Case):

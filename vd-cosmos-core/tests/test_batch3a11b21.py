@@ -95,25 +95,25 @@ class LaunchDiagnosticTests(B1Case):
                 self.assertEqual(launch_diagnostic(self.config,RuntimeError(message),'start')['detail'],'detail withheld')
     def fake_api(self,stage,message):
         api=ModuleType('playwright.sync_api');manager=MagicMock();pw=manager.start.return_value
-        context=pw.chromium.launch_persistent_context.return_value;context.pages=[]
+        context=pw.chromium.launch.return_value.new_context.return_value;context.pages=[]
         cdp=context.new_cdp_session.return_value
-        cdp.send.return_value={'frameTree':{'frame':{'id':'main'}}}
+        cdp.send.return_value={'frameTree':{'frame':{'id':'main'}},'targetInfo':{'targetId':'main'}}
         failure=RuntimeError(message)
         if stage=='start':manager.start.side_effect=failure
-        elif stage=='launch_persistent_context':pw.chromium.launch_persistent_context.side_effect=failure
+        elif stage=='launch':pw.chromium.launch.side_effect=failure
         elif stage=='new_page':context.new_page.side_effect=failure
-        elif stage=='route':context.route.side_effect=failure
+        elif stage=='route':context.route_web_socket.side_effect=failure
         elif stage=='cdp':context.new_cdp_session.side_effect=failure
         elif stage=='fetch_enable':
             def send(command,*args):
                 if command=='Fetch.enable':raise failure
-                return {'frameTree':{'frame':{'id':'main'}}}
+                return {'frameTree':{'frame':{'id':'main'}},'targetInfo':{'targetId':'main'}}
             cdp.send.side_effect=send
         api.sync_playwright=lambda:manager
         return api
     def test_each_launch_stage_is_reported_and_failed_launch_cleans_temp(self):
         self.config.raw['submit']['browser_executable']='/bin/true'
-        for stage in ('start','launch_persistent_context','new_page','route','cdp','fetch_enable'):
+        for stage in ('start','launch','new_page','route','cdp','fetch_enable'):
             with self.subTest(stage=stage):
                 r=model.create_request(self.config,CTX,self.form()|{'EXTRA_BUILD_PARAMETER':stage},'fixture')
                 s=sessions.start(self.config,r,CTX,Processes());driver=Driver(self.config,s,headless=True)
@@ -132,7 +132,7 @@ class LaunchDiagnosticTests(B1Case):
         api=self.fake_api(None,'unused');driver=Driver(self.config,s,headless=True)
         with patch.dict(os.environ,dict.fromkeys(('TMPDIR','TMP','TEMP'),'inherited-'+('x'*130))),patch.dict(sys.modules,{'playwright':ModuleType('playwright'),'playwright.sync_api':api}):
             driver.launch()
-            kwargs=driver._pw.chromium.launch_persistent_context.call_args.kwargs
+            kwargs=driver._pw.chromium.launch.call_args.kwargs
             temp=Path(kwargs['env']['TMPDIR']);self.assertTrue(browser_temp.fits(temp))
             for key in ('TMPDIR','TMP','TEMP'):
                 self.assertEqual(kwargs['env'][key],str(temp));self.assertTrue(os.environ[key].startswith('inherited-'))
@@ -140,10 +140,10 @@ class LaunchDiagnosticTests(B1Case):
     def test_forced_launch_failure_with_credential_withholds_detail(self):
         self.config.raw['submit']['browser_executable']='/bin/true'
         r=model.create_request(self.config,CTX,self.form(),'fixture');s=sessions.start(self.config,r,CTX,Processes())
-        api=self.fake_api('launch_persistent_context','Password=fixture-secret')  # credential-test-sample
+        api=self.fake_api('launch','Password=fixture-secret')  # credential-test-sample
         with patch.dict(sys.modules,{'playwright':ModuleType('playwright'),'playwright.sync_api':api}):
             error=self.fails(5,Driver(self.config,s,headless=True).launch)
-        self.assertEqual(error.details['stage'],'launch_persistent_context');self.assertEqual(error.details['detail'],'detail withheld')
+        self.assertEqual(error.details['stage'],'launch');self.assertEqual(error.details['detail'],'detail withheld')
     def test_executable_override_and_default_use_resolved_wrapper(self):
         wrapper=self.root/'google-chrome';wrapper.write_text('#!/bin/sh\nexit 0\n');wrapper.chmod(0o700)
         link=self.root/'wrapper-link';link.symlink_to(wrapper)

@@ -124,6 +124,8 @@ EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。�
 
 构建机只读验收：`verify_b3a11_real.sh` 先核对经审核的完整提交与 HEAD、六个本线目录干净；然后入口契约、同解释器完整测试、原 A–F、变量页 base 清单和 19091860 的 7 个失败包快照。每次创建 `data_root/verification/b3a11-<随机串>/`，旧数据不复用、不修改。stderr 打印版本、HEAD、汇总表和必要的登录命令；stdout 是单个 JSON 对象。输出过凭据模式检查；未登录只提示、不执行登录。完整操作命令及验收限制见本批 DELIVERY.md。
 
+A 的固定离线回归仍使用 19091860 的保存页面和基线。实时检查默认按构建号从新到旧尝试 `cosmos.acceptance_live_builds`，也可用 `--live-build <构建号>` 固定选择。详情证实已结束、报告返回 404 且桶索引已核验时记为 `RETIRED`，有下一候选时继续。实时报告、日志和 P4 快照基于所选构建。旧参数 `--live-build-id` 可作为同义参数。
+
 ## Checkpoint B1 defaults and verification
 
 `vd-cosmos-submit` adds browser-free lookup, doctor and persisted request observation. Its runtime remains standard-library-only. `scripts/verify_b3a11b1_real.sh <reviewed-full-commit> --config <existing-config.json>` runs the full offline suite and then anonymous management checks under a fresh child data root. Human commands are documented only in `docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md`.
