@@ -68,17 +68,24 @@ def doctor(config, *, reader=None, package_probe=php_packages):
         result.update(error.as_dict(), p4_config={'valid': False, **error.as_dict()})
         return result
     if reader is None: return result
-    overview = reader.overview(); samples = overview['samples']
+    def duration_samples(page):
+        return [sample for sample in page['samples'] if sample['duration_s'] is not None]
+
+    pages = [reader.overview()]
+    samples = duration_samples(pages[0])
     if not samples:
         from .bm_pages import listing
-        page = listing(reader.get('/history/' + config.raw['cosmos']['bm_config_id'], history=True), config, 'history')
-        samples = page['samples']
+        pages.append(listing(reader.get('/history/' + config.raw['cosmos']['bm_config_id'], history=True), config, 'history'))
+        samples = duration_samples(pages[1])
+    result['samples_skipped'] = sum(page['samples_skipped'] for page in pages)
+    result['samples_skipped_shapes'] = [shape for page in pages for shape in page['samples_skipped_shapes']]
+    result['duration_unrecognized'] = [row for page in pages for row in page['duration_unrecognized']]
     clock = reader.samples[-1] if reader.samples else {}
     result['clock'] = clock
-    if not reader.clock_valid():
-        result.update(exit_code=6, timezone_check='时钟样本未核验')
-    elif not samples:
+    if not samples:
         result.update(timezone_check='页面时区未验证', exit_code=3)
+    elif not reader.clock_valid():
+        result.update(exit_code=6, timezone_check='时钟样本未核验')
     else:
         sample = min(samples, key=lambda x: x['duration_s'])
         error = sample['start_time'] + sample['duration_s'] - clock['server_time']

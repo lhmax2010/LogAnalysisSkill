@@ -16,6 +16,7 @@ from vd_cosmos_core.export import check_content
 from vd_cosmos_core.submit_gate import Gate, address, request_evidence, static_key
 from vd_cosmos_core.submit_browser_contract import accepted_location, wire_values, verify_parts
 from vd_cosmos_core.submit_terminal import confirmation_error
+from vd_cosmos_core.submit_config import SECRET_NAME
 from vd_cosmos_core.files import digest, json_bytes
 from .browser_scripts import SCRIPT, DIGEST, arguments
 
@@ -81,6 +82,31 @@ def launch_diagnostic(config, error, stage):
     return {'exception_type':kind,'stage':stage,'detail':detail}
 
 
+def hub_path_shape(evidence):
+    """Bounded hub-only URL shape. Drop matrix parameters and opaque segments."""
+    def segment_shape(segment):
+        segment = segment.partition(';')[0]
+        if (not re.fullmatch(r'[A-Za-z0-9._~-]{0,40}', segment) or SECRET_NAME.search(segment)
+                or re.fullmatch(r'(?=.*[a-fA-F])[0-9a-fA-F]{16,}', segment)):
+            return '<redacted>'
+        return re.sub(r'[0-9]+', 'N', segment)
+
+    path = '/'.join(segment_shape(segment) for segment in (evidence['path'] or '').split('/'))
+    keys = [re.sub(r'[0-9]+', 'N', key) if not SECRET_NAME.search(key) else '<redacted>'
+            for key in evidence['query_keys']]
+    return (path + ('?' + '&'.join(keys) if keys else ''))[:80]
+
+
+@dataclass
+class Flight:
+    key: tuple
+    evidence: dict
+    started_at: float
+    announced: bool
+    fetch_id: str | None = None
+    decision: str = 'none'
+
+
 @dataclass
 class Pause:
     owner: object
@@ -95,6 +121,7 @@ class Pause:
     started: bool = False
     reported: bool = False
     teardown: bool = False
+    flight: Flight | None = None
 
 
 class Driver:
@@ -108,7 +135,7 @@ class Driver:
         self._pauses={};self._seen_pauses=set();self._paused_count=0;self._resolved_count=0;self._forced_closed=0
         self._pause_fault=False;self._closing=False;self._tearing_down=False;self._emergency_close=False;self._cancelled_on_close=0
         self._deferred=set();self._pause_timeline=[];self._response_redirects=set()
-        self._in_flight=set();self._network_started=0;self._network_finished=0
+        self._in_flight={};self._ended_before_start=set();self._network_started=0;self._network_finished=0
         self._last_activity=time.monotonic()
     def operate(self,args,request,context,confirm,reader_factory):
         self.gate=Gate(self.config,rehearse=args.rehearse,local_origin=self.local_origin)
@@ -117,7 +144,7 @@ class Driver:
             self._check_pause_fault()
             return dict(result,**self._operation_evidence())
         except FlowError as error:
-            self._check_pause_fault()
+            if error.reason != 'paused_request_unresolved':self._check_pause_fault()
             raise FlowError(error.code,error.reason,**{**error.details,**self._operation_evidence()}) from None
         except Exception:
             self._check_pause_fault()
@@ -146,9 +173,6 @@ class Driver:
             self._context.add_init_script(script=POPUP_GUARD)
             stage='new_page'
             self._page=self._context.pages[0] if self._context.pages else self._context.new_page()
-            self._page.on('request',self._request_started)
-            self._page.on('requestfinished',self._request_finished)
-            self._page.on('requestfailed',self._request_finished)
             stage='route'
             self._context.route_web_socket('**/*',self._websocket)
             self._context.on('page',self._new_page)
@@ -157,6 +181,10 @@ class Driver:
             self._frame=self._cdp.send('Page.getFrameTree')['frameTree']['frame']['id']
             self._target_id=self._cdp.send('Target.getTargetInfo')['targetInfo']['targetId']
             self._cdp.on('Fetch.requestPaused',self._paused)
+            self._cdp.on('Network.requestWillBeSent', self._network_start)
+            self._cdp.on('Network.loadingFinished', self._network_end)
+            self._cdp.on('Network.loadingFailed', self._network_end)
+            self._cdp.send('Network.enable', {'maxPostDataSize': 0})
             self._targets=self._browser.new_browser_cdp_session()
             self._targets.on('Target.attachedToTarget',self._attached_target)
             self._targets.send('Target.setAutoAttach',{'autoAttach':True,'waitForDebuggerOnStart':True,
@@ -226,18 +254,68 @@ class Driver:
             elif static_key(u.path) in self.gate.static_keys:path='registered_static'
         return {'scheme':u.scheme if u.scheme in {'http','https'} else 'other','origin':'hub' if hub else 'other',
                 'path':path,'has_query':bool(u.query)}
-    def _request_started(self,request):
-        key=id(request._impl_obj)
-        if key not in self._in_flight:
-            self._in_flight.add(key)
-            self._network_started+=1
-            self._last_activity=time.monotonic()
-    def _request_finished(self,request):
-        key=id(request._impl_obj)
-        if key in self._in_flight:
-            self._in_flight.remove(key)
-            self._network_finished+=1
-            self._last_activity=time.monotonic()
+    def _start_flight(self, key, url, method, resource, *, announced):
+        shape = self._url_shape(url)
+        evidence = request_evidence(url, method, resource, 'none')
+        details = {'origin': shape['origin'], 'method': evidence['method'],
+                   'resource_type': evidence['resource_type']}
+        if shape['origin'] == 'hub':
+            details['path_shape'] = hub_path_shape(evidence)
+        else:
+            details['path'] = 'unregistered'
+        now = time.monotonic()
+        flight = Flight(key, details, now, announced)
+        self._in_flight[key] = flight
+        self._network_started += 1
+        self._last_activity = now
+        return flight
+
+    def _finish_flight(self, flight):
+        if flight is None or self._in_flight.get(flight.key) is not flight:
+            return
+        del self._in_flight[flight.key]
+        if flight.key[0] == 'network' and not flight.announced:
+            self._ended_before_start.add(flight.key)
+        self._network_finished += 1
+        self._last_activity = time.monotonic()
+
+    def _network_start(self, event):
+        key = ('network', event['requestId'])
+        if key in self._ended_before_start:
+            self._ended_before_start.remove(key)
+            return
+        flight = self._in_flight.get(key)
+        if flight and ('redirectResponse' not in event or not flight.announced):
+            # Fetch may arrive first. Count a network ID once per redirect hop.
+            flight.announced = True
+            return
+        self._finish_flight(flight)
+        request = event['request']
+        self._start_flight(key, request['url'], request['method'], event.get('type', 'Other'), announced=True)
+
+    def _network_end(self, event):
+        self._finish_flight(self._in_flight.get(('network', event['requestId'])))
+
+    def _flight_for_pause(self, event, url, method, resource, response_stage):
+        network_id = event.get('networkId')
+        fetch_id = event['requestId']
+        key = ('network', network_id) if network_id else ('fetch', fetch_id)
+        flight = self._in_flight.get(key)
+        if not response_stage and flight and event.get('redirectedRequestId') == flight.fetch_id and flight.fetch_id:
+            # When the new Fetch pause precedes Network's redirect, retire only the old hop.
+            self._finish_flight(flight)
+            flight = None
+        if flight is None:
+            flight = self._start_flight(key, url, method, resource, announced=False)
+        flight.fetch_id = fetch_id
+        return flight
+
+    def _in_flight_evidence(self, now):
+        paused = {id(p.flight) for p in self._pauses.values()}
+        return [{**flight.evidence, 'age_s': round(now - flight.started_at, 3),
+                 'paused': id(flight) in paused, 'decision': flight.decision}
+                for flight in self._in_flight.values()]
+
     def _begin_pause(self,owner,stage,request_id,url,method='GET',resource='Other'):
         key=(stage,request_id)
         if key in self._seen_pauses:
@@ -254,6 +332,8 @@ class Driver:
         pause.timeline={'paused_at':time.monotonic(),'decision_at':None,'sent_at':None,
                         'acked_at':None,'stage':stage,'path':label,'origin':shape.get('origin','other'),
                         'method':pause.evidence['method'],'resource_type':pause.evidence['resource_type']}
+        if shape.get('origin') == 'hub' and label == 'unregistered':
+            pause.timeline['path_shape'] = hub_path_shape(pause.evidence)
         self._pause_timeline.append(pause.timeline)
         self._last_activity=time.monotonic()
         self._paused_count+=1
@@ -270,8 +350,13 @@ class Driver:
                 return
         pause.started=True
         pause.timeline.update(sent_at=time.monotonic(), command=args[0])
+        failed = args[0] == 'Fetch.failRequest'
+        if pause.flight is not None:
+            pause.flight.decision = 'failed' if failed else 'continued'
         await function(*args)
         pause.timeline['acked_at']=time.monotonic()
+        if failed:
+            self._finish_flight(pause.flight)
     def _forget_pause(self,pause):
         self._pauses.pop((pause.stage,pause.request_id))
         pause.timer.cancel()
@@ -345,6 +430,7 @@ class Driver:
         pause=self._begin_pause(self._cdp,'fetch_response' if response_stage else 'fetch_request',rid,url,r.get('method',''),resource)
         if pause is None:return
         try:
+            pause.flight = self._flight_for_pause(event, url, r.get('method', ''), resource, response_stage)
             if self._pause_fault or self._closing:
                 if self.gate.dismissing and not response_stage:
                     self.gate.record_request(url,r.get('method',''),resource,'gate_closed')
@@ -466,26 +552,30 @@ class Driver:
         """Require a quiet window after load, counting network work between Fetch pauses."""
         start=time.monotonic()
         deadline=start+self.quiet_timeout_s
-        def not_quiet():
-            return FlowError(5,'target_page_not_quiet',**self._operation_evidence(),
-                             in_flight=len(self._in_flight),requests_started=self._network_started,
-                             requests_finished=self._network_finished)
-        self._check_gate()
+        phase = 'load' if load else 'quiet'
         try:
-            if load:
-                self._page.wait_for_load_state('load',timeout=max(1,int((deadline-time.monotonic())*1000)))
-                start=time.monotonic()
-            while True:
-                self._check_gate()
-                now=time.monotonic()
-                if now>=deadline:raise not_quiet()
-                if not self._in_flight and not self._pauses and now-max(start,self._last_activity)>=self.quiet_window_s:
-                    return
-                self._page.wait_for_timeout(min(50,max(1,int((deadline-now)*1000))))
-        except FlowError:raise
-        except Exception:
             self._check_gate()
-            raise not_quiet() from None
+            try:
+                if load:
+                    self._page.wait_for_load_state('load',timeout=max(1,int((deadline-time.monotonic())*1000)))
+                    start=time.monotonic()
+                    phase = 'quiet'
+                while True:
+                    self._check_gate()
+                    now=time.monotonic()
+                    if now>=deadline:raise FlowError(5,'target_page_not_quiet')
+                    if not self._in_flight and not self._pauses and now-max(start,self._last_activity)>=self.quiet_window_s:
+                        return
+                    self._page.wait_for_timeout(min(50,max(1,int((deadline-now)*1000))))
+            except FlowError:raise
+            except Exception:
+                self._check_gate()
+                raise FlowError(5,'target_page_not_quiet') from None
+        except FlowError as error:
+            raise FlowError(error.code, error.reason, **{**self._operation_evidence(), **error.details,
+                            'wait_phase': phase, 'in_flight': len(self._in_flight),
+                            'in_flight_requests': self._in_flight_evidence(time.monotonic()),
+                            'requests_started': self._network_started, 'requests_finished': self._network_finished}) from None
     def _dismiss_notice(self,entry):
         self.gate.dismissing=True
         try:

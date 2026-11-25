@@ -52,6 +52,34 @@ class CallbackTests(B1Case):
             await asyncio.sleep(0)
             self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
         asyncio.run(scenario())
+    def test_network_redirect_and_late_start_use_exact_hop_identity(self):
+        from vd_cosmos_core.submit_gate import Gate
+        driver = Driver(self.config, {})
+        driver.gate = Gate(self.config, rehearse=True)
+        hub = driver.gate.origin
+        hidden = 'https://idp.example.invalid/auth-only-path?opaque=fixture'
+        first = {'requestId': 'same', 'request': {'url': hub+'/', 'method': 'GET'}, 'type': 'Document'}
+        driver._network_start(first)
+        previous = driver._flight_for_pause({'requestId': 'fetch-1', 'networkId': 'same'}, hub+'/', 'GET', 'Document', False)
+        previous.decision = 'continued'
+        second = driver._flight_for_pause({'requestId': 'fetch-2', 'networkId': 'same', 'redirectedRequestId': 'fetch-1'},
+                                          hidden, 'POST', 'Document', False)
+        driver._network_start({**first, 'request': {'url': hidden, 'method': 'POST'}, 'redirectResponse': {}})
+        driver._finish_flight(previous)  # A delayed completion cannot remove the redirected hop.
+        self.assertEqual(list(driver._in_flight.values()), [second])
+        self.assertEqual(driver._in_flight_evidence(second.started_at + 1),
+                         [{'origin': 'other', 'path': 'unregistered', 'method': 'POST', 'resource_type': 'Document',
+                           'age_s': 1, 'paused': False, 'decision': 'none'}])
+        driver._network_end({'requestId': 'same'})
+
+        early = driver._flight_for_pause({'requestId': 'fetch-3', 'networkId': 'late'}, hub+'/a42?key3=opaque',
+                                         'GET', 'Other', False)
+        self.assertEqual(early.evidence['path_shape'], '/aN?keyN')
+        driver._finish_flight(early)
+        driver._network_start({**first, 'requestId': 'late'})
+        self.assertFalse(driver._in_flight)
+        self.assertEqual((driver._network_started, driver._network_finished), (3, 3))
+
     def test_missing_async_bridge_and_async_failure_fail_closed(self):
         driver=Driver(self.config,{})
         driver._defer(object(),'close');self.assertEqual(driver._fatal,'browser_callback_dispatch_failed')

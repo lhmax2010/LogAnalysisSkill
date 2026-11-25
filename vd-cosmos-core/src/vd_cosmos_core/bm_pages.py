@@ -27,15 +27,24 @@ def page_time(value, zone):
         raise FlowError(5, 'bm_time_unrecognized') from None
 
 
-def duration(value):
-    compact = re.fullmatch(r'(?:(\d+)h:)?(?:(\d+)m:)?(\d+)s', value.strip())
-    if compact:
-        h, m, s = [int(x or 0) for x in compact.groups()]
-        return h * 3600 + m * 60 + s
-    parts = re.findall(r'(\d+)\s+(hours?|minutes?|seconds?)', value)
-    if not parts or re.sub(r'\d+\s+(?:hours?|minutes?|seconds?)', '', value).strip():
-        raise FlowError(5, 'bm_duration_unrecognized')
-    return sum(int(n) * (3600 if unit.startswith('hour') else 60 if unit.startswith('minute') else 1) for n, unit in parts)
+_DURATION_PLACEHOLDERS = {'', '-', '--', 'N/A'}
+_DURATION_COMPACT = re.compile(r'(?:(\d+)d:)?(?:(\d+)h:)?(?:(\d+)m(?::|$))?(?:(\d+)s)?')
+_DURATION_WORDS = re.compile(r'(?:(\d+) days?(?: |$))?(?:(\d+) hours?(?: |$))?'
+                             r'(?:(\d+) minutes?(?: |$))?(?:(\d+) seconds?)?')
+
+
+def duration_shape(value):
+    return re.sub(r'\d+', 'N', ' '.join(value.split()))[:40]
+
+
+def duration(value, *, where='summary', running=False):
+    text = ' '.join(value.split())
+    match = _DURATION_COMPACT.fullmatch(text) or _DURATION_WORDS.fullmatch(text)
+    # A compact day/hour prefix needs a minute or second field, and cannot end in a colon.
+    if match and len(text) <= 120 and any(match.groups()) and not text.endswith(':'):
+        return sum(int(n or 0) * scale for n, scale in zip(match.groups(), (86400, 3600, 60, 1)))
+    raise FlowError(5, 'bm_duration_unrecognized', value_shape=duration_shape(value),
+                    where=where, running=running)
 
 
 def nodes_without_promotions(node):
@@ -131,11 +140,14 @@ def detail(data, config, build_id, *, summary_required=True):
     summary = found[0]; start = page_time(summary['Begin Date'], c['bm_display_tz'])
     state = normalize(statuses[0].attrs['title'])[9:].casefold()
     ended = state in {str(w).casefold() for w in (c.get('status_source') or {}).get('terminal_words', ['successful', 'failed', 'cancelled'])}
+    duration_value = summary.get('Duration', '')
+    seconds = (duration(duration_value, where='summary', running=state == 'running')
+               if duration_value or ended else None)
     conflict = bool(hub and any(p['hub_id'] != hub for p in pairs)) or len({p['hub_id'] for p in pairs}) > 1
     return {'build_id': b, 'hub_id': hub, 'identity': 'strong', 'config_id': next(iter(configs)),
             'state': state, 'ended': ended, 'start_time': start,
-            'end_time': start + duration(summary['Duration']) if ended else None,
-            'duration_s': duration(summary['Duration']), 'requester': summary.get('Triggered By'),
+            'end_time': start + seconds if ended else None,
+            'duration_s': seconds, 'requester': summary.get('Triggered By'),
             'pairs': pairs, 'references': references, 'conflict': conflict,
             'relation': '冲突' if conflict else 'Hub Link' if hub else '无 Hub Link'}
 
@@ -151,15 +163,33 @@ def listing(data, config, kind):
     if kind == 'overview' and names != c['bm_overview_headers']:
         raise FlowError(5, 'bm_table_unrecognized')
     url = 'https://' + c['bm_host'] + '/' + kind + '/' + c['bm_config_id']
+    durations, unknown = {}, []
+
+    def row_build_id(row):
+        ids = {link_number(n.attrs.get('href', ''), c['bm_host'], url) for n in row.descendants({'a'})
+               if re.fullmatch(r'/build/\d+', urlsplit(urljoin(url, n.attrs.get('href', ''))).path)}
+        if ids and (len(ids) != 1 or None in ids):
+            raise FlowError(5, 'bm_row_unrecognized')
+        return next(iter(ids), None)
+
+    def row_duration(row, value, build_id, running):
+        if row.order not in durations:
+            seconds = None
+            if value not in _DURATION_PLACEHOLDERS:
+                try:
+                    seconds = duration(value, where=kind, running=running)
+                except FlowError as error:
+                    unknown.append({'build_id': build_id, 'value_shape': error.details['value_shape']})
+            durations[row.order] = seconds
+        return durations[row.order]
+
     for row in rows:
         cs = cells(row)
         if not cs or all(n.tag == 'th' for n in cs): continue
         values = dict(zip(names, [normalize(n.text()) for n in cs]))
-        ids = {link_number(n.attrs.get('href', ''), c['bm_host'], url) for n in row.descendants({'a'})
-               if re.fullmatch(r'/build/\d+', urlsplit(urljoin(url, n.attrs.get('href', ''))).path)}
-        if not ids: continue
-        if len(ids) != 1 or None in ids: raise FlowError(5, 'bm_row_unrecognized')
-        entry = {'build_id': ids.pop(), 'version': values.get('Build Version', values.get('Version', '')),
+        build_id = row_build_id(row)
+        if build_id is None: continue
+        entry = {'build_id': build_id, 'version': values.get('Build Version', values.get('Version', '')),
                  'hub_id': values.get('Hub ID') or None, 'requester': values.get('Requester'),
                  'process_status': values.get('Process Status'), 'schedule_date': values.get('Schedule Date'), 'start_time': None,
                  'running': bool(re.search(r'\b\d+%', row.text()))}
@@ -167,18 +197,28 @@ def listing(data, config, kind):
             raise FlowError(5, 'bm_row_unrecognized')
         if values.get('Begin Date'):
             entry['start_time'] = page_time(values['Begin Date'], c['bm_display_tz'])
-            entry['duration_s'] = duration(values['Duration'])
+        if 'Duration' in names:
+            entry['duration_s'] = row_duration(row, values.get('Duration', ''), build_id, entry['running'])
         result.append(entry)
-    samples = []
+    samples, skipped_shapes = [], []
     for table in (n for n in doc.nodes if n.tag == 'table'):
         cols = columns(table, ['Version', 'Begin Date', 'Duration'])
         if not cols: continue
         ns, rs = cols
-        for r in rs:
-            if not re.search(r'\b\d+%', r.text()): continue
-            v = dict(zip(ns, [normalize(n.text()) for n in cells(r)]))
-            samples.append({'start_time': page_time(v['Begin Date'], c['bm_display_tz']), 'duration_s': duration(v['Duration'])})
-    answer = {'rows': result, 'samples': samples, 'next': None}
+        for row in rs:
+            running = bool(re.search(r'\b\d+%', row.text()))
+            if not running and kind == 'history': continue  # History rows were already checked above.
+            values = dict(zip(ns, [normalize(n.text()) for n in cells(row)]))
+            text = values.get('Duration', '')
+            id_cell = values.get('Id', '')
+            build_id = row_build_id(row) or (id_cell if id_cell.isdecimal() else None)
+            seconds = row_duration(row, text, build_id, running)
+            if running and seconds is None:
+                skipped_shapes.append(duration_shape(text))
+            elif running:
+                samples.append({'start_time': page_time(values['Begin Date'], c['bm_display_tz']), 'duration_s': seconds})
+    answer = {'rows': result, 'samples': samples, 'samples_skipped': len(skipped_shapes),
+              'samples_skipped_shapes': skipped_shapes, 'duration_unrecognized': unknown, 'next': None}
     if kind == 'history':
         counts = set(re.findall(r'Showing\s+(\d+)\s+to\s+(\d+)\s+of\s+(\d+)', doc.root.text()))
         if len(counts) != 1: raise FlowError(5, 'bm_history_count_unrecognized')

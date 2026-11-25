@@ -867,3 +867,14 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 浏览器级 CDP 隔离新页面目标；主文档响应附加禁止 popup 的沙箱策略，文档创建时用固定脚本关闭 window.open，防止新目标事件晚于首请求；WebSocket 和 service worker 仍走原有拒绝边界。每条暂停证据记录阶段及单调时钟的接收、决定、发送和确认时间；身份路径保留注册形状。关闭前收敛延迟命令，关闭后清理剩余任务。浏览器启动器在私有 profile 内记录主进程 PID 与启动标识，供关闭校验和恢复使用。
 - A 的保存页面仍独立核对 19091860 和原始基线（构建机报告 2244/2244、6/6）。实时构建支持 `--live-build`，默认按 `cosmos.acceptance_live_builds` 从新到旧选。报告 HTTP 404、有可验证的桶索引且详情证实终态才记为 `RETIRED`，后续候选可继续；其他观察失败正常报错。实时 A/B/E/F 与源码快照基于同一个选定构建。
 - 两版标准和 minimal Python、凭据预检及 CPU 负载下 50 轮 Chrome 静态资源回归见 `evidence-b211/`。本机使用回环夹具，真实 Hub 重演和真实 A 复验待构建机。
+
+## B2.12 概览页静默等待
+
+构建机 `ed61a2d` 第六次演练在 SSO 与账号核对通过后报 `target_page_not_quiet`。88 个 Fetch 暂停均获应答，旧 Playwright 计数 121 次开始、120 次结束，留下 1 个未识别请求。
+
+同一 Fetch 闸门下的本机 Chrome 回放中，默认 `/favicon.ico` 有 CDP 开始、暂停及失败事件，Playwright 同时省略了开始和失败通知。自定义图标、prefetch、显式 fetch、被挡图片及 iframe 都发出了 Playwright 失败通知。默认图标因此不能单独解释旧计数中的缺口，现有构建机证据也不足以反查遗漏通知的请求。回放还观测到 Fetch 暂停可能先于 Network 开始事件。
+
+- 静默等待改为同一 CDP 会话的 Network ID 统计。收到 `Fetch.failRequest` 应答就结束对应跳，即使没有后续失败通知。放行请求仍等网络终结或明确跳转。仅新增观测用 `Network.enable`，不新增任何放行路径。
+- 静默失败记录 `wait_phase`、尚未结束请求的脱敏形状、年龄、暂停状态和决定。Hub 未登记暂停也带路径形状；其它来源只写未登记。证据不含查询值、头部、正文或 SSO 数据。
+- 回归：`test_blocked_icon_and_prefetch_quiet_without_network_terminal_callback`、`test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts`、`test_activity_after_load_times_out_before_run_recording`、`test_network_redirect_and_late_start_use_exact_hop_identity`、`test_network_observation_is_allowed_only_in_the_adapter`。
+- 构建机 B2 启动方式不变。离线复验可将匿名来源换成本仓库脱敏夹具，版本门、CLI 合同、静态检查和真实 headless 套件均按原验收路径执行。线上匿名预检与再次演练需要构建机。

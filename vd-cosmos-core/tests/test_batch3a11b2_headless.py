@@ -95,6 +95,41 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(counts['pending'],0)
         self.assertEqual(counts['paused'],counts['resolved']+counts['closed_unconfirmed'])
     def wait(self):self.page.wait_for_timeout(350)
+    def test_blocked_icon_and_prefetch_quiet_without_network_terminal_callback(self):
+        driver = self.driver
+        # Chrome really blocks these requests. Drop the accounting notification
+        # to reproduce the missing terminal callback independently of timing.
+        driver._cdp.remove_listener('Network.loadingFailed', driver._network_end)
+        page_started, page_failed = set(), set()
+        self.page.on('request', lambda request: page_started.add(request.url))
+        self.page.on('requestfailed', lambda request: page_failed.add(request.url))
+        path = driver.gate.overview
+        url = self.server.origin + path
+        driver.gate.navigation(url)
+        self.server.responses[path] = (200, None, b'<link rel="icon" href="/favicon.ico">'
+            b'<link rel="prefetch" href="/future42.html?mode=opaque-fixture-value">'
+            b'<script>fetch("/denied123.ico").catch(()=>{});</script>')
+        start = len(driver._pause_timeline)
+        self.page.goto(url, wait_until='load')
+        shapes = {'/favicon.ico', '/futureN.html?mode', '/deniedN.ico'}
+        deadline = time.monotonic() + 5
+        while not shapes <= {row.get('path_shape') for row in driver._pause_timeline[start:]}:
+            self.assertLess(time.monotonic(), deadline)
+            self.page.wait_for_timeout(25)
+        driver._wait_for_quiet(load=True)
+        timeline = driver._pause_timeline[start:]
+        blocked = [row for row in timeline if row.get('path_shape') in shapes]
+        self.assertCountEqual([row['path_shape'] for row in blocked], shapes)
+        self.assertTrue(all(row['command'] == 'Fetch.failRequest' and row['acked_at'] is not None for row in blocked))
+        self.assertTrue(all(row['path'] == 'unregistered' for row in blocked))
+        self.assertNotIn('opaque-fixture-value', str(timeline))
+        for path in ('/future42.html?mode=opaque-fixture-value', '/denied123.ico'):
+            self.assertIn(self.server.origin + path, page_started)
+            self.assertIn(self.server.origin + path, page_failed)
+        self.assertNotIn(self.server.origin + '/favicon.ico', page_started | page_failed)
+        self.assertEqual(self.server.calls, [('GET', driver.gate.overview)])
+        self.assertEqual(driver._network_started, driver._network_finished)
+
     def test_sixty_static_files_with_slow_response_have_one_pause_each(self):
         paths=[f'/asset/fixture-{index}.png' for index in range(60)]
         self.driver.gate.static_keys.update(paths)
@@ -343,6 +378,13 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertGreater(error.details['in_flight'],0)
         self.assertGreater(error.details['requests_started'],error.details['requests_finished'])
         self.assertIn('pause_counts',error.details)
+        self.assertEqual(error.details['wait_phase'], 'load')
+        image = next(row for row in error.details['in_flight_requests'] if row['resource_type'] == 'Image')
+        self.assertEqual({k: v for k, v in image.items() if k != 'age_s'},
+                         {'origin': 'hub', 'method': 'GET', 'resource_type': 'Image',
+                          'paused': False, 'decision': 'continued', 'path_shape': '/slow.png?v'})
+        self.assertGreaterEqual(image['age_s'], 0)
+        self.assertNotIn('fixture-value', str(error.details))
 
     def test_activity_after_load_times_out_before_run_recording(self):
         entry=self.page.url
@@ -358,6 +400,9 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
             release.set()
         self.assertEqual(error.reason,'target_page_not_quiet')
         self.assertGreater(error.details['in_flight'],0)
+        self.assertEqual(error.details['wait_phase'], 'quiet')
+        self.assertTrue(any(row.get('path_shape') == '/late.png' and row['decision'] == 'continued'
+                            for row in error.details['in_flight_requests']))
         self.assertFalse(self.driver.gate.capture_run)
         self.assertFalse(self.driver.gate.run_candidates)
 

@@ -2,6 +2,7 @@ import copy
 from datetime import datetime, timezone
 from html import escape
 import json
+import re
 import os
 from pathlib import Path
 import subprocess
@@ -218,6 +219,60 @@ class LookupTests(B1Case):
         self.assertEqual(doctor(self.config,reader=reader,package_probe=lambda:{'verified':True,'count':0})['exit_code'],3)
         result=doctor(self.config,reader=self.reader(),package_probe=lambda:{'verified':True,'count':0})
         self.assertEqual(result['timezone_check'],'页面时区未验证')
+    def test_durations_with_days_or_without_seconds(self):
+        for text, seconds in (
+            ('1 day', 86400), ('2 days 3 hours 4 minutes 5 seconds', 183845),
+            ('1 day 2 minutes', 86520), ('1d:02h:03m:04s', 93784),
+            ('2d:03h:04m', 183840), ('1h:14m', 4440), ('14m', 840),
+            ('0m', 0), ('7m:2s', 422), ('1 hour 3 minutes', 3780),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(bm_pages.duration(text), seconds)
+        for text in ('1h:', '1h:3m:', '1 minute 2 hours', '1 day 2 days', '1h:4x', '3m4s', '32'*100 + 's'):
+            with self.subTest(text=text):
+                error = self.fails(5, bm_pages.duration, text, where='overview', running=True)
+                self.assertEqual(error.reason, 'bm_duration_unrecognized')
+                self.assertEqual(error.details['where'], 'overview')
+                self.assertTrue(error.details['running'])
+                self.assertLessEqual(len(error.details['value_shape']), 40)
+                self.assertFalse(any(c.isdigit() for c in error.details['value_shape']))
+
+    def test_duration_listing_continues_and_skips_only_unusable_running_samples(self):
+        ids = ['900', '901', '902', '903', '904', '905', '906']
+        durations = ['', '-', '--', 'N/A', 'elapsed 123 ticks', '22m', 'finished after 99 ticks']
+        page = history(ids, versions={key: 'running 2%' for key in ids[:-1]})
+        replacements = iter(durations)
+        page = re.sub(rb'<td>1 hour</td>', lambda _: f'<td>{next(replacements)}</td>'.encode(), page)
+        result = bm_pages.listing(page, self.config, 'history')
+        self.assertEqual([row['duration_s'] for row in result['rows']], [None]*5 + [1320, None])
+        self.assertEqual(result['duration_unrecognized'], [
+            {'build_id': '904', 'value_shape': 'elapsed N ticks'},
+            {'build_id': '906', 'value_shape': 'finished after N ticks'},
+        ])
+        self.assertEqual(result['samples_skipped'], 5)
+        self.assertEqual(result['samples_skipped_shapes'], ['', '-', '--', 'N/A', 'elapsed N ticks'])
+        self.assertEqual([row['duration_s'] for row in result['samples']], [1320])
+
+    def test_watched_running_summary_can_be_empty_ended_summary_stays_strict(self):
+        running = bm_pages.detail(detail(state='running', duration=''), self.config, '900')
+        self.assertIsNone(running['duration_s'])
+        self.assertIsNone(running['end_time'])
+        for value, shape in (('', ''), ('unknown 982 ticks', 'unknown N ticks')):
+            error = self.fails(5, bm_pages.detail, detail(duration=value), self.config, '900')
+            self.assertEqual(error.reason, 'bm_duration_unrecognized')
+            self.assertEqual(error.details, {'where': 'summary', 'running': False, 'value_shape': shape})
+
+    def test_doctor_reports_shapes_when_all_duration_samples_are_skipped(self):
+        reader = self.reader({
+            '/overview/4362': overview(sample=True).replace(b'1h:00m:00s', b'unknown 123 ticks'),
+            '/history/4362': history(['901'], running=True).replace(b'<td>1 hour</td>', b'<td>N/A</td>'),
+        })
+        result = doctor(self.config, reader=reader, package_probe=lambda: {'verified': True, 'count': 0})
+        self.assertEqual((result['exit_code'], result['timezone_check']), (3, '页面时区未验证'))
+        self.assertEqual(result['samples_skipped'], 2)
+        self.assertEqual(result['samples_skipped_shapes'], ['unknown N ticks', 'N/A'])
+        self.assertEqual(result['duration_unrecognized'], [{'build_id': '900', 'value_shape': 'unknown N ticks'}])
+
     def test_lookup_readonly_does_not_resolve_uncertain(self):
         r=submit_model.create_request(self.config,EXTERNAL,self.form(),'fixture');submit_model.record_outcome(self.config,r['request_id'],EXTERNAL,'uncertain')
         with EventStore(self.config.data_root) as store:head=store.head()

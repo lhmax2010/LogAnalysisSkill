@@ -92,3 +92,11 @@
 | 原心跳测试在 50 ms 间隔下假定轻载时序，调度超过 150 ms 就会产生合法中断。测试用信号确保扫描处于阻塞，按实测事件时间验证分类，等待上限取测试间隔的 60 倍。另用注入时间核对三倍间隔的边界。生产规则保持三倍阈值。 | `test_heartbeat_continues_while_scan_or_terminal_callback_waits`、`test_heartbeat_threshold_is_strict` |
 
 双版本标准和 minimal Python 测试、同核 CPU 负载下各 50 次心跳测试、假 P4 规模测量及 SHA256 见 `evidence-b3a24/`。真实 P4 的网络延迟与两个大包的快照结果待构建机复验。
+
+## B3a2.5 管理端构建耗时兼容
+
+构建机 v16 的 B1 doctor 偶发 `bm_duration_unrecognized`。之后匿名页面读取只见可解析的耗时，触发值未从 v16 证据恢复。
+
+增加天数及省略秒的紧凑格式。列表中的空值、占位符和无法解析的行给出空耗时。无法解析的行保留构建号和有界脱敏形状。时区样本跳过不可用行，doctor 汇报跳过数量和形状，无样本按既有“页面时区未验证”返回 3。已结束构建详情仍拒绝空值或异常格式，错误带位置与形状。
+
+回归：`test_durations_with_days_or_without_seconds`、`test_duration_listing_continues_and_skips_only_unusable_running_samples`、`test_watched_running_summary_can_be_empty_ended_summary_stays_strict`、`test_doctor_reports_shapes_when_all_duration_samples_are_skipped`。

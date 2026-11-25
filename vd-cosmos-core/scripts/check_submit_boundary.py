@@ -4,7 +4,8 @@ import ast
 from pathlib import Path
 
 BANNED={'cookies','add_cookies','storage_state','screenshot','content','inner_html','outer_html','start_tracing','tracing','connect_over_cdp','connect','get_attribute','input_value'}
-CDP={'Fetch.enable','Fetch.continueRequest','Fetch.continueResponse','Fetch.failRequest','Target.getTargetInfo','Target.setAutoAttach','Target.closeTarget','Page.getFrameTree','Browser.getWindowForTarget','Browser.setWindowBounds'}
+# Network.enable observes request IDs and terminal events for the single Fetch gate.
+CDP={'Network.enable','Fetch.enable','Fetch.continueRequest','Fetch.continueResponse','Fetch.failRequest','Target.getTargetInfo','Target.setAutoAttach','Target.closeTarget','Page.getFrameTree','Browser.getWindowForTarget','Browser.setWindowBounds'}
 
 def validate(text,adapter=False):
     tree=ast.parse(text,feature_version=10)
@@ -17,12 +18,12 @@ def validate(text,adapter=False):
             if attr in BANNED:raise ValueError('forbidden browser API')
             if attr in {'new_cdp_session','new_browser_cdp_session'} and not adapter:raise ValueError('CDP outside adapter')
             if attr=='_defer' and len(node.args)>=2 and isinstance(node.args[1],ast.Constant) and node.args[1].value=='send':
-                if len(node.args)<3:raise ValueError('deferred CDP method')
+                if not adapter or len(node.args)<3:raise ValueError('deferred CDP method')
                 first=node.args[2];values=[first.body,first.orelse] if isinstance(first,ast.IfExp) else [first]
                 if any(not isinstance(v,ast.Constant) or v.value not in CDP for v in values):raise ValueError('deferred CDP method')
             if attr=='evaluate' and (not adapter or not node.args or not isinstance(node.args[0],ast.Name) or node.args[0].id!='SCRIPT'):raise ValueError('unregistered script')
             if attr=='send' and isinstance(node.func.value,ast.Attribute) and node.func.value.attr in {'_cdp','_targets'}:
-                if not node.args:raise ValueError('CDP method')
+                if not adapter or not node.args:raise ValueError('CDP method')
                 first=node.args[0];values=[first.body,first.orelse] if isinstance(first,ast.IfExp) else [first]
                 if any(not isinstance(v,ast.Constant) or v.value not in CDP for v in values):raise ValueError('CDP method')
             if attr=='add_init_script':

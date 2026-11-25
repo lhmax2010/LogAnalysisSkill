@@ -119,6 +119,17 @@ class B2bTests(B1Case):
         spec=importlib.util.spec_from_file_location('boundary',REPO/'vd-cosmos-core/scripts/check_submit_boundary.py');mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
         for code in ('page.screenshot()','page.evaluate(source)','context.cookies()','context.new_cdp_session(page)','launch(record_har_path="file")'):
             with self.assertRaises(ValueError):mod.validate(code)
+    def test_network_observation_is_allowed_only_in_the_adapter(self):
+        spec = importlib.util.spec_from_file_location('boundary', REPO/'vd-cosmos-core/scripts/check_submit_boundary.py')
+        boundary = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(boundary)
+        observation = "self._cdp.send('Network.enable', {'maxPostDataSize': 0})"
+        boundary.validate(observation, adapter=True)
+        with self.assertRaises(ValueError):
+            boundary.validate(observation)
+        with self.assertRaises(ValueError):
+            boundary.validate("self._cdp.send('Network.getResponseBody')", adapter=True)
+
     def test_manual_action_resolution_preserves_history(self):
         r,s,d=self.setup_flow()
         with EventStore(self.config.data_root) as store:store.append(CTX,'manual_action_pending',{'target':model.target(self.config)},store.head(),operation_id=s['operation_id'])
