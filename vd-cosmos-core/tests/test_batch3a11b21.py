@@ -124,6 +124,12 @@ class LaunchDiagnosticTests(B1Case):
                     error=self.fails(5,driver.launch)
                 self.assertEqual(error.reason,'browser_start_failed');self.assertEqual(error.details['stage'],stage)
                 self.assertEqual(error.details['exception_type'],'RuntimeError');self.assertEqual(error.details['detail'],'safe startup failure')
+                if stage == 'fetch_enable':
+                    row, = error.details['pause_timeline']
+                    self.assertEqual(row['command'], 'Fetch.enable')
+                    self.assertEqual(row['error_type'], 'RuntimeError')
+                    self.assertEqual(row['error_message'], 'protocol message unavailable')
+                    self.assertIsNone(row['acked_at'])
                 self.assertFalse(created[0].exists());self.assertFalse((profile/browser_temp.MARKER).exists())
                 sessions.finish(self.config,s,CTX,Processes())
     def test_successful_launch_passes_private_env_and_close_removes_temp(self):

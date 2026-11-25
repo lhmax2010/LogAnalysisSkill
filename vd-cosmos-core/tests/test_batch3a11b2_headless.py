@@ -130,6 +130,74 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(self.server.calls, [('GET', driver.gate.overview)])
         self.assertEqual(driver._network_started, driver._network_finished)
 
+    def cancelled_fetch(self, command):
+        driver = self.driver
+        path = '/cancel-before-decision.png'
+        if command == 'Fetch.continueRequest':
+            # One exact loopback request is allowed for this fixture.
+            driver.gate.allowed = (self.server.origin + path, 'GET')
+        deferred, terminal = [], set()
+        original = driver._defer
+
+        def hold(owner, method, *args, pause=None, continuing=False):
+            if pause and pause.evidence['path'] == path:
+                deferred.append((owner, method, args, pause, continuing))
+            else:
+                original(owner, method, *args, pause=pause, continuing=continuing)
+
+        driver._cdp.on('Network.loadingFailed', lambda event: terminal.add(event['requestId']))
+        # The CDP event proves cancellation. Production accounting must also
+        # work if that event was not available to the accounting listener.
+        driver._cdp.remove_listener('Network.loadingFailed', driver._network_end)
+        with patch.object(driver, '_defer', side_effect=hold):
+            self.page.evaluate("""url => {
+                window.fixtureAbort = new AbortController();
+                fetch(url, {signal: fixtureAbort.signal}).catch(() => {});
+            }""", path)
+            deadline = time.monotonic() + 5
+            while not deferred:
+                self.assertLess(time.monotonic(), deadline)
+                self.page.wait_for_timeout(25)
+            owner, method, args, pause, continuing = deferred[0]
+            self.assertEqual(args[0], command)
+            self.assertEqual(pause.flight.key[0], 'network')
+            self.page.evaluate('() => window.fixtureAbort.abort()')
+            while pause.flight.key[1] not in terminal:
+                self.assertLess(time.monotonic(), deadline)
+                self.page.wait_for_timeout(25)
+            self.assertIn(pause.flight.key, driver._in_flight)
+        original(owner, method, *args, pause=pause, continuing=continuing)
+        driver._wait_for_quiet(load=True)
+        self.assertEqual(len(deferred), 1)
+        self.assertEqual(driver.pause_counts()['gone_before_decision'], 1)
+        self.assertEqual(driver.pause_counts()['paused'], driver.pause_counts()['resolved'])
+        self.assertEqual(driver._network_started, driver._network_finished)
+        self.assertEqual(pause.timeline['command'], command)
+        self.assertEqual(pause.timeline['resolution'], 'gone_before_decision')
+        self.assertEqual(pause.timeline['error_type'], 'Error')
+        self.assertEqual(pause.timeline['error_message'], 'Invalid InterceptionId.')
+        self.assertIsNotNone(pause.timeline['sent_at'])
+        self.assertIsNone(pause.timeline['acked_at'])
+        self.assertEqual(self.server.calls, [])
+
+        # An unrelated registered asset can still load after the cancellation.
+        driver.gate.static_keys.add('/after-cancel.png')
+        self.page.evaluate("""() => {
+            const image = new Image();
+            image.onload = image.onerror = () => { window.fixtureImageDone = true; };
+            image.src = '/after-cancel.png';
+            document.body.append(image);
+        }""")
+        self.page.wait_for_function('window.fixtureImageDone === true', timeout=5000)
+        driver._wait_for_quiet()
+        self.assertEqual(self.server.calls, [('GET', '/after-cancel.png')])
+
+    def test_cancelled_request_fail_command_is_gone_and_reaches_quiet(self):
+        self.cancelled_fetch('Fetch.failRequest')
+
+    def test_cancelled_request_continue_command_is_gone_and_reaches_quiet(self):
+        self.cancelled_fetch('Fetch.continueRequest')
+
     def test_sixty_static_files_with_slow_response_have_one_pause_each(self):
         paths=[f'/asset/fixture-{index}.png' for index in range(60)]
         self.driver.gate.static_keys.update(paths)

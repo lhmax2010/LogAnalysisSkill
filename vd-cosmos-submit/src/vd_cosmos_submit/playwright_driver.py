@@ -82,6 +82,32 @@ def launch_diagnostic(config, error, stage):
     return {'exception_type':kind,'stage':stage,'detail':detail}
 
 
+_MISSING_FETCH_ID = re.compile(r'(?:invalid|unknown) (?:interception|request) ?id\.?', re.I)
+
+
+def fetch_error(config, command, error):
+    """Extract only a safe protocol message from the adapter's exception wrapper."""
+    kind = type(error).__name__
+    if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,79}', kind):
+        kind = 'Exception'
+    protocol = re.fullmatch(r'(?:(?:[A-Za-z_][A-Za-z0-9_.]*)?: )?Protocol error \('
+                            + re.escape(command) + r'\): (.+)', str(error))
+    if protocol is None:
+        return {'error_type': kind, 'error_message': 'protocol message unavailable'}
+    message = protocol[1]
+    if _MISSING_FETCH_ID.fullmatch(message):
+        return {'error_type': kind, 'error_message': message}
+    safe = (re.fullmatch(r'[A-Za-z0-9 .,?!()-]+', message)
+            and not SECRET_NAME.search(message)
+            and not re.search(r'\b(?:headers?|bodies|body|authorization|sso|credentials?)\b', message, re.I))
+    if safe:
+        try:
+            safe = check_content(message.encode('ascii'), config)['allowed']
+        except FlowError:
+            safe = False
+    return {'error_type': kind, 'error_message': message[:120] if safe else 'protocol message withheld'}
+
+
 def hub_path_shape(evidence):
     """Bounded hub-only URL shape. Drop matrix parameters and opaque segments."""
     def segment_shape(segment):
@@ -122,6 +148,7 @@ class Pause:
     reported: bool = False
     teardown: bool = False
     flight: Flight | None = None
+    main_document: bool = False
 
 
 class Driver:
@@ -132,7 +159,7 @@ class Driver:
     def __init__(self,config,session,*,headless=False,local_origin=None):
         self.config=config;self.session=session;self.headless=headless;self.local_origin=local_origin
         self._pw=None;self._context=None;self._browser=None;self._targets=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None;self._submission_id=None
-        self._pauses={};self._seen_pauses=set();self._paused_count=0;self._resolved_count=0;self._forced_closed=0
+        self._pauses={};self._seen_pauses=set();self._paused_count=0;self._resolved_count=0;self._forced_closed=0;self._gone_before_decision=0
         self._pause_fault=False;self._closing=False;self._tearing_down=False;self._emergency_close=False;self._cancelled_on_close=0
         self._deferred=set();self._pause_timeline=[];self._response_redirects=set()
         self._in_flight={};self._ended_before_start=set();self._network_started=0;self._network_finished=0
@@ -190,9 +217,14 @@ class Driver:
             self._targets.send('Target.setAutoAttach',{'autoAttach':True,'waitForDebuggerOnStart':True,
                 'flatten':True,'filter':[{'type':'page'}]})
             stage='fetch_enable'
+            sent_at = time.monotonic()
             self._cdp.send('Fetch.enable',{'patterns':[{'urlPattern':'*','requestStage':'Request'}]})
         except Exception as error:
             details=launch_diagnostic(self.config,error,stage)
+            if stage == 'fetch_enable':
+                self._pause_timeline.append({'stage': stage, 'command': 'Fetch.enable', 'sent_at': sent_at,
+                                             'acked_at': None, **fetch_error(self.config, 'Fetch.enable', error)})
+                details.update(self._operation_evidence())
             try:self.close()
             except FlowError:details['cleanup']='unverified; recovery required'
             if stage=='launch' and re.search(r'(?i)sandbox|zygote_host_impl_linux|operation not permitted.*user.?namespace',str(error)):
@@ -230,7 +262,8 @@ class Driver:
     def pause_counts(self):
         return {'paused':self._paused_count,'resolved':self._resolved_count,
                 'pending':len(self._pauses),'closed_unconfirmed':self._forced_closed,
-                'cancelled_on_close':self._cancelled_on_close}
+                'cancelled_on_close':self._cancelled_on_close,
+                'gone_before_decision':self._gone_before_decision}
     def _operation_evidence(self):
         details={'pause_counts':self.pause_counts(),'pause_timeline':self._pause_timeline}
         if self.gate is not None:
@@ -353,7 +386,11 @@ class Driver:
         failed = args[0] == 'Fetch.failRequest'
         if pause.flight is not None:
             pause.flight.decision = 'failed' if failed else 'continued'
-        await function(*args)
+        try:
+            await function(*args)
+        except (Exception, asyncio.CancelledError) as error:
+            pause.timeline.update(fetch_error(self.config, args[0], error))
+            raise
         pause.timeline['acked_at']=time.monotonic()
         if failed:
             self._finish_flight(pause.flight)
@@ -375,10 +412,24 @@ class Driver:
         elif error:
             if pause.teardown and type(error).__name__=='TargetClosedError':
                 self._resolve_pause(pause,cancelled_on_close=True)
+            elif self._missing_noncritical_pause(pause):
+                # Chrome removed this pause. The command did not release it.
+                self._response_redirects.discard(pause.request_id)
+                self._finish_flight(pause.flight)
+                pause.timeline['resolution'] = 'gone_before_decision'
+                self._gone_before_decision += 1
+                self._resolve_pause(pause)
             else:
                 self._lose_pause(pause)
         else:
             self._resolve_pause(pause)
+    def _missing_noncritical_pause(self, pause):
+        if pause.main_document or pause.request_id == self._submission_id:
+            return False
+        if self._submission_id is None and self.gate is not None and self.gate.sent:
+            return False
+        return _MISSING_FETCH_ID.fullmatch(pause.timeline.get('error_message', '')) is not None
+
     def _report_pause(self,pause):
         self._pause_fault=True
         self._fatal='paused_request_unresolved'
@@ -429,6 +480,8 @@ class Driver:
         resource=event.get('resourceType','Other')
         pause=self._begin_pause(self._cdp,'fetch_response' if response_stage else 'fetch_request',rid,url,r.get('method',''),resource)
         if pause is None:return
+        frame_id = event.get('frameId')
+        pause.main_document = resource == 'Document' and (not frame_id or frame_id == self._frame)
         try:
             pause.flight = self._flight_for_pause(event, url, r.get('method', ''), resource, response_stage)
             if self._pause_fault or self._closing:

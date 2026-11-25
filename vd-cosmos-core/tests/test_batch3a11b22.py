@@ -20,7 +20,7 @@ from helpers import REPO
 from vd_cosmos_core import submit_model as model,submit_sessions as sessions,verification_process as vp
 from vd_cosmos_core import verify_b3a11 as verify
 from vd_cosmos_core.errors import FlowError
-from vd_cosmos_submit.playwright_driver import Driver
+from vd_cosmos_submit.playwright_driver import Driver, fetch_error
 
 
 class CallbackTests(B1Case):
@@ -50,7 +50,7 @@ class CallbackTests(B1Case):
             self.assertEqual(called[0],'close')
             self.assertEqual(called[1][0],'Fetch.failRequest')
             await asyncio.sleep(0)
-            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0,'gone_before_decision':0})
         asyncio.run(scenario())
     def test_network_redirect_and_late_start_use_exact_hop_identity(self):
         from vd_cosmos_core.submit_gate import Gate
@@ -108,7 +108,7 @@ class CallbackTests(B1Case):
             await asyncio.sleep(.05)
             self.assertTrue(driver._emergency_close)
             self.assertEqual(sent,[('Fetch.continueRequest',{'requestId':'fixture','interceptResponse':True})])
-            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':0,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0})
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':0,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0,'gone_before_decision':0})
             e=self.fails(4,driver._check_pause_fault)
             self.assertEqual(e.reason,'paused_request_unresolved')
             self.assertEqual(e.details['gate_records'][0]['url_shape']['path'],'/overview/<id>')
@@ -127,7 +127,7 @@ class CallbackTests(B1Case):
             await asyncio.wait_for(finished.wait(),2)
             await asyncio.sleep(0)
             self.assertEqual(sent,['Fetch.failRequest'])
-            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0})
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':0,'gone_before_decision':0})
             self.assertNotIn('private',str(self.fails(4,driver._check_pause_fault).details))
         asyncio.run(scenario())
     def test_late_abort_after_intentional_teardown_is_resolved_as_cancellation(self):
@@ -146,7 +146,7 @@ class CallbackTests(B1Case):
             driver._paused({'requestId':'fixture','request':{'url':driver.gate.origin+'/favicon.ico','method':'GET'}})
             await asyncio.wait_for(done.wait(),2);await asyncio.sleep(0)
             self.assertEqual(calls,['Fetch.failRequest'])
-            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':1})
+            self.assertEqual(driver.pause_counts(),{'paused':1,'resolved':1,'pending':0,'closed_unconfirmed':0,'cancelled_on_close':1,'gone_before_decision':0})
             driver._check_pause_fault()
         asyncio.run(scenario())
 
@@ -171,6 +171,95 @@ class CallbackTests(B1Case):
             await asyncio.sleep(0)
             self.assertEqual(len(sent),1)
         asyncio.run(scenario())
+    def test_cancelled_noncritical_continue_response_removes_redirect_authority(self):
+        from vd_cosmos_core.submit_gate import Gate
+
+        async def scenario():
+            driver = Driver(self.config, {})
+            driver.gate = Gate(self.config, rehearse=True)
+            driver._frame = 'main'
+            sent = []
+
+            async def send(command, options):
+                sent.append((command, options))
+                raise RuntimeError(f'Protocol error ({command}): Unknown request id.')
+
+            driver._cdp = SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(), send=send))
+            event = {'requestId': 'gone-response', 'networkId': 'network-1', 'frameId': 'child',
+                     'resourceType': 'Image', 'responseStatusCode': 302,
+                     'request': {'url': driver.gate.origin + '/fixture.png', 'method': 'GET'}}
+            with patch.object(driver.gate, 'response', return_value=True):
+                driver._paused(event)
+            self.assertIn(event['requestId'], driver._response_redirects)
+            await asyncio.sleep(0)
+            await asyncio.sleep(0)
+            driver._check_pause_fault()
+            self.assertEqual(sent, [('Fetch.continueResponse', {'requestId': event['requestId']})])
+            self.assertFalse(driver._response_redirects)
+            self.assertFalse(driver._in_flight)
+            self.assertEqual(driver.pause_counts()['gone_before_decision'], 1)
+            self.assertEqual(driver._pause_timeline[0]['error_message'], 'Unknown request id.')
+
+        asyncio.run(scenario())
+
+    def test_critical_pause_and_other_protocol_errors_stay_fatal(self):
+        from vd_cosmos_core.submit_gate import Gate
+
+        async def scenario(case, message):
+            driver = Driver(self.config, {})
+            driver.gate = Gate(self.config, rehearse=True)
+            driver._frame = 'main'
+            sent = []
+
+            async def send(command, options):
+                sent.append(command)
+                raise RuntimeError(f'CDPSession.send: Protocol error ({command}): {message}')
+
+            driver._cdp = SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(), send=send))
+            event = {'requestId': 'critical', 'networkId': 'network-1', 'frameId': 'main',
+                     'resourceType': 'Image', 'request': {'url': driver.gate.origin + '/new.png', 'method': 'GET'}}
+            if case == 'submission':
+                driver.gate.sent = True
+                driver._submission_id = event['requestId']
+                event['responseStatusCode'] = 200
+            if case == 'main document':
+                event['resourceType'] = 'Document'
+            driver._paused(event)
+            await asyncio.sleep(0)
+            await asyncio.sleep(0)
+            self.assertEqual(sent, ['Fetch.failRequest'])
+            error = self.fails(4, driver._check_pause_fault)
+            self.assertEqual(error.reason, 'paused_request_unresolved')
+            self.assertEqual(error.details['pause_counts']['closed_unconfirmed'], 1)
+            self.assertEqual(error.details['pause_counts']['gone_before_decision'], 0)
+            row, = error.details['pause_timeline']
+            self.assertEqual((row['error_type'], row['error_message']), ('RuntimeError', message))
+            self.assertNotIn('resolution', row)
+            self.assertIsNone(row['acked_at'])
+
+        for case, message in (
+            ('submission', 'Invalid InterceptionId.'),
+            ('main document', 'Invalid InterceptionId.'),
+            ('other protocol error', 'Invalid InterceptionId. Method is unsupported.'),
+        ):
+            with self.subTest(case=case):
+                asyncio.run(scenario(case, message))
+
+    def test_fetch_error_records_only_bounded_safe_protocol_text(self):
+        cmd = 'Fetch.failRequest'
+        safe = 'Invalid parameters. ' * 20
+        wrapped = f'CDPSession.send: Protocol error ({cmd}): '
+        self.assertEqual(fetch_error(self.config, cmd, RuntimeError(wrapped + safe)),
+                         {'error_type': 'RuntimeError', 'error_message': safe[:120]})
+        for unsafe in ('Rejected https://example.invalid/value?fixture=private', 'Rejected https:example.invalid',
+                       'X-Custom: fixture', 'Unexpected header fixture', 'Unexpected body fixture',
+                       'Rejected SSO fixture', 'Response  --  ' + 'x'*120 + ' /private'):
+            with self.subTest(unsafe=unsafe):
+                self.assertEqual(fetch_error(self.config, cmd, RuntimeError(wrapped + unsafe))['error_message'],
+                                 'protocol message withheld')
+        self.assertEqual(fetch_error(self.config, cmd, RuntimeError('Invalid InterceptionId.'))['error_message'],
+                         'protocol message unavailable')
+
     def test_registered_callbacks_have_no_sync_calls_or_websocket_connection(self):
         path=REPO/'vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py';tree=ast.parse(path.read_text())
         names={'_paused','_new_page','_websocket','_deferred_done','_attached_target'}
@@ -204,7 +293,7 @@ class ProcessRaceTests(B1Case):
 class PauseReceiptTests(B1Case):
     def test_once_result_file_keeps_pause_counters_even_on_failure(self):
         from vd_cosmos_submit import cli
-        counts={'paused':2,'resolved':1,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0}
+        counts={'paused':2,'resolved':1,'pending':0,'closed_unconfirmed':1,'cancelled_on_close':0,'gone_before_decision':0}
         err=FlowError(4,'paused_request_unresolved',pause_counts=counts,gate_records=[
             {'reason':'paused_request_unresolved','stage':'fetch_request','url_shape':{'path':'registered_static'}}],
             request_records=[{'method':'GET','resource_type':'Image','host':'hub.example.invalid',

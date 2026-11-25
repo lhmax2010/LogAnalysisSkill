@@ -878,3 +878,12 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 静默失败记录 `wait_phase`、尚未结束请求的脱敏形状、年龄、暂停状态和决定。Hub 未登记暂停也带路径形状；其它来源只写未登记。证据不含查询值、头部、正文或 SSO 数据。
 - 回归：`test_blocked_icon_and_prefetch_quiet_without_network_terminal_callback`、`test_target_that_never_reaches_load_fails_with_inflight_and_pause_counts`、`test_activity_after_load_times_out_before_run_recording`、`test_network_redirect_and_late_start_use_exact_hop_identity`、`test_network_observation_is_allowed_only_in_the_adapter`。
 - 构建机 B2 启动方式不变。离线复验可将匿名来源换成本仓库脱敏夹具，版本门、CLI 合同、静态检查和真实 headless 套件均按原验收路径执行。线上匿名预检与再次演练需要构建机。
+
+## B2.13 Chrome 已取消的 Fetch 暂停
+
+构建机 `efe079b` 第七次演练在概览加载时，未登记字体的 `Fetch.failRequest` 没有应答。接下来的请求进入故障处理路径。本机用 AbortController 在环回请求暂停后撤销请求，等到 Chrome 发出 `Network.loadingFailed` 才发原指令。Chrome 对 `Fetch.failRequest` 和 `Fetch.continueRequest` 均返回协议消息 `Invalid InterceptionId.`，服务器均未收到请求。实机第七次演练的原始协议消息未记录。
+
+- 失败的 Fetch 指令在时间线保存错误类型和最多 120 字符的安全协议消息。可能包含凭据或请求内容的消息隐藏。没有协议消息时记录不可用。
+- 对非关键暂停，只把明确的 invalid/unknown interception/request ID 作为 `gone_before_decision` 计入已解决，并清掉对应在途记录和该暂停的跳转授权。每个指令最多发送一次。主框架文档、提交请求和其它错误继续走原故障路径。允许名单保持原样，仍挡未登记字体。
+- 真实 Chrome 回归：`test_cancelled_request_fail_command_is_gone_and_reaches_quiet`、`test_cancelled_request_continue_command_is_gone_and_reaches_quiet`。两项均断开在途统计的失败事件监听，确认协议消息也能清账，并检查下一项登记静态资源仍能加载。
+- 合成回归：`test_cancelled_noncritical_continue_response_removes_redirect_authority`、`test_critical_pause_and_other_protocol_errors_stay_fatal`、`test_fetch_error_records_only_bounded_safe_protocol_text`。B2 复验入口不变。
