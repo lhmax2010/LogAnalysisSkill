@@ -105,6 +105,9 @@ class B2bTests(B1Case):
         from vd_cosmos_submit.playwright_driver import Driver
         from hashlib import sha256
         self.assertEqual(sha256(browser_scripts.SCRIPT.encode()).hexdigest(),browser_scripts.DIGEST)
+        args = browser_scripts.arguments('scroll_run', target='root/PRODUCT/fixture/RELEASE')
+        self.assertEqual(args['operation'], 'scroll_run')
+        self.fails(4, browser_scripts.arguments, 'scroll_run', target='root/PRODUCT/fixture/RELEASE', selector='button')
         r,s,d=self.setup_flow();driver=Driver(self.config,s)
         with patch('vd_cosmos_submit.playwright_driver.submit_flow.execute',side_effect=RuntimeError('synthetic auth parameter')):
             try:driver.operate(SimpleNamespace(rehearse=True),r,CTX,lambda _:None,self.reader)

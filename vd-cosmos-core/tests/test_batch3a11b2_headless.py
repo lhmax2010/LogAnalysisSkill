@@ -341,7 +341,6 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(self.server.calls,[('GET','/'),('GET','/dashboard')])
 
     def test_notice_style_only_and_exact_run_sends_once(self):
-        from unittest.mock import patch
         path=self.driver.gate.overview
         run=path+'?7-1.ILinkListener-run'
         self.server.responses[run]=(302,'/wicket/page?9',b'')
@@ -357,8 +356,7 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
             self.assertEqual(self.server.calls,[])
             self.assertEqual(details['run_pattern']['path'],path)
             return 'allow-run'
-        with patch.object(self.driver,'_window'):
-            self.driver._run_editor(entry,confirm)
+        self.driver._run_editor(entry,confirm)
         self.assertEqual(self.server.calls,[('GET',run),('GET','/wicket/page?9')])
 
     def test_wrong_run_answer_gives_expected_word_and_never_navigates(self):
@@ -369,6 +367,119 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(error.reason,'run_confirmation_required')
         self.assertEqual(error.details['todo']['expected'],'allow-run')
         self.assertEqual(self.server.calls,[])
+
+    def test_run_obscured_reasons_include_only_safe_geometry_facts(self):
+        driver = self.driver
+        button = '<button>Run the configuration</button>'
+        overlay = '<div id="cover" class="' + 'x'*80 + '" style="position:fixed;inset:0"></div>'
+        secret_shape = ('<div id="https://local.invalid/hidden" class="https://local.invalid/hidden"'
+                        ' style="position:fixed;inset:0">fixture-private-text</div>')
+        cases = [
+            ('notices_multiple', button + '<div id="myNav" class="overlay">One</div>'*2, 2, 1, None),
+            ('button_count', '<button>Different label</button>', 0, 0, None),
+            ('button_count', button*2, 0, 2, None),
+            ('hit_outside_viewport', '<style>button{position:fixed;top:200vh}</style>' + button, 0, 1, None),
+            ('hit_other_element', button + overlay, 0, 1, {'tag': 'div', 'id': 'cover', 'class': 'x'*60}),
+            ('hit_other_element', button + secret_shape, 0, 1,
+             {'tag': 'div', 'id': '<redacted>', 'class': '<redacted>'}),
+            ('hit_null', '<script>document.elementFromPoint = () => null;</script>' + button, 0, 1, None),
+        ]
+        for reason, html, notices, count, hit in cases:
+            with self.subTest(reason=reason, notices=notices, count=count):
+                self.page.set_content(html)
+                raised = self.fails(4, driver._dismiss_notice, self.page.url)
+                self.assertEqual(raised.reason, 'run_button_obscured')
+                info = raised.details
+                self.assertEqual(info['hit_reason'], reason)
+                operation = 'run_position' if reason == 'hit_outside_viewport' else 'dismiss_notice'
+                self.assertEqual(info['operation'], operation)
+                self.assertFalse(info['clear'])
+                self.assertEqual(info['window_state'], 'normal')
+                self.assertIn(info['visibility_state'], {'visible', 'hidden'})
+                self.assertEqual((info['notices_visible'], info['button_count'], info['hit']), (notices, count, hit))
+                self.assertGreater(info['viewport']['innerHeight'], 0)
+                self.assertGreater(info['viewport']['innerWidth'], 0)
+                if count == 1:
+                    self.assertEqual(set(info['rect']), {'x', 'y', 'w', 'h'})
+                    self.assertTrue(all(type(value) is int for value in info['rect'].values()))
+                else:
+                    self.assertIsNone(info['rect'])
+                self.assertNotIn('local.invalid', str(info))
+                self.assertNotIn('fixture-private-text', str(info))
+        self.assertEqual(self.server.calls, [])
+
+    def test_offscreen_run_scrolls_then_waits_and_hits_before_capture(self):
+        driver = self.driver
+        path = driver.gate.overview
+        run = path + '?7-1.ILinkListener-run'
+        self.page.set_content(f'<div style="height:240vh"></div><a href="{run}">Run the configuration</a>')
+        checks = []
+        run_script = driver._run_probe
+        wait = driver._wait_for_quiet
+
+        def probe(entry, operation):
+            result = run_script(entry, operation)
+            checks.append((operation, result['clear'], driver._window_state()))
+            return result
+
+        def quiet(**kwargs):
+            checks.append(('quiet',))
+            return wait(**kwargs)
+
+        with patch.object(driver, '_run_probe', side_effect=probe), \
+                 patch.object(driver, '_wait_for_quiet', side_effect=quiet):
+            error = self.fails(3, driver._run_editor, self.page.url, lambda _: 'decline')
+        self.assertEqual(error.reason, 'run_confirmation_required')
+        self.assertEqual(checks[:5], [('quiet',), ('run_position', False, 'normal'),
+                                     ('scroll_run', False, 'normal'), ('quiet',),
+                                     ('run_position', True, 'normal')])
+        self.assertEqual(len(driver.gate.run_candidates), 1)
+        self.assertEqual(self.server.calls, [])
+
+    def test_minimize_rechecks_normal_hit_first_and_falls_back_on_changed_rect(self):
+        driver = self.driver
+        path = driver.gate.overview
+        run = path + '?7-1.ILinkListener-run'
+        self.page.set_content(f'<a href="{run}">Run the configuration</a>')
+        self.server.responses[run] = (302, '/wicket/page?9', b'')
+        self.server.responses['/wicket/page?9'] = (200, None, b'<main>editor</main>')
+        win = 'normal'
+        checks = []
+        run_script = driver._run_probe
+        click = self.page.mouse.click
+
+        def move(state):
+            nonlocal win
+            win = state
+            checks.append(('window', state))
+
+        def probe(entry, operation):
+            result = run_script(entry, operation)
+            self.assertTrue(result['clear'])
+            checks.append(('probe', win))
+            if win == 'minimized':
+                result['click_rect'][0] += 0.25  # Same rounded evidence, different actual rectangle.
+            return result
+
+        def record_click(*coords):
+            checks.append(('click', win, driver.gate.capture_run))
+            return click(*coords)
+
+        def confirm(_):
+            checks.append(('confirm', win))
+            self.assertEqual(self.server.calls, [])
+            return 'allow-run'
+
+        with patch.object(driver, '_window_state', side_effect=lambda: win), \
+                 patch.object(driver, '_window', side_effect=move), \
+                 patch.object(driver, '_run_probe', side_effect=probe), \
+                 patch.object(self.page.mouse, 'click', side_effect=record_click):
+            driver._run_editor(self.page.url, confirm)
+        self.assertEqual(checks, [('probe', 'normal'), ('window', 'minimized'), ('probe', 'minimized'),
+                                  ('window', 'normal'), ('probe', 'normal'), ('click', 'normal', True),
+                                  ('confirm', 'normal'), ('probe', 'normal'), ('click', 'normal', False),
+                                  ('window', 'minimized')])
+        self.assertEqual(self.server.calls, [('GET', run), ('GET', '/wicket/page?9')])
 
     def test_notice_cannot_hide_other_obstructions_or_send_mutation_requests(self):
         entry=self.page.url

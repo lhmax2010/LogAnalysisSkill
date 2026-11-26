@@ -9,16 +9,33 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  const visible=e=>{const s=getComputedStyle(e);return e.getClientRects().length>0 &&
    e.checkVisibility({opacityProperty:true,visibilityProperty:true}) &&
    s.visibility==='visible' && e.getBoundingClientRect().width>0 && e.getBoundingClientRect().height>0;};
- if(operation==='dismiss_notice'||operation==='run_position'){
+ if(['dismiss_notice','run_position','scroll_run'].includes(operation)){
   const notices=[...document.querySelectorAll('#myNav.overlay')].filter(visible);
-  if(notices.length>1)return {clear:false};
   if(operation==='dismiss_notice' && notices.length===1)notices[0].style.setProperty('display','none','important');
   const buttons=[...document.querySelectorAll('a,button,[role="button"],input[type="button"],input[type="submit"]')]
-    .filter(e=>visible(e) && (e.tagName==='INPUT'?e.value:e.innerText).trim()==='Run the configuration');
-  if(buttons.length!==1)return {clear:false};
-  const button=buttons[0],r=button.getBoundingClientRect();
-  const x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);
-  return hit&&button.contains(hit)?{clear:true,x,y}:{clear:false};
+    .filter(e=>visible(e) && (e.tagName==='INPUT'?e.value:(e.innerText||'')).trim()==='Run the configuration');
+  const button=buttons.length===1?buttons[0]:null,r=button?.getBoundingClientRect();
+  const facts={operation,notices_visible:notices.length,button_count:buttons.length,
+    rect:r?{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height)}:null,
+    viewport:{innerWidth,innerHeight},
+    visibility_state:['visible','hidden','prerender','unloaded'].includes(document.visibilityState)?document.visibilityState:'unknown',
+    hit:null};
+  const blocked=reason=>({clear:false,reason,...facts});
+  if(notices.length>1)return blocked('notices_multiple');
+  if(!button)return blocked('button_count');
+  const x=r.x+r.width/2,y=r.y+r.height/2;
+  if(x<0 || y<0 || x>=innerWidth || y>=innerHeight){
+   if(operation==='scroll_run')button.scrollIntoView({block:'center',behavior:'instant'});
+   return blocked('hit_outside_viewport');
+  }
+  const hit=document.elementFromPoint(x,y);
+  if(!hit)return blocked('hit_null');
+  const safeAttribute=(text,pattern,limit)=>text && !pattern.test(text)?'<redacted>':text.slice(0,limit);
+  facts.hit={tag:safeAttribute(hit.tagName.toLowerCase(),/^[a-z][a-z0-9-]*$/,32),
+    id:safeAttribute(hit.getAttribute('id')||'',/^[a-zA-Z0-9_-]+$/,80),
+    class:safeAttribute(hit.getAttribute('class')||'',/^[a-zA-Z0-9_ -]+$/,60)};
+  if(!button.contains(hit))return blocked('hit_other_element');
+  return {clear:true,x,y,click_rect:[r.x,r.y,r.width,r.height],...facts};
  }
  if(operation==='account'){
   const info=e=>({tag:e.tagName.toLowerCase(),id:e.id,class:e.getAttribute('class')||''});
@@ -79,10 +96,10 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='40c4274865973c41df730c351eaea5f0664388d322f61b1bb4f13eb5075fa960'
+DIGEST='ccb9ea5e3c53b0334c70c89610e7b5476029b4abaf7b52672776db827d7fd102'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
-    if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
+    if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation=='fill' and (type(index) is not int or not 0<=index<18 or not isinstance(value,str)):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation!='fill' and (index is not None or value is not None):raise FlowError(4,'fixed_script_arguments_rejected')
     if operation=='account':

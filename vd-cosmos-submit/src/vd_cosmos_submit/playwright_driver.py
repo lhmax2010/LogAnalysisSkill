@@ -769,13 +769,52 @@ class Driver:
                 if err.reason=='fixed_script_failed' and self.gate.phase=='auth':return
                 raise
             if probe['manual_login']:raise self._manual_login_error()
-    def _run_position(self,entry,operation='run_position'):
+    def _run_probe(self, entry, operation):
         self._check_manual_login()
         self._check_gate()
-        if self._page.url!=entry:raise FlowError(5,'target_navigation_failed')
-        position=self._fixed_script(operation)
-        if not position['clear']:raise FlowError(4,'run_button_obscured')
-        return position['x'],position['y']
+        if self._page.url != entry:
+            raise FlowError(5, 'target_navigation_failed')
+        position = self._fixed_script(operation)
+        if position.get('password_present'):
+            raise self._manual_login_error()
+        return position
+
+    def _run_position(self, entry, operation='run_position'):
+        self._check_gate()
+        state = self._window_state()
+        if state != 'normal':
+            self._window('normal')
+            state = self._window_state()
+            if state != 'normal':
+                raise FlowError(4, 'run_window_not_normal', window_state=state)
+            self._wait_for_quiet()
+        position = self._run_probe(entry, operation)
+        if not position['clear'] and position['reason'] == 'hit_outside_viewport':
+            self._run_probe(entry, 'scroll_run')
+            self._wait_for_quiet()
+            position = self._run_probe(entry, 'run_position')
+        if not position['clear']:
+            hit_reason = position.pop('reason')
+            raise FlowError(4, 'run_button_obscured', **position, hit_reason=hit_reason, window_state=self._window_state())
+        return position
+
+    def _run_click_position(self, entry, *, try_minimize=True):
+        normal = self._run_position(entry)
+        if not try_minimize:
+            return (normal['x'], normal['y']), False
+        try:
+            self._window('minimized')
+        except Exception:
+            pass  # Some window managers do not support minimizing via CDP.
+        if self._window_state() == 'minimized':
+            self._wait_for_quiet()
+            minimized = self._run_probe(entry, 'run_position')
+            if minimized['clear'] and minimized['click_rect'] == normal['click_rect']:
+                return (minimized['x'], minimized['y']), True
+        # Re-prove the restored hit before arming any Run request.
+        restored = self._run_position(entry)
+        return (restored['x'], restored['y']), False
+
     def _wait_for_quiet(self,*,load=False):
         """Require a quiet window after load, counting network work between Fetch pauses."""
         start=time.monotonic()
@@ -814,10 +853,10 @@ class Driver:
     def _run_editor(self,entry,confirm):
         # The first click is observed but never sent. Permission is for the exact GET only.
         self._wait_for_quiet(load=True)
-        self._window('minimized')
+        position, minimized = self._run_click_position(entry)
         self.gate.capture_run=True
         try:
-            self._page.mouse.click(*self._run_position(entry))
+            self._page.mouse.click(*position)
             deadline=time.monotonic()+5
             while not self.gate.run_candidates and not (self._fatal or self.gate.fatal) and time.monotonic()<deadline:
                 self._page.wait_for_timeout(20)
@@ -827,13 +866,24 @@ class Driver:
         candidate={'method':'GET','path':self.gate.overview,'listener':'ILinkListener','behavior':None,'component':'run'}
         if confirm({'confirmation':'run','target':submit_model.target(self.config),'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':
             raise confirmation_error('run','allow-run')
-        position=self._run_position(entry)
+        position, minimized = self._run_click_position(entry, try_minimize=minimized)
         self.gate.allow_run(self.gate.run_candidates[0])
         self._page.mouse.click(*position)
         try:self._page.wait_for_url(re.compile(re.escape(self.gate.origin)+r'/wicket/page\?[0-9]+$'),timeout=5000)
         except Exception:
             self._check_manual_login()
             raise FlowError(5,'run_navigation_failed') from None
+        if not minimized:
+            try:
+                self._window('minimized')
+            except Exception:
+                pass  # The editor stays protected by the request gate.
+
+    def _window_state(self):
+        info = self._cdp.send('Browser.getWindowForTarget')
+        state = info.get('bounds', {}).get('windowState')
+        return state if state in ('normal', 'minimized', 'maximized', 'fullscreen') else 'unknown'
+
     def _window(self,state):
         # Fixed window-only CDP calls; no runtime evaluation/network data extraction.
         info=self._cdp.send('Browser.getWindowForTarget')

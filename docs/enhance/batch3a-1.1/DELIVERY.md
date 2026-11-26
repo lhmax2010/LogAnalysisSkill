@@ -907,3 +907,13 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 旧代数请求按 `superseded_by_navigation` 退休，无 ID 或 loader 也适用。当前代数无终止证据的请求仍阻挡静默；闸门保持原样。
 - 收据增加 `generation`、`current_generation`、`network_id_present`、`host_class`。无法识别的 loader 显示 `unknown`，非 Hub 保留来源类别和“未登记”，无 URL。
 - 回归：`test_auth_request_without_network_id_blocks_current_then_is_superseded`、`test_unmapped_request_during_commit_is_kept_with_new_document`、`test_navigation_retires_previous_generation_and_correlates_main_loader`。B2 复验入口保持原样。
+
+## B2.16 Run 按钮命中证据与滚动
+
+`480ea45` 第十次演练中 87 个暂停均已解决，有 1 个旧文档请求退休。首次 Run 点击前报 `run_button_obscured`。旧脚本只返回 `clear:false`，无法推断实机原因。
+
+本机 Chrome 158 环回探针分别用有头和无头窗口验证：CDP 记录 `minimized` 后，居中的按钮矩形均保持不变，`elementFromPoint` 仍命中按钮，页面可见状态仍是 `visible`。按钮中心在视口下方时均返回 `null`。覆盖式遮挡均命中覆盖层 `div`。
+
+- Run 几何诊断返回固定原因 `notices_multiple`、`button_count`、`hit_outside_viewport`、`hit_other_element`、`hit_null`，附操作、可见数量、圆整矩形、视口、可见状态和脱敏命中元素字段。错误将原因放在 `hit_reason`，另带 CDP 窗口状态。固定脚本摘要已更新。
+- 先在正常窗口完成命中检查。唯一按钮的中心在视口外时，固定脚本滚动一次，重新等待静默并命中检查。尝试最小化后，只有重新命中且原始矩形完全一致才在该状态点击。否则恢复正常窗口并复核。首次回放仍拦截请求，确认 `allow-run` 后只放行原规则允许的精确请求。
+- 回归：`test_run_obscured_reasons_include_only_safe_geometry_facts`、`test_offscreen_run_scrolls_then_waits_and_hits_before_capture`、`test_minimize_rechecks_normal_hit_first_and_falls_back_on_changed_rect`、`test_notice_style_only_and_exact_run_sends_once`、`test_fixed_script_registered_digest_and_exception_redaction`。B2 复验入口保持原样。
