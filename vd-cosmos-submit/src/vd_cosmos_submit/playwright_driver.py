@@ -168,6 +168,7 @@ class Driver:
     pause_timeout_s = 10
     quiet_window_s = 1.5
     quiet_timeout_s = 30
+    window_restore_timeout_s = 5
 
     def __init__(self,config,session,*,headless=False,local_origin=None):
         self.config=config;self.session=session;self.headless=headless;self.local_origin=local_origin
@@ -562,6 +563,8 @@ class Driver:
             pause.timeline.update(fetch_error(self.config, args[0], error))
             raise
         pause.timeline['acked_at']=time.monotonic()
+        if failed and pause.timeline.get('captured_run'):
+            pause.timeline['ack_latency_s'] = pause.timeline['acked_at'] - pause.timeline['sent_at']
         if document is not None:
             document.acknowledged = True
             self._commit_document()
@@ -690,7 +693,9 @@ class Driver:
                 body=r.get('postData','').encode() if inspect else b''
                 captured=len(self.gate.run_candidates)
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=run_ajax or headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
-                if len(self.gate.run_candidates)>captured:blocked='Aborted'
+                if len(self.gate.run_candidates)>captured:
+                    blocked = 'Aborted'
+                    pause.timeline.update(captured_run=True, ack_latency_s=None)
                 if allow and self.gate.sent and self._submission_id is None:self._submission_id=rid
             if not allow:
                 self._defer(self._cdp,'send','Fetch.failRequest',
@@ -781,39 +786,27 @@ class Driver:
 
     def _run_position(self, entry, operation='run_position'):
         self._check_gate()
-        state = self._window_state()
-        if state != 'normal':
-            self._window('normal')
-            state = self._window_state()
-            if state != 'normal':
-                raise FlowError(4, 'run_window_not_normal', window_state=state)
-            self._wait_for_quiet()
+        self._ensure_normal_window()
         position = self._run_probe(entry, operation)
         if not position['clear'] and position['reason'] == 'hit_outside_viewport':
+            self._ensure_normal_window()
             self._run_probe(entry, 'scroll_run')
             self._wait_for_quiet()
+            self._ensure_normal_window()
             position = self._run_probe(entry, 'run_position')
         if not position['clear']:
             hit_reason = position.pop('reason')
             raise FlowError(4, 'run_button_obscured', **position, hit_reason=hit_reason, window_state=self._window_state())
         return position
 
-    def _run_click_position(self, entry, *, try_minimize=True):
-        normal = self._run_position(entry)
-        if not try_minimize:
-            return (normal['x'], normal['y']), False
-        try:
-            self._window('minimized')
-        except Exception:
-            pass  # Some window managers do not support minimizing via CDP.
-        if self._window_state() == 'minimized':
-            self._wait_for_quiet()
-            minimized = self._run_probe(entry, 'run_position')
-            if minimized['clear'] and minimized['click_rect'] == normal['click_rect']:
-                return (minimized['x'], minimized['y']), True
-        # Re-prove the restored hit before arming any Run request.
-        restored = self._run_position(entry)
-        return (restored['x'], restored['y']), False
+    def _run_click_position(self, entry):
+        for _ in range(2):
+            position = self._run_position(entry)
+            state = self._window_state()
+            if state == 'normal':
+                return position['x'], position['y']
+            # If the window changed during the probe, restore and re-prove the hit.
+        raise self._run_window_error(state)
 
     def _wait_for_quiet(self,*,load=False):
         """Require a quiet window after load, counting network work between Fetch pauses."""
@@ -853,7 +846,7 @@ class Driver:
     def _run_editor(self,entry,confirm):
         # The first click is observed but never sent. Permission is for the exact GET only.
         self._wait_for_quiet(load=True)
-        position, minimized = self._run_click_position(entry)
+        position = self._run_click_position(entry)
         self.gate.capture_run=True
         try:
             self._page.mouse.click(*position)
@@ -866,28 +859,42 @@ class Driver:
         candidate={'method':'GET','path':self.gate.overview,'listener':'ILinkListener','behavior':None,'component':'run'}
         if confirm({'confirmation':'run','target':submit_model.target(self.config),'run_pattern':candidate,'confirm':'allow-run'})!='allow-run':
             raise confirmation_error('run','allow-run')
-        position, minimized = self._run_click_position(entry, try_minimize=minimized)
+        position = self._run_click_position(entry)
         self.gate.allow_run(self.gate.run_candidates[0])
         self._page.mouse.click(*position)
         try:self._page.wait_for_url(re.compile(re.escape(self.gate.origin)+r'/wicket/page\?[0-9]+$'),timeout=5000)
         except Exception:
             self._check_manual_login()
             raise FlowError(5,'run_navigation_failed') from None
-        if not minimized:
-            try:
-                self._window('minimized')
-            except Exception:
-                pass  # The editor stays protected by the request gate.
-
     def _window_state(self):
         info = self._cdp.send('Browser.getWindowForTarget')
         state = info.get('bounds', {}).get('windowState')
         return state if state in ('normal', 'minimized', 'maximized', 'fullscreen') else 'unknown'
 
-    def _window(self,state):
-        # Fixed window-only CDP calls; no runtime evaluation/network data extraction.
-        info=self._cdp.send('Browser.getWindowForTarget')
-        self._cdp.send('Browser.setWindowBounds',{'windowId':info['windowId'],'bounds':{'windowState':state}})
+    @staticmethod
+    def _run_window_error(state):
+        return FlowError(3, 'run_window_not_normal', window_state=state,
+                         todo={'reason': 'run_window_not_normal', 'message': 'restore the Chrome window and rerun'})
+
+    def _ensure_normal_window(self):
+        state = self._window_state()
+        if state == 'normal':
+            return
+        info = self._cdp.send('Browser.getWindowForTarget')
+        try:
+            self._cdp.send('Browser.setWindowBounds', {'windowId': info['windowId'], 'bounds': {'windowState': 'normal'}})
+        except Exception:
+            # A window manager can reject the command. Only the observed state permits a click.
+            self._check_gate()
+        deadline = time.monotonic() + self.window_restore_timeout_s
+        while (remaining := deadline - time.monotonic()) > 0:
+            self._page.wait_for_timeout(min(100, max(1, int(remaining * 1000))))
+            self._check_gate()
+            state = self._window_state()
+            if state == 'normal':
+                return
+        raise self._run_window_error(state)
+
     def _check_account(self, dashboard):
         account=self.config.raw['submit']['account']
         unmatched={'matched':False,'element':None,'container':None}

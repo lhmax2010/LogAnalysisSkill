@@ -933,3 +933,11 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 固定脚本对可见文字、title、aria-label 分别折叠空白后精确比较。每个元素最多记一次。多个字段相同时，`match_field` 按文字、title、aria-label 的顺序取第一项。定位结果和命中错误保留该字段。多个控件冲突时报告实际匹配字段，近似项也标明精确匹配的字段。
 - 仍要求唯一可见控件、非零不透明度及中心命中。滚动、窗口确认及请求闸门保持原样。固定脚本摘要已更新。
 - 回归：`test_icon_run_matches_title_or_aria_label_and_counts_each_element_once`、`test_run_refuses_separate_exact_matches_and_hidden_title_controls`、`test_notice_style_only_and_exact_run_sends_once`。后一项使用只有 title 有标签的图标按钮，检查确认前服务器收到零个 Run 请求，确认后只收到一个。
+
+## B2.19 Run 窗口恢复及禁用主动最小化
+
+`fa92385` 第十三次实机演练已拦截并记录正确的 Run 请求。操作者输入 `allow-run` 后，立即读取的 X11 窗口状态仍为 `minimized`，第二次点击未执行。
+
+- 驱动不再主动最小化。两次 Run 点击分别使用正常窗口的新鲜命中检查。遇到非正常状态发一次固定的 normal 恢复，每 100 ms 观察状态，最多 5 秒。仍未恢复时退出 3 并给出恢复窗口后重试的待办。静态边界只允许字面量 normal 恢复，禁止其它窗口写入形状。请求闸门保持原样。
+- 首次捕获的 `Fetch.failRequest` 在时间线标记 `captured_run`，收到应答后记录 `ack_latency_s`（从发出至应答，秒）。时序和应答策略保持原样。
+- 本机有头 Chrome 环回试验在确认时模拟人工最小化。驱动仅写 normal，两个点击的窗口状态均为 normal，确认之前服务器未收到 Run，确认后精确放行一次。自动回归覆盖持续最小化时的退出、无主动窗口写入、恢复轮询、静态边界与应答计时。

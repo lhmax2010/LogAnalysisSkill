@@ -134,6 +134,24 @@ class B2bTests(B1Case):
         with self.assertRaises(ValueError):
             boundary.validate("self._cdp.send('Network.getResponseBody')", adapter=True)
 
+    def test_browser_window_boundary_allows_only_literal_normal_restores(self):
+        spec = importlib.util.spec_from_file_location('boundary', REPO/'vd-cosmos-core/scripts/check_submit_boundary.py')
+        boundary = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(boundary)
+        boundary.validate("self._cdp.send('Browser.getWindowForTarget')", adapter=True)
+        restore = "self._cdp.send('Browser.setWindowBounds', {'windowId': info['windowId'], 'bounds': {'windowState': 'normal'}})"
+        boundary.validate(restore, adapter=True)
+        for script in (
+            restore.replace("'normal'", "'minimized'"),
+            restore.replace("'normal'", "state"),
+            restore.replace("'windowState': 'normal'", "'windowState': 'normal', 'width': 300"),
+            "self._defer(self._cdp, 'send', 'Browser.setWindowBounds', args)",
+        ):
+            with self.subTest(script=script), self.assertRaises(ValueError):
+                boundary.validate(script, adapter=True)
+        with self.assertRaises(ValueError):
+            boundary.validate(restore)
+
     def test_manual_action_resolution_preserves_history(self):
         r,s,d=self.setup_flow()
         with EventStore(self.config.data_root) as store:store.append(CTX,'manual_action_pending',{'target':model.target(self.config)},store.head(),operation_id=s['operation_id'])

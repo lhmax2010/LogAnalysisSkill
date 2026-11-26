@@ -6,7 +6,23 @@ from pathlib import Path
 BANNED={'cookies','add_cookies','storage_state','screenshot','content','inner_html','outer_html','start_tracing','tracing','connect_over_cdp','connect','get_attribute','input_value'}
 # Network.enable is the sole Network command. Observe IDs, status and cache/terminal
 # events for the existing Fetch gate. Page.getFrameTree already supplies committed loader IDs.
+# Window methods check and restore a user-moved window to normal before a Run hit test.
 CDP={'Network.enable','Fetch.enable','Fetch.continueRequest','Fetch.continueResponse','Fetch.failRequest','Target.getTargetInfo','Target.setAutoAttach','Target.closeTarget','Page.getFrameTree','Browser.getWindowForTarget','Browser.setWindowBounds'}
+
+
+def validate_window_restore(call):
+    # Require a synchronous, literal normal-state restore, with no geometry changes.
+    if len(call.args) != 2 or call.keywords or not isinstance(call.args[1], ast.Dict):
+        raise ValueError('window restore arguments')
+    params = call.args[1]
+    if len(params.keys) != 2 or not all(isinstance(key, ast.Constant) for key in params.keys):
+        raise ValueError('window restore arguments')
+    fields = {key.value: value for key, value in zip(params.keys, params.values)}
+    if fields.keys() != {'windowId', 'bounds'}:
+        raise ValueError('window restore arguments')
+    if ast.literal_eval(fields['bounds']) != {'windowState': 'normal'}:
+        raise ValueError('window restore state')
+
 
 def validate(text,adapter=False):
     tree=ast.parse(text,feature_version=10)
@@ -21,12 +37,13 @@ def validate(text,adapter=False):
             if attr=='_defer' and len(node.args)>=2 and isinstance(node.args[1],ast.Constant) and node.args[1].value=='send':
                 if not adapter or len(node.args)<3:raise ValueError('deferred CDP method')
                 first=node.args[2];values=[first.body,first.orelse] if isinstance(first,ast.IfExp) else [first]
-                if any(not isinstance(v,ast.Constant) or v.value not in CDP for v in values):raise ValueError('deferred CDP method')
+                if any(not isinstance(v,ast.Constant) or v.value not in CDP or v.value=='Browser.setWindowBounds' for v in values):raise ValueError('deferred CDP method')
             if attr=='evaluate' and (not adapter or not node.args or not isinstance(node.args[0],ast.Name) or node.args[0].id!='SCRIPT'):raise ValueError('unregistered script')
             if attr=='send' and isinstance(node.func.value,ast.Attribute) and node.func.value.attr in {'_cdp','_targets'}:
                 if not adapter or not node.args:raise ValueError('CDP method')
                 first=node.args[0];values=[first.body,first.orelse] if isinstance(first,ast.IfExp) else [first]
                 if any(not isinstance(v,ast.Constant) or v.value not in CDP for v in values):raise ValueError('CDP method')
+                if any(v.value=='Browser.setWindowBounds' for v in values):validate_window_restore(node)
             if attr=='add_init_script':
                 opts=node.keywords
                 if (not adapter or node.args or len(opts)!=1 or opts[0].arg!='script'

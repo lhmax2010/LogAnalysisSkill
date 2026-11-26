@@ -357,14 +357,21 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
             self.assertEqual(self.server.calls,[])
             self.assertEqual(details['run_pattern']['path'],path)
             return 'allow-run'
-        self.driver._run_editor(entry,confirm)
+        with patch.object(self.driver._cdp, 'send', wraps=self.driver._cdp.send) as cdp:
+            self.driver._run_editor(entry,confirm)
         self.assertEqual(self.server.calls,[('GET',run),('GET','/wicket/page?9')])
+        methods = [call.args[0] for call in cdp.call_args_list]
+        self.assertIn('Browser.getWindowForTarget', methods)
+        self.assertNotIn('Browser.setWindowBounds', methods)
+        row, = [row for row in self.driver._operation_evidence()['pause_timeline'] if row.get('captured_run')]
+        self.assertEqual(row['command'], 'Fetch.failRequest')
+        self.assertGreaterEqual(row['ack_latency_s'], 0)
+        self.assertEqual(row['ack_latency_s'], row['acked_at'] - row['sent_at'])
 
     def test_wrong_run_answer_gives_expected_word_and_never_navigates(self):
         path=self.driver.gate.overview
         self.page.set_content(f'<a href="{path}?7-1.ILinkListener-run">Run the configuration</a>')
-        with patch.object(self.driver,'_window'):
-            error=self.fails(3,self.driver._run_editor,self.server.origin+path,lambda _:'yes')
+        error=self.fails(3,self.driver._run_editor,self.server.origin+path,lambda _:'yes')
         self.assertEqual(error.reason,'run_confirmation_required')
         self.assertEqual(error.details['todo']['expected'],'allow-run')
         self.assertEqual(self.server.calls,[])
@@ -543,50 +550,84 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(len(driver.gate.run_candidates), 1)
         self.assertEqual(self.server.calls, [])
 
-    def test_minimize_rechecks_normal_hit_first_and_falls_back_on_changed_rect(self):
+    def test_run_waits_for_user_minimized_window_to_restore_after_confirmation(self):
         driver = self.driver
-        path = driver.gate.overview
-        run = path + '?7-1.ILinkListener-run'
+        run = driver.gate.overview + '?7-1.ILinkListener-run'
         self.page.set_content(f'<a href="{run}">Run the configuration</a>')
         self.server.responses[run] = (302, '/wicket/page?9', b'')
         self.server.responses['/wicket/page?9'] = (200, None, b'<main>editor</main>')
-        win = 'normal'
-        checks = []
-        run_script = driver._run_probe
-        click = self.page.mouse.click
+        state, poll_waits, restores, checks = 'normal', [], [], []
+        original_send, original_wait = driver._cdp.send, self.page.wait_for_timeout
+        probe, click = driver._run_probe, self.page.mouse.click
 
-        def move(state):
-            nonlocal win
-            win = state
-            checks.append(('window', state))
+        def send(method, params=None):
+            if method == 'Browser.getWindowForTarget':
+                return {'windowId': 7, 'bounds': {'windowState': state}}
+            if method == 'Browser.setWindowBounds':
+                restores.append(params)
+                checks.append(('restore', state))
+                return {}
+            return original_send(method, params)
 
-        def probe(entry, operation):
-            result = run_script(entry, operation)
-            self.assertTrue(result['clear'])
-            checks.append(('probe', win))
-            if win == 'minimized':
-                result['click_rect'][0] += 0.25  # Same rounded evidence, different actual rectangle.
-            return result
+        def wait(milliseconds):
+            nonlocal state
+            if restores and state == 'minimized':
+                poll_waits.append(milliseconds)
+                if len(poll_waits) == 2:
+                    state = 'normal'
+            return original_wait(milliseconds)
+
+        def check_position(*args):
+            checks.append(('probe', state))
+            return probe(*args)
 
         def record_click(*coords):
-            checks.append(('click', win, driver.gate.capture_run))
+            checks.append(('click', state, driver.gate.capture_run))
             return click(*coords)
 
         def confirm(_):
-            checks.append(('confirm', win))
+            nonlocal state
+            checks.append(('confirm', state))
             self.assertEqual(self.server.calls, [])
+            state = 'minimized'
             return 'allow-run'
 
-        with patch.object(driver, '_window_state', side_effect=lambda: win), \
-                 patch.object(driver, '_window', side_effect=move), \
-                 patch.object(driver, '_run_probe', side_effect=probe), \
+        with patch.object(driver._cdp, 'send', side_effect=send), \
+                 patch.object(self.page, 'wait_for_timeout', side_effect=wait), \
+                 patch.object(driver, '_run_probe', side_effect=check_position), \
                  patch.object(self.page.mouse, 'click', side_effect=record_click):
             driver._run_editor(self.page.url, confirm)
-        self.assertEqual(checks, [('probe', 'normal'), ('window', 'minimized'), ('probe', 'minimized'),
-                                  ('window', 'normal'), ('probe', 'normal'), ('click', 'normal', True),
-                                  ('confirm', 'normal'), ('probe', 'normal'), ('click', 'normal', False),
-                                  ('window', 'minimized')])
+        self.assertEqual(restores, [{'windowId': 7, 'bounds': {'windowState': 'normal'}}])
+        self.assertEqual(poll_waits, [100, 100])
+        self.assertEqual(checks, [('probe', 'normal'), ('click', 'normal', True),
+                                  ('confirm', 'normal'), ('restore', 'minimized'),
+                                  ('probe', 'normal'), ('click', 'normal', False)])
         self.assertEqual(self.server.calls, [('GET', run), ('GET', '/wicket/page?9')])
+
+    def test_run_reports_unrestored_window_and_never_clicks(self):
+        driver = self.driver
+        self.page.set_content('<button>Run the configuration</button>')
+        self.assertEqual(driver.window_restore_timeout_s, 5)
+        driver.window_restore_timeout_s = .24
+        original_send = driver._cdp.send
+
+        def send(method, params=None):
+            if method == 'Browser.getWindowForTarget':
+                return {'windowId': 7, 'bounds': {'windowState': 'minimized'}}
+            if method == 'Browser.setWindowBounds':
+                return {}
+            return original_send(method, params)
+
+        with patch.object(driver._cdp, 'send', side_effect=send) as cdp, \
+                 patch.object(self.page.mouse, 'click') as click:
+            error = self.fails(3, driver._run_editor, self.page.url, lambda _: self.fail('unexpected confirmation'))
+        self.assertEqual(error.reason, 'run_window_not_normal')
+        self.assertEqual(error.details['window_state'], 'minimized')
+        self.assertEqual(error.details['todo']['message'], 'restore the Chrome window and rerun')
+        writes = [call.args[1] for call in cdp.call_args_list if call.args[0] == 'Browser.setWindowBounds']
+        self.assertEqual(writes, [{'windowId': 7, 'bounds': {'windowState': 'normal'}}])
+        click.assert_not_called()
+        self.assertEqual(self.server.calls, [])
 
     def test_notice_cannot_hide_other_obstructions_or_send_mutation_requests(self):
         entry=self.page.url
