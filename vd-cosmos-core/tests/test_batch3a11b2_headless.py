@@ -882,24 +882,34 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertFalse(self.driver.gate.capture_run)
         self.assertFalse(self.driver.gate.run_candidates)
 
-    def test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch(self):
+    def editor_form(self):
         from html import escape
         from vd_cosmos_core.submit_browser_contract import SEED
-        self.driver.gate.run_redirect=self.server.origin+'/wicket/page?1'
-        self.page.goto(self.server.origin+'/wicket/page?1')
-        rows=[]
+        rows = []
         for seed in SEED:
-            name=seed['name']
-            if seed['kind']=='ks':
-                prefix=name.removesuffix('recorder')
-                control=(f'<input type="hidden" name="{name}"><select name="{prefix}choices"></select>'
-                         f'<select name="{prefix}selection"></select>')
-            elif seed['kind'] in {'select','textarea'}:
-                control=f'<{seed["kind"]} name="{name}"></{seed["kind"]}>'
+            name = seed['name']
+            kind = seed['kind']
+            if kind == 'ks':
+                prefix = name.removesuffix('recorder')
+                control = (f'<input type="hidden" name="{name}"><select name="{prefix}choices"></select>'
+                           f'<select name="{prefix}selection"></select>')
+            elif kind in {'select', 'textarea'}:
+                control = f'<{kind} name="{name}"></{kind}>'
             else:
-                control=f'<input type="{seed["kind"]}" name="{name}">'
+                control = f'<input type="{kind}" name="{name}">'
             rows.append(f'<tr><td>{escape(seed["label"])}</td><td>{control}</td></tr>')
-        form='<form id="form" enctype="multipart/form-data"><input type="hidden" name="form_hf_0"><table>'+''.join(rows)+'</table></form>'
+        return ('<form id="form" method="post" enctype="multipart/form-data">'
+                '<input type="hidden" name="form_hf_0"><table>' + ''.join(rows) + '</table></form>')
+
+    def open_fixture_editor(self):
+        url = self.server.origin + '/wicket/page?1'
+        self.driver.gate.run_redirect = url
+        self.page.goto(url)
+
+    def test_form_breadcrumb_segments_allow_optional_root_and_capture_mismatch(self):
+        from vd_cosmos_core.submit_browser_contract import SEED
+        self.open_fixture_editor()
+        form = self.editor_form()
         for breadcrumb, segments in (('root / PRODUCT &gt; fixture » RELEASE', ['root','PRODUCT','fixture','RELEASE']),
                                      ('PRODUCT › fixture\nRELEASE',['PRODUCT','fixture','RELEASE'])):
             self.page.set_content(f'<div class="breadcrumbs">{breadcrumb}</div>'+form)
@@ -914,6 +924,100 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         error=self.fails(5,self.driver.snapshot)
         self.assertEqual(error.reason,'form_unrecognized')
         self.assertEqual(error.details['breadcrumb_segments'],['PRODUCT','wrong','RELEASE'])
+
+    def test_editor_form_reports_each_structural_failure(self):
+        from vd_cosmos_core.submit_browser_contract import SEED
+        self.open_fixture_editor()
+        breadcrumb = '<div class="breadcrumbs">PRODUCT / fixture / RELEASE</div>'
+        form = self.editor_form()
+        name = SEED[1]['name']
+        control = f'<input type="text" name="{name}">'
+        for stage, markup in (
+            ('breadcrumb', breadcrumb.replace('fixture', 'wrong') + form),
+            ('form', breadcrumb + form.replace('multipart/form-data', 'text/plain')),
+            ('control', breadcrumb + form.replace(control, '')),
+            ('type', breadcrumb + form.replace(control, control.replace('"text"', '"number"'))),
+            ('label', breadcrumb + form.replace('<td>BASE_REPOS</td>', '<td>Unexpected label</td>')),
+            ('extra', breadcrumb + form.replace('form_hf_0', 'unexpected_hidden')),
+            ('duplicate', breadcrumb + form.replace(control, control * 2)),
+        ):
+            with self.subTest(stage=stage):
+                self.page.set_content(markup)
+                error = self.fails(5, self.driver.snapshot)
+                self.assertEqual(error.reason, 'form_unrecognized')
+                self.assertEqual(error.details['stage'], stage)
+                self.assertEqual(error.details['form_count'], 1)
+                self.assertEqual(error.details['forms'][0]['id'], 'form')
+
+    def test_editor_structure_reports_names_and_labels_without_values_options_or_urls(self):
+        from vd_cosmos_core.submit_browser_contract import SEED
+        self.open_fixture_editor()
+        form = self.editor_form()
+        hidden = '<input type="hidden" name="form_hf_0">'
+        form = form.replace(hidden, '<input type="hidden" name="form_hf_0" value="fixture-hidden-value">')
+        form = form.replace('</select>', '<option value="fixture-option-value">Fixture option text</option></select>', 1)
+        form = form.replace('</textarea>', 'Fixture textarea value</textarea>', 1)
+        form = form.replace('<td>BASE_REPOS</td>', '<td><label>Corrected label</label></td>')
+        form = form.replace(f'name="{SEED[1]["name"]}">', f'name="{SEED[1]["name"]}" value="fixture-input-value">')
+        self.page.set_content(
+            '<div id="primary-BREADCRUMB" class="breadcrumb">PRODUCT / fixture / RELEASE</div>'
+            '<nav aria-label="breadcrumb" class="compact">root / PRODUCT › fixture</nav>'
+            '<nav aria-label="breadcrumbs">https://hidden-url.example.invalid/config</nav>'
+            '<option class="breadcrumb-candidate">Fixture separate option text</option>'
+            '<form id="sidebar" action="https://hidden-action.example.invalid"><input name="search"></form>' + form)
+        error = self.fails(5, self.driver.snapshot)
+        evidence = error.details
+        self.assertEqual(evidence['stage'], 'label')
+        self.assertEqual(evidence['breadcrumb_candidates'], [
+            {'tag': 'div', 'id': 'primary-BREADCRUMB', 'class': 'breadcrumb', 'segments': ['PRODUCT', 'fixture', 'RELEASE']},
+            {'tag': 'nav', 'id': '', 'class': 'compact', 'segments': ['root', 'PRODUCT', 'fixture']},
+            {'tag': 'nav', 'id': '', 'class': '', 'segments': []},
+            {'tag': 'option', 'id': '', 'class': 'breadcrumb-candidate', 'segments': []},
+        ])
+        self.assertEqual(evidence['form_count'], 2)
+        self.assertEqual(evidence['forms'][1],
+                         {'id': 'form', 'enctype': 'multipart/form-data', 'method': 'post', 'element_count': 21})
+        self.assertIn({'prefix': 'editor:content:basicProperties:8:property', 'count': 3},
+                      evidence['element_name_prefixes'])
+        first, base, *rest = evidence['basic_properties']
+        self.assertEqual(first['controls'], [{'tag': 'select', 'type': 'select-one', 'row_label': 'BUILD_TYPE'}])
+        self.assertEqual(base, {'index': 1, 'count': 1,
+                               'controls': [{'tag': 'input', 'type': 'text', 'row_label': 'Corrected label'}]})
+        self.assertEqual(len(rest), 16)
+        self.assertIn('form_hf_0', evidence['hidden_input_names'])
+        for forbidden in ('fixture-hidden-value', 'fixture-option-value', 'Fixture option text', 'Fixture textarea value',
+                          'fixture-input-value', 'Fixture separate option text', 'hidden-url', 'hidden-action'):
+            self.assertNotIn(forbidden, str(evidence))
+
+    def test_editor_quiet_precedes_snapshot_and_preserves_blocked_static_path(self):
+        driver = self.driver
+        path = driver.gate.overview
+        run = path + '?7-1.ILinkListener-run'
+        slow = '/slow-editor.png'
+        static = '/wicket/resource/fixture.Palette/palette-ver-1234567890123.js'
+        query = '?v=fixture-private-query'
+        driver.gate.static_keys.add(slow)
+        self.server.delays[slow] = .35
+        self.server.responses[run] = (302, '/wicket/page?9', b'')
+        self.server.responses['/wicket/page?9'] = (200, None, (
+            f'<img src="{slow}"><script src="{static}{query}"></script>'
+            '<script src="/redacted-hub-123.txt"></script>'
+            f'<script src="http://localhost:{self.server.server_port}/redacted-foreign-123.js"></script>'
+        ).encode())
+        self.page.set_content(f'''<button onclick="location.href='{run}'">Run the configuration</button>''')
+        driver._run_editor(self.page.url, lambda _: 'allow-run')
+
+        self.assertGreaterEqual(time.monotonic() - self.server.completed[slow], driver.quiet_window_s)
+        error = self.fails(5, driver.snapshot)
+        self.assertEqual(error.details['stage'], 'breadcrumb')
+        paused, = [p for p in error.details['pause_timeline'] if 'static_path' in p]
+        self.assertEqual(paused['static_path'], '/wicket/resource/fixture.Palette/palette-ver-*.js')
+        self.assertEqual((paused['path'], paused['command']), ('unregistered', 'Fetch.failRequest'))
+        self.assertNotIn('fixture-private-query', str(error.details))
+        self.assertTrue(any(p.get('path_shape') == '/redacted-hub-N.txt' and 'static_path' not in p
+                            for p in error.details['pause_timeline']))
+        self.assertNotIn('redacted-foreign', str(error.details))
+        self.assertNotIn(('GET', static + query), self.server.calls)
 
     def test_service_worker_and_websocket_cannot_open_channels(self):
         self.page.evaluate("""base=>{try{new WebSocket(base.replace('http:','ws:')+'/socket')}catch(e){};navigator.serviceWorker.register('/worker.js').catch(()=>{});}""",self.server.origin)

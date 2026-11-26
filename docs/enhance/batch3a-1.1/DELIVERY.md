@@ -941,3 +941,12 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 驱动不再主动最小化。两次 Run 点击分别使用正常窗口的新鲜命中检查。遇到非正常状态发一次固定的 normal 恢复，每 100 ms 观察状态，最多 5 秒。仍未恢复时退出 3 并给出恢复窗口后重试的待办。静态边界只允许字面量 normal 恢复，禁止其它窗口写入形状。请求闸门保持原样。
 - 首次捕获的 `Fetch.failRequest` 在时间线标记 `captured_run`，收到应答后记录 `ack_latency_s`（从发出至应答，秒）。时序和应答策略保持原样。
 - 本机有头 Chrome 环回试验在确认时模拟人工最小化。驱动仅写 normal，两个点击的窗口状态均为 normal，确认之前服务器未收到 Run，确认后精确放行一次。自动回归覆盖持续最小化时的退出、无主动窗口写入、恢复轮询、静态边界与应答计时。
+
+## B2.20 编辑器静默等待与表单结构证据
+
+第十四次实机演练（`173d60b`）通过 Run 请求确认并打开编辑器。101 次暂停均已处理，随后因为面包屑为空而拒绝识别表单，未填值或提交。
+
+- Run 导航后先等待编辑器的 load 事件和静默窗口，再由调用方取首个表单快照。匹配规则与请求准入规则沿用原有口径。
+- `form_unrecognized` 记录挡住操作的阶段，附候选面包屑、全部 form 的属性及控件数量、控件名称前缀计数、basicProperties 按序号的类型和行标签，以及隐藏控件名称。采集标签时排除控件内容，失败报告不含控件值、选项文字或 URL。
+- 本地暂停时间线为 Hub 同源的未登记静态资源另记 `static_path`，省略查询串，将 Wicket 版本号归一化为 `-ver-*`。其它路径按原规则打码。带非路径字符或命中凭据检查的资源继续只记脱敏形状。未登记资源仍由闸门拦截。
+- 环回复现与回归覆盖 `test_editor_form_reports_each_structural_failure`、`test_editor_structure_reports_names_and_labels_without_values_options_or_urls`、`test_editor_quiet_precedes_snapshot_and_preserves_blocked_static_path`。现有面包屑和 Run 请求回归继续验证原口径。编辑器实页结构待下一次实机演练确认。

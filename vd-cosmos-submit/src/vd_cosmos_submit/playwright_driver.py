@@ -532,6 +532,12 @@ class Driver:
                         'method':pause.evidence['method'],'resource_type':pause.evidence['resource_type']}
         if shape.get('origin') == 'hub' and label == 'unregistered':
             pause.timeline['path_shape'] = hub_path_shape(pause.evidence)
+            # Keep the normalized resource path in local evidence only.
+            # Exclude URL or matrix delimiters and apply the credential check.
+            path = urlsplit(url).path
+            if (re.fullmatch(r'/(?:[A-Za-z0-9_.$~+-]+/)*[A-Za-z0-9_.$~+-]+\.(?:js|css|png|gif|svg|woff2?|ttf)', path, re.I)
+                    and check_content(path.encode('ascii'), self.config)['allowed']):
+                pause.timeline['static_path'] = static_key(path)
         self._pause_timeline.append(pause.timeline)
         self._last_activity=time.monotonic()
         self._paused_count+=1
@@ -866,6 +872,8 @@ class Driver:
         except Exception:
             self._check_manual_login()
             raise FlowError(5,'run_navigation_failed') from None
+        self._wait_for_quiet(load=True)
+
     def _window_state(self):
         info = self._cdp.send('Browser.getWindowForTarget')
         state = info.get('bounds', {}).get('windowState')
@@ -916,7 +924,8 @@ class Driver:
     def _script(self,operation,**kw):
         self._check();value=self._fixed_script(operation,**kw)
         if isinstance(value,dict) and value.get('form_unrecognized'):
-            raise FlowError(5,'form_unrecognized',breadcrumb_segments=value['breadcrumb_segments'])
+            details = {key: fact for key, fact in value.items() if key != 'form_unrecognized'}
+            raise FlowError(5, 'form_unrecognized', **details, **self._operation_evidence())
         if isinstance(value,dict) and value.get('password_present'):raise self._manual_login_error()
         return value
     def snapshot(self):return self._script('snapshot')

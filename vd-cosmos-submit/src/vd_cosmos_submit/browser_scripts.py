@@ -90,39 +90,95 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   }
   return {matched:false,element,container:null};
  }
+ const splitBreadcrumb=text=>text.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean);
  const breadcrumbs=[...document.querySelectorAll('.breadcrumb,.breadcrumbs')];
- const segments=breadcrumbs.length===1 ? breadcrumbs[0].textContent.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean) : [];
+ const segments=breadcrumbs.length===1?splitBreadcrumb(breadcrumbs[0].textContent):[];
+ const documentForms=[...document.forms];
+ const prefix='editor:content:basicProperties:';
+ const namePattern=/^[a-zA-Z0-9_.$:-]+$/;
+ const urlText=/:\s*[/\\]|\/\/|https?:|ftp:|mailto:|www\./i;
+ const safeName=(text,limit=160)=>!text?'':namePattern.test(text) && !urlText.test(text)?text.slice(0,limit):'<redacted>';
+ const safeLabel=text=>!text?'':/^[\p{L}\p{M}\p{N} _.,()'+&?-]+$/u.test(text) && !urlText.test(text)
+   ?text.slice(0,60):'<redacted>';
+ const excludedText='input,textarea,select,option,optgroup,datalist,button,[contenteditable],script,style';
+ const textWithoutControls=node=>{
+  if(node.closest(excludedText))return '';
+  const copy=node.cloneNode(true);
+  copy.querySelectorAll(excludedText).forEach(e=>e.remove());
+  return copy.textContent;
+ };
+ const breadcrumbEvidence=node=>{
+  if(!node)return [];
+  const text=textWithoutControls(node);
+  // Do not split a URL into fragments that would then pass the segment filter.
+  if(urlText.test(text) || /[?@#]/.test(text))return [];
+  return splitBreadcrumb(text).map(s=>safeLabel(s.replace(/\s+/g,' ')));
+ };
+ const unrecognized=stage=>{
+  const candidates=[...document.querySelectorAll('[class*="breadcrumb" i],[id*="breadcrumb" i],nav[aria-label*="bread" i]')].slice(0,5);
+  const elementNames=new Map(),basicProperties=new Map(),rowLabels=new Map();
+  for(const form of documentForms){
+   for(const e of form.elements){
+    if(!e.name)continue;
+    const name=safeName(e.name.split(':',5).join(':'));
+    elementNames.set(name,(elementNames.get(name)||0)+1);
+    const group=e.name.match(/(?:^|:)basicProperties:(\d{1,6})(?=:|$)/);
+    if(!group)continue;
+    const index=Number(group[1]),row=e.closest('tr');
+    if(row && !rowLabels.has(row)){
+     const label=row.querySelector('th,label')||row.cells[0]||row;
+     rowLabels.set(row,safeLabel(textWithoutControls(label).replace(/\s+/g,' ').trim()));
+    }
+    if(!basicProperties.has(index))basicProperties.set(index,[]);
+    basicProperties.get(index).push({tag:safeName(e.tagName.toLowerCase(),32),type:safeName(e.type,32),
+     row_label:rowLabels.get(row)||''});
+   }
+  }
+  return {form_unrecognized:true,stage,breadcrumb_segments:breadcrumbs.length===1?breadcrumbEvidence(breadcrumbs[0]):[],
+   breadcrumb_candidates:candidates.map(e=>({tag:safeName(e.tagName.toLowerCase(),32),id:safeName(e.id,60),
+    class:e.getAttribute('class')?.trim().split(/\s+/).map(token=>safeName(token,60)).join(' ').slice(0,60)||'',
+    segments:breadcrumbEvidence(e)})),
+   form_count:documentForms.length,forms:documentForms.map(f=>({enctype:f.enctype,method:f.method,id:safeName(f.id),
+    element_count:f.elements.length})),
+   element_name_prefixes:[...elementNames].slice(0,60).map(([prefix,count])=>({prefix,count})),
+   basic_properties:[...basicProperties].sort(([a],[b])=>a-b).map(([index,controls])=>({index,count:controls.length,controls})),
+   hidden_input_names:[...document.querySelectorAll('input[type="hidden"][name]')].map(e=>safeName(e.name))};
+ };
  const expected=target.split('/');
  const same=(a,b)=>a.length===b.length && a.every((s,i)=>s===b[i]);
  if(!segments.length || !(same(segments,expected) || (expected[0]==='root' && same(segments,expected.slice(1)))))
-   return {form_unrecognized:true,breadcrumb_segments:segments};
- const forms = [...document.forms].filter(f=>f.enctype==='multipart/form-data');
- if (forms.length!==1) throw Error('form'); const f=forms[0];
- const prefix='editor:content:basicProperties:';
- const all=[...f.elements];
+   return unrecognized('breadcrumb');
+ const forms=documentForms.filter(f=>f.enctype==='multipart/form-data');
+ if(forms.length!==1)return unrecognized('form');
+ const f=forms[0],all=[...f.elements];
  const known=all.filter(e=>e.name && e.name.startsWith(prefix));
- const names=new Set(); for(const e of known){if(names.has(e.name))throw Error('duplicate');names.add(e.name);}
+ const names=new Set();
+ for(const e of known){if(names.has(e.name))return unrecognized('duplicate');names.add(e.name);}
  const groups=Array.from({length:18},(_,i)=>known.filter(e=>e.name.startsWith(prefix+i+':property:editor:editor:')));
  const labels=['BUILD_TYPE','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','PACKAGE_LIST','GITURL','SHELVE_LIST','KS_LIST','Product Version (ks)','rpm Add & Delete','PACKAGE_LIST (DELETE)','PACKAGE_LIST (x86 arch)','Ignore package build failure?',"Keep 'Full' build type",'Image Skip?','EMAIL_CC','EXTRA_BUILD_PARAMETER'];
  const kinds=['select','text','text','text','select','textarea','select','textarea','ks','textarea','textarea','textarea','textarea','checkbox','checkbox','select','textarea','text'];
- const controls=groups.map((g,i)=>{
-  const e=i===8?g.find(x=>x.type==='hidden'):g[0];
-  if(!e || (i!==8 && g.length!==1) || (i===8 && (g.length!==3 || !g.some(x=>x.name.endsWith(':palette:choices')) || !g.some(x=>x.name.endsWith(':palette:selection')))))throw Error('control');
-  if(i!==8 && (e.tagName==='SELECT'?'select':e.tagName==='TEXTAREA'?'textarea':e.type)!==kinds[i])throw Error('type');
+ const elements=groups.map((g,i)=>i===8?g.find(x=>x.type==='hidden'):g[0]);
+ for(const [i,g] of groups.entries()){
+  const e=elements[i];
+  if(!e || (i!==8 && g.length!==1) || (i===8 && (g.length!==3 || !g.some(x=>x.name.endsWith(':palette:choices')) || !g.some(x=>x.name.endsWith(':palette:selection')))))return unrecognized('control');
+  if(i!==8 && (e.tagName==='SELECT'?'select':e.tagName==='TEXTAREA'?'textarea':e.type)!==kinds[i])return unrecognized('type');
   const row=e.closest('tr');const text=row?row.innerText:'';
-  if(!text.includes(labels[i]))throw Error('label');
+  if(!text.includes(labels[i]))return unrecognized('label');
+ }
+ const hidden=all.filter(e=>e.type==='hidden' && e.name===f.id+'_hf_0');
+ if(hidden.length!==1 || all.some(e=>e.name && !e.name.startsWith(prefix) && e!==hidden[0]))return unrecognized('extra');
+ const controls=elements.map((e,i)=>{
+  const g=groups[i];
   const opts=e.tagName==='SELECT'?[...e.options].map(o=>({text:o.text,value:o.value})):[];
   const selected=i===8?[...g.filter(x=>x.tagName==='SELECT').slice(-1)[0]?.options||[]].map(o=>o.text):[];
   const v=i===8?selected.join(','):e.type==='checkbox'?String(e.checked):e.tagName==='SELECT'?e.selectedOptions[0]?.text||'':e.value;
   return {index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,selected,value:v,default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
  });
- const hidden=all.filter(e=>e.type==='hidden' && e.name===f.id+'_hf_0');
- if(hidden.length!==1 || all.some(e=>e.name && !e.name.startsWith(prefix) && e!==hidden[0]))throw Error('extra');
  if(operation==='snapshot')return {target,controls,hidden:hidden[0].name,breadcrumb_segments:segments};
  if(operation==='serialize')return [...new FormData(f).entries()].map(([k,v])=>{if(typeof v!=='string')throw Error('file');return [k,v];});
  if(operation==='fill'){
   if(!Number.isInteger(index)||index<0||index>17||typeof value!=='string')throw Error('args');
-  const g=groups[index], e=index===8?g.find(x=>x.type==='hidden'):g[0];
+  const e=elements[index];
   if(index===8){if(controls[8].value!==value)throw Error('ks');return true;}
   if(e.tagName==='SELECT'){const options=[...e.options].filter(o=>o.text===value);if(options.length!==1)throw Error('option');e.value=options[0].value;}
   else if(e.type==='checkbox'){if(!['true','false'].includes(value))throw Error('boolean');e.checked=value==='true';}
@@ -131,7 +187,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='97e0bf425afaffc51d16d0cd1e3c7bb0b9ad8cea6b8fdeacfe22d98501deeeb0'
+DIGEST='bf98dd6246ea2c5f0c9399a62dfed482862742f2a359568b228eaac52433a8f8'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
