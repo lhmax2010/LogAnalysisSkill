@@ -125,6 +125,7 @@ class B2bTests(B1Case):
         spec.loader.exec_module(boundary)
         observation = "self._cdp.send('Network.enable', {'maxPostDataSize': 0})"
         boundary.validate(observation, adapter=True)
+        self.assertEqual({method for method in boundary.CDP if method.startswith('Network.')}, {'Network.enable'})
         with self.assertRaises(ValueError):
             boundary.validate(observation)
         with self.assertRaises(ValueError):

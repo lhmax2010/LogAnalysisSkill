@@ -887,3 +887,12 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 对非关键暂停，只把明确的 invalid/unknown interception/request ID 作为 `gone_before_decision` 计入已解决，并清掉对应在途记录和该暂停的跳转授权。每个指令最多发送一次。主框架文档、提交请求和其它错误继续走原故障路径。允许名单保持原样，仍挡未登记字体。
 - 真实 Chrome 回归：`test_cancelled_request_fail_command_is_gone_and_reaches_quiet`、`test_cancelled_request_continue_command_is_gone_and_reaches_quiet`。两项均断开在途统计的失败事件监听，确认协议消息也能清账，并检查下一项登记静态资源仍能加载。
 - 合成回归：`test_cancelled_noncritical_continue_response_removes_redirect_authority`、`test_critical_pause_and_other_protocol_errors_stay_fatal`、`test_fetch_error_records_only_bounded_safe_protocol_text`。B2 复验入口不变。
+
+## B2.14 导航后的在途请求及缓存
+
+`3e95fa3` 第八次构建机演练的 92 个 Fetch 暂停已解决，静默等待还记录了 2 个上页资源和 3 个当前页资源。用本机沙箱 Chrome 在环回服务器重现了上页泄漏：A 的慢图片开始加载，B 提交后 Playwright 和 CDP 都没有该图片的完成或失败事件，基线仍算 1 项在途。B 的重复图片和带散列查询键的字体各只向服务器请求一次。B 中这两个缓存命中均有 Playwright 完成事件，以及 CDP 的 `requestServedFromCache`、`responseReceived`、`loadingFinished`；本次观察到内存缓存，未复现实机当前页缺终止事件。
+
+- 在同一 CDP 会话用 Network 标识对齐 Fetch 暂停。终止事件关闭对应请求，明确的缓存事件与响应事件也可关闭。仅有响应、缓存或磁盘缓存标志时保留在途，等待所需证据。
+- Playwright 主框架导航事件仅唤起异步 `Page.getFrameTree` 查询。其提交的 loader 变化退休已知旧文档请求，按 `superseded_by_navigation` 计数并列证据。未知 loader 仍阻挡静默。现有闸门和已暂停指令的处置保持原样。
+- 静默证据保留 loader 相对标签、Network 事件名称、HTTP 状态和缓存标志。Network 仅启用现有 `Network.enable`，不登记原始标识、请求或响应内容。B2 复验入口保持原样。
+- 回归：`test_navigation_retires_slow_image_without_a_loading_failed_event`、`test_cached_image_reaches_quiet_without_loading_finished`、`test_navigation_retires_only_confirmed_previous_main_loader`、`test_network_cache_pair_closes_in_either_order_but_partial_signals_do_not`、既有当前文档慢加载及网络边界测试。

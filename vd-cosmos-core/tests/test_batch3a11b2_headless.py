@@ -1,4 +1,5 @@
 """Real Chrome + local server request counts. Missing runtime is NEVER a pass."""
+from base64 import b64decode
 import importlib.util
 import os
 from pathlib import Path
@@ -99,7 +100,7 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         driver = self.driver
         # Chrome really blocks these requests. Drop the accounting notification
         # to reproduce the missing terminal callback independently of timing.
-        driver._cdp.remove_listener('Network.loadingFailed', driver._network_end)
+        driver._cdp.remove_listener('Network.loadingFailed', driver._network_failed)
         page_started, page_failed = set(), set()
         self.page.on('request', lambda request: page_started.add(request.url))
         self.page.on('requestfailed', lambda request: page_failed.add(request.url))
@@ -148,7 +149,7 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         driver._cdp.on('Network.loadingFailed', lambda event: terminal.add(event['requestId']))
         # The CDP event proves cancellation. Production accounting must also
         # work if that event was not available to the accounting listener.
-        driver._cdp.remove_listener('Network.loadingFailed', driver._network_end)
+        driver._cdp.remove_listener('Network.loadingFailed', driver._network_failed)
         with patch.object(driver, '_defer', side_effect=hold):
             self.page.evaluate("""url => {
                 window.fixtureAbort = new AbortController();
@@ -397,6 +398,83 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertNotIn(image,self.server.completed)
         return url,image,release
 
+    def test_navigation_retires_slow_image_without_a_loading_failed_event(self):
+        _, image, release = self.slow_target()
+        driver = self.driver
+        driver._cdp.remove_listener('Network.loadingFailed', driver._network_failed)
+        self.assertTrue(any(row['path_shape'] == '/slow.png?v' for row in driver._in_flight_evidence(time.monotonic())
+                            if row['origin'] == 'hub'))
+        target = '/second-document'
+        self.server.responses[target] = (200, None, b'<p>Second document</p>')
+        driver.gate.allowed = (self.server.origin + target, 'GET')
+        self.page.goto(self.server.origin + target, wait_until='load')
+        try:
+            driver._wait_for_quiet(load=True)
+            self.assertNotIn(image, self.server.completed)
+            evidence = driver._operation_evidence()
+            self.assertEqual(evidence['superseded_by_navigation'], 1)
+            row, = evidence['superseded_requests']
+            self.assertEqual((row['loader'], row['decision'], row['paused'], row['from_cache']),
+                             ('previous', 'continued', False, False))
+            self.assertEqual(row['path_shape'], '/slow.png?v')
+            self.assertEqual(row['resolution'], 'superseded_by_navigation')
+            self.assertEqual(row['network_events_seen'], ['requestWillBeSent'])
+            self.assertEqual(driver._network_started, driver._network_finished)
+        finally:
+            release.set()
+
+    def test_cached_image_reaches_quiet_without_loading_finished(self):
+        image = '/cacheable.gif'
+        content = b64decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')
+        normal_get = Handler.do_GET
+
+        def cacheable_asset(handler):
+            if handler.path != image:
+                return normal_get(handler)
+            handler.server.calls.append(('GET', image))
+            handler.send_response(200)
+            handler.send_header('Content-Type', 'image/gif')
+            handler.send_header('Cache-Control', 'public, max-age=3600')
+            handler.send_header('Content-Length', str(len(content)))
+            handler.end_headers()
+            handler.wfile.write(content)
+
+        driver = self.driver
+        driver.gate.static_keys.add(image)
+        body = b'<img src="/cacheable.gif">'
+        for path in ('/warm-cache', '/reuse-cache'):
+            self.server.responses[path] = (200, None, body)
+
+        def navigate(path):
+            url = self.server.origin + path
+            driver.gate.allowed = (url, 'GET')
+            self.page.goto(url, wait_until='load')
+
+        with patch.object(Handler, 'do_GET', cacheable_asset):
+            navigate('/warm-cache')
+            driver._wait_for_quiet(load=True)
+
+            ids, cache_events, suppressed = set(), set(), set()
+            driver._cdp.on('Network.requestWillBeSent', lambda event: ids.add(event['requestId'])
+                           if event['request']['url'] == self.server.origin + image else None)
+            driver._cdp.on('Network.requestServedFromCache', lambda event: cache_events.add(event['requestId']))
+            driver._cdp.remove_listener('Network.loadingFinished', driver._network_end)
+
+            def finish(event):
+                if event['requestId'] in ids:
+                    suppressed.add(event['requestId'])
+                else:
+                    driver._network_end(event)
+
+            driver._cdp.on('Network.loadingFinished', finish)
+            navigate('/reuse-cache')
+            driver._wait_for_quiet(load=True)
+        self.assertEqual(len(ids), 1)
+        self.assertEqual(ids, suppressed)
+        self.assertLessEqual(ids, cache_events)
+        self.assertEqual(self.server.calls.count(('GET', image)), 1)
+        self.assertEqual(driver._network_started, driver._network_finished)
+
     def test_slow_static_finishes_and_target_quiet_window_precedes_dismissal(self):
         url,image,release=self.slow_target()
         timer=threading.Timer(.25,release.set);timer.start();self.addCleanup(timer.join)
@@ -450,7 +528,9 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         image = next(row for row in error.details['in_flight_requests'] if row['resource_type'] == 'Image')
         self.assertEqual({k: v for k, v in image.items() if k != 'age_s'},
                          {'origin': 'hub', 'method': 'GET', 'resource_type': 'Image',
-                          'paused': False, 'decision': 'continued', 'path_shape': '/slow.png?v'})
+                          'paused': False, 'decision': 'continued', 'path_shape': '/slow.png?v',
+                          'loader': 'current', 'network_events_seen': ['requestWillBeSent'],
+                          'http_status': None, 'from_cache': False})
         self.assertGreaterEqual(image['age_s'], 0)
         self.assertNotIn('fixture-value', str(error.details))
 

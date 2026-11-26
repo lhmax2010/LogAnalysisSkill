@@ -69,7 +69,8 @@ class CallbackTests(B1Case):
         self.assertEqual(list(driver._in_flight.values()), [second])
         self.assertEqual(driver._in_flight_evidence(second.started_at + 1),
                          [{'origin': 'other', 'path': 'unregistered', 'method': 'POST', 'resource_type': 'Document',
-                           'age_s': 1, 'paused': False, 'decision': 'none'}])
+                           'age_s': 1, 'paused': False, 'decision': 'none', 'loader': 'current',
+                           'network_events_seen': ['requestWillBeSent'], 'http_status': None, 'from_cache': False}])
         driver._network_end({'requestId': 'same'})
 
         early = driver._flight_for_pause({'requestId': 'fetch-3', 'networkId': 'late'}, hub+'/a42?key3=opaque',
@@ -79,6 +80,76 @@ class CallbackTests(B1Case):
         driver._network_start({**first, 'requestId': 'late'})
         self.assertFalse(driver._in_flight)
         self.assertEqual((driver._network_started, driver._network_finished), (3, 3))
+
+    def test_navigation_retires_only_confirmed_previous_main_loader(self):
+        from vd_cosmos_core.submit_gate import Gate
+
+        driver = Driver(self.config, {})
+        driver.gate = Gate(self.config, rehearse=True)
+        driver._frame = 'main'
+
+        def commit(sample, loader):
+            driver._observe_main_loader(sample, {'frameTree': {'frame': {'id': 'main', 'loaderId': loader}}})
+
+        def start(rid, loader):
+            driver._network_start({'requestId': rid, 'loaderId': loader, 'type': 'Image',
+                                   'request': {'url': driver.gate.origin + '/asset138.png', 'method': 'GET'}})
+
+        commit(0, 'loader-a')
+        start('old', 'loader-a')
+        start('new', 'loader-b')
+        start('unknown', '')
+        start('other-frame', 'child-loader')
+        commit(1, 'loader-a')  # Same-document navigation leaves every flight alone.
+        self.assertEqual(len(driver._in_flight), 4)
+        commit(3, 'loader-b')
+        commit(2, 'loader-a')  # A late snapshot cannot replace the newer commit.
+        start('late-old', 'loader-a')
+        self.assertEqual(set(driver._in_flight), {('network', name) for name in ('new', 'unknown', 'other-frame')})
+        evidence = driver._operation_evidence()
+        self.assertEqual(evidence['superseded_by_navigation'], 2)
+        self.assertTrue(all(row['loader'] == 'previous' and row['path_shape'] == '/assetN.png'
+                            for row in evidence['superseded_requests']))
+        old = driver._flight_for_pause({'requestId': 'late-fetch', 'networkId': 'old'},
+                                       driver.gate.origin + '/asset138.png', 'GET', 'Image', True)
+        self.assertEqual(old.loader_id, 'loader-a')
+        self.assertNotIn(old.key, driver._in_flight)
+        driver._network_failed({'requestId': 'new', 'errorText': 'net::ERR_ABORTED', 'canceled': True})
+        self.assertNotIn(('network', 'new'), driver._in_flight)
+
+    def test_network_cache_pair_closes_in_either_order_but_partial_signals_do_not(self):
+        from vd_cosmos_core.submit_gate import Gate
+
+        driver = Driver(self.config, {})
+        driver.gate = Gate(self.config, rehearse=True)
+        driver._loader_id = 'main-loader'
+        for rid in ('cache-first', 'response-first', 'disk-only'):
+            with self.subTest(request=rid):
+                request = {'requestId': rid}
+                driver._network_start({**request, 'loaderId': 'main-loader', 'type': 'Font',
+                                       'request': {'url': driver.gate.origin + '/font.woff2?v=fixture', 'method': 'GET'}})
+                flight = driver._in_flight['network', rid]
+                flight.decision = 'continued'
+                response = {**request, 'response': {'status': 200, 'fromDiskCache': rid == 'disk-only',
+                                                     'url': 'https://example.invalid/private'}}
+                if rid == 'cache-first':
+                    driver._network_cache(request)
+                else:
+                    driver._network_response(response)
+                row, = driver._in_flight_evidence(flight.started_at + 1)
+                self.assertEqual(row['loader'], 'current')
+                self.assertEqual(row['http_status'], None if rid == 'cache-first' else 200)
+                self.assertEqual(row['from_cache'], rid != 'response-first')
+                self.assertEqual(row['network_events_seen'], ['requestWillBeSent',
+                    'requestServedFromCache' if rid == 'cache-first' else 'responseReceived'])
+                self.assertNotIn('private', str(row))
+                if rid == 'cache-first':
+                    driver._network_response(response)
+                elif rid == 'response-first':
+                    driver._network_cache(request)
+                else:
+                    driver._network_end(request)
+                self.assertFalse(driver._in_flight)
 
     def test_missing_async_bridge_and_async_failure_fail_closed(self):
         driver=Driver(self.config,{})
@@ -262,7 +333,7 @@ class CallbackTests(B1Case):
 
     def test_registered_callbacks_have_no_sync_calls_or_websocket_connection(self):
         path=REPO/'vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py';tree=ast.parse(path.read_text())
-        names={'_paused','_new_page','_websocket','_deferred_done','_attached_target'}
+        names={'_paused','_new_page','_websocket','_deferred_done','_attached_target','_main_frame_navigated'}
         for method in (n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name in names):
             for call in (n for n in ast.walk(method) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute)):
                 self.assertNotIn(call.func.attr,{'send','close','abort','continue_','connect_to_server','_sync'})

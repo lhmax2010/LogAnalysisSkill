@@ -4,7 +4,8 @@ import ast
 from pathlib import Path
 
 BANNED={'cookies','add_cookies','storage_state','screenshot','content','inner_html','outer_html','start_tracing','tracing','connect_over_cdp','connect','get_attribute','input_value'}
-# Network.enable observes request IDs and terminal events for the single Fetch gate.
+# Network.enable is the sole Network command. Observe IDs, status and cache/terminal
+# events for the existing Fetch gate. Page.getFrameTree already supplies committed loader IDs.
 CDP={'Network.enable','Fetch.enable','Fetch.continueRequest','Fetch.continueResponse','Fetch.failRequest','Target.getTargetInfo','Target.setAutoAttach','Target.closeTarget','Page.getFrameTree','Browser.getWindowForTarget','Browser.setWindowBounds'}
 
 def validate(text,adapter=False):

@@ -3,7 +3,7 @@
 # WebSockets remain unconnected. Other callbacks schedule coroutine work on the
 # adapter's existing loop and return immediately; only the main flow may wait.
 import asyncio
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import inspect
 import os
 import re
@@ -131,6 +131,10 @@ class Flight:
     announced: bool
     fetch_id: str | None = None
     decision: str = 'none'
+    loader_id: str | None = None
+    network_events_seen: list[str] = field(default_factory=list)
+    http_status: int | None = None
+    from_cache: bool = False
 
 
 @dataclass
@@ -163,6 +167,11 @@ class Driver:
         self._pause_fault=False;self._closing=False;self._tearing_down=False;self._emergency_close=False;self._cancelled_on_close=0
         self._deferred=set();self._pause_timeline=[];self._response_redirects=set()
         self._in_flight={};self._ended_before_start=set();self._network_started=0;self._network_finished=0
+        self._loader_id = None
+        self._previous_loaders = set()
+        self._loader_sample = self._loader_sampled = 0
+        self._superseded_flights = {}
+        self._superseded_requests = []
         self._last_activity=time.monotonic()
     def operate(self,args,request,context,confirm,reader_factory):
         self.gate=Gate(self.config,rehearse=args.rehearse,local_origin=self.local_origin)
@@ -205,12 +214,18 @@ class Driver:
             self._context.on('page',self._new_page)
             stage='cdp'
             self._cdp=self._context.new_cdp_session(self._page)
-            self._frame=self._cdp.send('Page.getFrameTree')['frameTree']['frame']['id']
+            tree = self._cdp.send('Page.getFrameTree')
+            self._frame = tree['frameTree']['frame']['id']
+            self._main_frame = self._page.main_frame
+            self._observe_main_loader(0, tree)
+            self._page.on('framenavigated', self._main_frame_navigated)
             self._target_id=self._cdp.send('Target.getTargetInfo')['targetInfo']['targetId']
             self._cdp.on('Fetch.requestPaused',self._paused)
             self._cdp.on('Network.requestWillBeSent', self._network_start)
+            self._cdp.on('Network.responseReceived', self._network_response)
+            self._cdp.on('Network.requestServedFromCache', self._network_cache)
             self._cdp.on('Network.loadingFinished', self._network_end)
-            self._cdp.on('Network.loadingFailed', self._network_end)
+            self._cdp.on('Network.loadingFailed', self._network_failed)
             self._cdp.send('Network.enable', {'maxPostDataSize': 0})
             self._targets=self._browser.new_browser_cdp_session()
             self._targets.on('Target.attachedToTarget',self._attached_target)
@@ -230,7 +245,7 @@ class Driver:
             if stage=='launch' and re.search(r'(?i)sandbox|zygote_host_impl_linux|operation not permitted.*user.?namespace',str(error)):
                 raise FlowError(6,'browser_sandbox_unavailable',**details) from None
             raise FlowError(5,'browser_start_failed',**details) from None
-    def _defer(self, owner, method, *args, pause=None, continuing=False):
+    def _defer(self, owner, method, *args, pause=None, continuing=False, on_result=None):
         """One guarded bridge to Playwright's coroutine implementation, no _sync.
 
         The sync facade has no public non-waiting send. Fail closed if the
@@ -245,7 +260,7 @@ class Driver:
             task=impl._loop.create_task(coroutine)
             self._deferred.add(task)
             if pause is None:
-                task.add_done_callback(self._deferred_done)
+                task.add_done_callback(lambda done: self._deferred_done(done, on_result))
             else:
                 pause.timeline['decision_at']=time.monotonic()
                 pause.task=task
@@ -255,17 +270,27 @@ class Driver:
             if pause is None:self._fatal='browser_callback_dispatch_failed'
             elif continuing:self._expire_pause(pause)
             else:self._lose_pause(pause)
-    def _deferred_done(self,task):
+    def _deferred_done(self, task, on_result=None):
         self._deferred.discard(task)
         if task.cancelled():return
-        if task.exception() is not None and not self._closing:self._fatal='browser_callback_dispatch_failed'
+        error = task.exception()
+        if self._closing:return
+        if error is not None:
+            self._fatal = 'browser_callback_dispatch_failed'
+        elif on_result is not None:
+            try:
+                on_result(task.result())
+            except (KeyError, TypeError, ValueError):
+                self._fatal = 'browser_callback_dispatch_failed'
     def pause_counts(self):
         return {'paused':self._paused_count,'resolved':self._resolved_count,
                 'pending':len(self._pauses),'closed_unconfirmed':self._forced_closed,
                 'cancelled_on_close':self._cancelled_on_close,
                 'gone_before_decision':self._gone_before_decision}
     def _operation_evidence(self):
-        details={'pause_counts':self.pause_counts(),'pause_timeline':self._pause_timeline}
+        details={'pause_counts':self.pause_counts(),'pause_timeline':self._pause_timeline,
+                 'superseded_by_navigation': len(self._superseded_requests),
+                 'superseded_requests': list(self._superseded_requests)}
         if self.gate is not None:
             if self.gate.request_records:details['request_records']=self.gate.request_records
             for record in reversed(self.gate.records):
@@ -312,6 +337,41 @@ class Driver:
         self._network_finished += 1
         self._last_activity = time.monotonic()
 
+    def _main_frame_navigated(self, frame):
+        if frame != self._main_frame or self._closing:
+            return
+        # The Playwright event is a wakeup only. Read the committed loader
+        # from the page CDP session without calling sync APIs in the callback.
+        self._loader_sample += 1
+        sample = self._loader_sample
+        self._last_activity = time.monotonic()
+        self._defer(self._cdp, 'send', 'Page.getFrameTree',
+                    on_result=lambda tree: self._observe_main_loader(sample, tree))
+
+    def _observe_main_loader(self, sample, tree):
+        if sample < self._loader_sampled:
+            return
+        self._loader_sampled = sample
+        frame = tree['frameTree']['frame']
+        loader = frame.get('loaderId')
+        if frame['id'] != self._frame or not loader or loader == self._loader_id:
+            return
+        if self._loader_id:
+            self._previous_loaders.add(self._loader_id)
+        self._previous_loaders.discard(loader)
+        self._loader_id = loader
+        for flight in tuple(self._in_flight.values()):
+            self._retire_old_flight(flight)
+
+    def _retire_old_flight(self, flight):
+        if flight.loader_id not in self._previous_loaders:
+            return
+        paused = any(pause.flight is flight for pause in self._pauses.values())
+        evidence = self._flight_evidence(flight, time.monotonic(), paused=paused)
+        self._superseded_requests.append({**evidence, 'resolution': 'superseded_by_navigation'})
+        self._superseded_flights[flight.key] = flight
+        self._finish_flight(flight)
+
     def _network_start(self, event):
         key = ('network', event['requestId'])
         if key in self._ended_before_start:
@@ -321,13 +381,49 @@ class Driver:
         if flight and ('redirectResponse' not in event or not flight.announced):
             # Fetch may arrive first. Count a network ID once per redirect hop.
             flight.announced = True
-            return
-        self._finish_flight(flight)
-        request = event['request']
-        self._start_flight(key, request['url'], request['method'], event.get('type', 'Other'), announced=True)
+        else:
+            self._finish_flight(flight)
+            request = event['request']
+            flight = self._start_flight(key, request['url'], request['method'], event.get('type', 'Other'),
+                                        announced=True)
+        flight.loader_id = event.get('loaderId') or flight.loader_id
+        self._network_event(flight, 'requestWillBeSent')
+        self._retire_old_flight(flight)
 
-    def _network_end(self, event):
-        self._finish_flight(self._in_flight.get(('network', event['requestId'])))
+    @staticmethod
+    def _network_event(flight, name):
+        if name not in flight.network_events_seen:
+            flight.network_events_seen.append(name)
+
+    def _network_end(self, event, name='loadingFinished'):
+        flight = self._in_flight.get(('network', event['requestId']))
+        if flight is not None:
+            self._network_event(flight, name)
+            self._finish_flight(flight)
+
+    def _network_failed(self, event):
+        self._network_end(event, 'loadingFailed')
+
+    def _network_response(self, event):
+        flight = self._in_flight.get(('network', event['requestId']))
+        if flight is None:
+            return
+        response = event['response']
+        status = response.get('status')
+        if isinstance(status, (int, float)) and 100 <= status <= 599:
+            flight.http_status = int(status)
+        flight.from_cache |= response.get('fromDiskCache') is True
+        self._network_event(flight, 'responseReceived')
+        if 'requestServedFromCache' in flight.network_events_seen:
+            self._finish_flight(flight)
+
+    def _network_cache(self, event):
+        flight = self._in_flight.get(('network', event['requestId']))
+        if flight is not None:
+            flight.from_cache = True
+            self._network_event(flight, 'requestServedFromCache')
+            if 'responseReceived' in flight.network_events_seen:
+                self._finish_flight(flight)
 
     def _flight_for_pause(self, event, url, method, resource, response_stage):
         network_id = event.get('networkId')
@@ -339,14 +435,22 @@ class Driver:
             self._finish_flight(flight)
             flight = None
         if flight is None:
+            flight = self._superseded_flights.get(key)
+        if flight is None:
             flight = self._start_flight(key, url, method, resource, announced=False)
         flight.fetch_id = fetch_id
         return flight
 
+    def _flight_evidence(self, flight, now, *, paused):
+        return {**flight.evidence, 'age_s': round(now - flight.started_at, 3),
+                'paused': paused, 'decision': flight.decision,
+                'loader': 'previous' if flight.loader_id in self._previous_loaders else 'current',
+                'network_events_seen': list(flight.network_events_seen),
+                'http_status': flight.http_status, 'from_cache': flight.from_cache}
+
     def _in_flight_evidence(self, now):
         paused = {id(p.flight) for p in self._pauses.values()}
-        return [{**flight.evidence, 'age_s': round(now - flight.started_at, 3),
-                 'paused': id(flight) in paused, 'decision': flight.decision}
+        return [self._flight_evidence(flight, now, paused=id(flight) in paused)
                 for flight in self._in_flight.values()]
 
     def _begin_pause(self,owner,stage,request_id,url,method='GET',resource='Other'):
@@ -617,7 +721,8 @@ class Driver:
                     self._check_gate()
                     now=time.monotonic()
                     if now>=deadline:raise FlowError(5,'target_page_not_quiet')
-                    if not self._in_flight and not self._pauses and now-max(start,self._last_activity)>=self.quiet_window_s:
+                    if (not self._in_flight and not self._pauses and self._loader_sampled == self._loader_sample
+                            and now-max(start,self._last_activity)>=self.quiet_window_s):
                         return
                     self._page.wait_for_timeout(min(50,max(1,int((deadline-now)*1000))))
             except FlowError:raise
