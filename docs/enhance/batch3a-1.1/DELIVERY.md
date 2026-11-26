@@ -925,3 +925,11 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - Run 标签先折叠空白，再按大小写精确比较，仍需一个匹配。Run 的可见性显式核对 client rect、尺寸、计算后的 display 与 visibility，并排除自身或祖先不透明度为零的元素。由此保持透明控件拒绝，同时不依赖 `checkVisibility` 的 Run 筛选。最终仍需通过中心命中。通知与账号的原可见性检查保持原样。
 - 匹配数量不为一时，`near_matches` 最多列五个符合长度限制的近似项，记录字段来源、显式空白、旧新可见性、脱敏矩形及是否在通知中。非字母及允许空白的标签显示为 `<non-label>`。可编辑输入的值、链接和处理器均不进入证据。固定脚本摘要已更新。
 - 回归：`test_run_label_whitespace_is_collapsed_before_the_exact_match`、`test_run_match_excludes_hidden_and_transparent_buttons_and_still_checks_hit`、`test_run_near_match_diagnostics_are_bounded_and_sanitized`。B2 复验入口保持原样。
+
+## B2.18 识别只带 title 或 aria-label 的 Run 控件
+
+`99b14a0` 第十二次实机演练在 1280×720 的正常窗口中发现一个可见的图标按钮，只有 title 的标签是“Run the configuration”。静默检查通过。演练在点击前结束。
+
+- 固定脚本对可见文字、title、aria-label 分别折叠空白后精确比较。每个元素最多记一次。多个字段相同时，`match_field` 按文字、title、aria-label 的顺序取第一项。定位结果和命中错误保留该字段。多个控件冲突时报告实际匹配字段，近似项也标明精确匹配的字段。
+- 仍要求唯一可见控件、非零不透明度及中心命中。滚动、窗口确认及请求闸门保持原样。固定脚本摘要已更新。
+- 回归：`test_icon_run_matches_title_or_aria_label_and_counts_each_element_once`、`test_run_refuses_separate_exact_matches_and_hidden_title_controls`、`test_notice_style_only_and_exact_run_sends_once`。后一项使用只有 title 有标签的图标按钮，检查确认前服务器收到零个 Run 请求，确认后只收到一个。

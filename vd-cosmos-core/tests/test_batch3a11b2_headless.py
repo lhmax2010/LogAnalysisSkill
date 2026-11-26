@@ -345,7 +345,8 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         run=path+'?7-1.ILinkListener-run'
         self.server.responses[run]=(302,'/wicket/page?9',b'')
         self.server.responses['/wicket/page?9']=(200,None,b'<main>editor</main>')
-        self.page.set_content(f'<a href="{run}">Run the configuration</a>'
+        self.page.set_content(f'''<button title="Run the configuration" onclick="location.href='{run}'">
+                                <span aria-hidden="true">▶</span></button>'''
                               '<div id="myNav" class="overlay" style="position:fixed;inset:0">'
                               '<a onclick="fetch(\'/should-not-run\')">close</a></div>')
         entry=self.server.origin+path
@@ -426,6 +427,50 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         error = self.fails(4, self.driver._run_position, self.page.url)
         self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 2))
         self.assertEqual([row['visible']['new'] for row in error.details['near_matches']], [True, True])
+        self.assertEqual(self.server.calls, [])
+
+    def test_icon_run_matches_title_or_aria_label_and_counts_each_element_once(self):
+        icon = '<svg width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6"/></svg>'
+        cases = [
+            (f'<button title="Run&nbsp;the  configuration">{icon}</button>', 'title'),
+            (f'<button aria-label="Run&#10;the configuration">{icon}</button>', 'aria-label'),
+            ('<button title="Run the configuration" aria-label="Run the configuration">'
+             'Run the configuration</button>', 'text'),
+        ]
+        for markup, field in cases:
+            with self.subTest(field=field):
+                self.page.set_content(markup)
+                position = self.driver._run_position(self.page.url)
+                self.assertTrue(position['clear'])
+                self.assertEqual((position['button_count'], position['match_field']), (1, field))
+
+        self.page.set_content('<button title="Run the configuration">Run</button>'
+                              '<div style="position:fixed;inset:0"></div>')
+        error = self.fails(4, self.driver._run_position, self.page.url)
+        self.assertEqual(error.reason, 'run_button_obscured')
+        self.assertEqual((error.details['hit_reason'], error.details['match_field']), ('hit_other_element', 'title'))
+        self.assertEqual(self.server.calls, [])
+
+    def test_run_refuses_separate_exact_matches_and_hidden_title_controls(self):
+        title_button = '<button title="Run the configuration"><span aria-hidden="true">▶</span></button>'
+        self.page.set_content('<button>Run the configuration</button>' + title_button)
+        error = self.fails(4, self.driver._run_position, self.page.url)
+        self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 2))
+        self.assertIsNone(error.details['match_field'])
+        self.assertEqual(error.details['match_fields'], ['text', 'title'])
+        self.assertEqual([row['match_field'] for row in error.details['near_matches']], ['text', 'title'])
+
+        for style in ('visibility:hidden', 'opacity:0'):
+            for markup in (title_button.replace('<button', f'<button style="{style}"', 1),
+                           f'<div style="{style}">{title_button}</div>'):
+                with self.subTest(style=style, markup=markup):
+                    self.page.set_content(markup)
+                    error = self.fails(4, self.driver._run_position, self.page.url)
+                    self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 0))
+                    self.assertIsNone(error.details['match_field'])
+                    row, = error.details['near_matches']
+                    self.assertEqual(row['match_field'], 'title')
+                    self.assertEqual(row['visible'], {'old': False, 'new': False})
         self.assertEqual(self.server.calls, [])
 
     def test_run_match_excludes_hidden_and_transparent_buttons_and_still_checks_hit(self):

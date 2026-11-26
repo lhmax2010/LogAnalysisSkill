@@ -13,7 +13,12 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   const notices=[...document.querySelectorAll('#myNav.overlay')].filter(visible);
   if(operation==='dismiss_notice' && notices.length===1)notices[0].style.setProperty('display','none','important');
   const collapse=text=>text.replace(/\s+/g,' ').trim();
-  const label=e=>e.tagName==='INPUT'&&['button','submit','reset'].includes(e.type)?e.value:(e.innerText||'');
+  const labelFields=e=>{
+   // Read the value only for non-editable input labels.
+   const text=e.tagName==='INPUT'&&['button','submit','reset'].includes(e.type)?e.value:(e.innerText||'');
+   return [['text',text],['title',e.getAttribute('title')||''],['aria-label',e.getAttribute('aria-label')||'']];
+  };
+  const exactMatch=fields=>fields.find(([,text])=>collapse(text)==='Run the configuration');
   const rendered=e=>{
    const s=getComputedStyle(e),r=e.getBoundingClientRect();
    if(!e.getClientRects().length || r.width<=0 || r.height<=0 || s.display==='none' || s.visibility!=='visible')return false;
@@ -30,24 +35,27 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   const nearMatches=()=>{
    const matches=[];
    for(const e of document.querySelectorAll('a,button,[role="button"],input')){
-    // Read the value only for non-editable input labels, never from an editable field.
-    const fields=[['text',label(e)],['title',e.getAttribute('title')||''],['aria-label',e.getAttribute('aria-label')||'']];
-    const match=fields.find(([,text])=>{const normalized=collapse(text);return normalized.length<=40 && /run/i.test(normalized);});
+    const fields=labelFields(e),exact=exactMatch(fields);
+    const match=exact||fields.find(([,text])=>{const normalized=collapse(text);return normalized.length<=40 && /run/i.test(normalized);});
     if(!match)continue;
-    matches.push({tag:tag(e),field:match[0],label:displayLabel(match[1]),visible:{old:visible(e),new:rendered(e)},
+    matches.push({tag:tag(e),field:match[0],match_field:exact?.[0]??null,label:displayLabel(match[1]),visible:{old:visible(e),new:rendered(e)},
       rect:rounded(e.getBoundingClientRect()),inside_notice:!!e.closest('#myNav')});
     if(matches.length===5)break;
    }
    return matches;
   };
-  const buttons=[...document.querySelectorAll('a,button,[role="button"],input[type="button"],input[type="submit"]')]
-    .filter(e=>collapse(label(e))==='Run the configuration' && rendered(e));
-  const button=buttons.length===1?buttons[0]:null,r=button?.getBoundingClientRect();
-  const facts={operation,notices_visible:notices.length,button_count:buttons.length,
+  const buttons=[];
+  for(const element of document.querySelectorAll('a,button,[role="button"],input[type="button"],input[type="submit"]')){
+   const match=exactMatch(labelFields(element));
+   if(match && rendered(element))buttons.push({element,field:match[0]});
+  }
+  const matched=buttons.length===1?buttons[0]:null,button=matched?.element,r=button?.getBoundingClientRect();
+  const facts={operation,notices_visible:notices.length,button_count:buttons.length,match_field:matched?.field??null,
     rect:r?rounded(r):null,viewport:{innerWidth,innerHeight},
     visibility_state:['visible','hidden','prerender','unloaded'].includes(document.visibilityState)?document.visibilityState:'unknown',
     hit:null};
   if(!button)facts.near_matches=nearMatches();
+  if(buttons.length>1)facts.match_fields=[...new Set(buttons.map(match=>match.field))];
   const blocked=reason=>({clear:false,reason,...facts});
   if(notices.length>1)return blocked('notices_multiple');
   if(!button)return blocked('button_count');
@@ -123,7 +131,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='1e8ef470a72547dc254e933c488a860c4899d3baa65283a116dc07e96f350a5b'
+DIGEST='97e0bf425afaffc51d16d0cd1e3c7bb0b9ad8cea6b8fdeacfe22d98501deeeb0'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')
