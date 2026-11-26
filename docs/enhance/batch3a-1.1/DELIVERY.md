@@ -917,3 +917,11 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - Run 几何诊断返回固定原因 `notices_multiple`、`button_count`、`hit_outside_viewport`、`hit_other_element`、`hit_null`，附操作、可见数量、圆整矩形、视口、可见状态和脱敏命中元素字段。错误将原因放在 `hit_reason`，另带 CDP 窗口状态。固定脚本摘要已更新。
 - 先在正常窗口完成命中检查。唯一按钮的中心在视口外时，固定脚本滚动一次，重新等待静默并命中检查。尝试最小化后，只有重新命中且原始矩形完全一致才在该状态点击。否则恢复正常窗口并复核。首次回放仍拦截请求，确认 `allow-run` 后只放行原规则允许的精确请求。
 - 回归：`test_run_obscured_reasons_include_only_safe_geometry_facts`、`test_offscreen_run_scrolls_then_waits_and_hits_before_capture`、`test_minimize_rechecks_normal_hit_first_and_falls_back_on_changed_rect`、`test_notice_style_only_and_exact_run_sends_once`、`test_fixed_script_registered_digest_and_exception_redaction`。B2 复验入口保持原样。
+
+## B2.17 Run 按钮标签与近似项证据
+
+`c65cf07` 第十一次演练的静默检查通过，`dismiss_notice` 报 `button_count: 0`。本机 Chrome 的旧脚本对换行、NBSP 和保留双空格的可见标签均计 0。实机文字形状尚未取得。
+
+- Run 标签先折叠空白，再按大小写精确比较，仍需一个匹配。Run 的可见性显式核对 client rect、尺寸、计算后的 display 与 visibility，并排除自身或祖先不透明度为零的元素。由此保持透明控件拒绝，同时不依赖 `checkVisibility` 的 Run 筛选。最终仍需通过中心命中。通知与账号的原可见性检查保持原样。
+- 匹配数量不为一时，`near_matches` 最多列五个符合长度限制的近似项，记录字段来源、显式空白、旧新可见性、脱敏矩形及是否在通知中。非字母及允许空白的标签显示为 `<non-label>`。可编辑输入的值、链接和处理器均不进入证据。固定脚本摘要已更新。
+- 回归：`test_run_label_whitespace_is_collapsed_before_the_exact_match`、`test_run_match_excludes_hidden_and_transparent_buttons_and_still_checks_hit`、`test_run_near_match_diagnostics_are_bounded_and_sanitized`。B2 复验入口保持原样。

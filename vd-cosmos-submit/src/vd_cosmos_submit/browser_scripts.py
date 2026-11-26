@@ -12,14 +12,42 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  if(['dismiss_notice','run_position','scroll_run'].includes(operation)){
   const notices=[...document.querySelectorAll('#myNav.overlay')].filter(visible);
   if(operation==='dismiss_notice' && notices.length===1)notices[0].style.setProperty('display','none','important');
+  const collapse=text=>text.replace(/\s+/g,' ').trim();
+  const label=e=>e.tagName==='INPUT'&&['button','submit','reset'].includes(e.type)?e.value:(e.innerText||'');
+  const rendered=e=>{
+   const s=getComputedStyle(e),r=e.getBoundingClientRect();
+   if(!e.getClientRects().length || r.width<=0 || r.height<=0 || s.display==='none' || s.visibility!=='visible')return false;
+   // CSS opacity is not inherited, yet a transparent ancestor hides the button.
+   for(let node=e;node;node=node.parentElement)if(Number(getComputedStyle(node).opacity)===0)return false;
+   return true;
+  };
+  const safeAttribute=(text,pattern,limit)=>text && !pattern.test(text)?'<redacted>':text.slice(0,limit);
+  const tag=e=>safeAttribute(e.tagName.toLowerCase(),/^[a-z][a-z0-9-]*$/,32);
+  const rounded=r=>({x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height)});
+  const whitespace={' ':'␠','\n':'⏎','\r':'⏎','\r\n':'⏎','\u00a0':'⍽','\t':'⇥'};
+  const displayLabel=text=>/^[A-Za-z \r\n\u00a0\t]+$/.test(text)
+    ?text.replace(/\r\n|[ \r\n\u00a0\t]/g,c=>whitespace[c]).slice(0,120):'<non-label>';
+  const nearMatches=()=>{
+   const matches=[];
+   for(const e of document.querySelectorAll('a,button,[role="button"],input')){
+    // Read the value only for non-editable input labels, never from an editable field.
+    const fields=[['text',label(e)],['title',e.getAttribute('title')||''],['aria-label',e.getAttribute('aria-label')||'']];
+    const match=fields.find(([,text])=>{const normalized=collapse(text);return normalized.length<=40 && /run/i.test(normalized);});
+    if(!match)continue;
+    matches.push({tag:tag(e),field:match[0],label:displayLabel(match[1]),visible:{old:visible(e),new:rendered(e)},
+      rect:rounded(e.getBoundingClientRect()),inside_notice:!!e.closest('#myNav')});
+    if(matches.length===5)break;
+   }
+   return matches;
+  };
   const buttons=[...document.querySelectorAll('a,button,[role="button"],input[type="button"],input[type="submit"]')]
-    .filter(e=>visible(e) && (e.tagName==='INPUT'?e.value:(e.innerText||'')).trim()==='Run the configuration');
+    .filter(e=>collapse(label(e))==='Run the configuration' && rendered(e));
   const button=buttons.length===1?buttons[0]:null,r=button?.getBoundingClientRect();
   const facts={operation,notices_visible:notices.length,button_count:buttons.length,
-    rect:r?{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height)}:null,
-    viewport:{innerWidth,innerHeight},
+    rect:r?rounded(r):null,viewport:{innerWidth,innerHeight},
     visibility_state:['visible','hidden','prerender','unloaded'].includes(document.visibilityState)?document.visibilityState:'unknown',
     hit:null};
+  if(!button)facts.near_matches=nearMatches();
   const blocked=reason=>({clear:false,reason,...facts});
   if(notices.length>1)return blocked('notices_multiple');
   if(!button)return blocked('button_count');
@@ -30,8 +58,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   }
   const hit=document.elementFromPoint(x,y);
   if(!hit)return blocked('hit_null');
-  const safeAttribute=(text,pattern,limit)=>text && !pattern.test(text)?'<redacted>':text.slice(0,limit);
-  facts.hit={tag:safeAttribute(hit.tagName.toLowerCase(),/^[a-z][a-z0-9-]*$/,32),
+  facts.hit={tag:tag(hit),
     id:safeAttribute(hit.getAttribute('id')||'',/^[a-zA-Z0-9_-]+$/,80),
     class:safeAttribute(hit.getAttribute('class')||'',/^[a-zA-Z0-9_ -]+$/,60)};
   if(!button.contains(hit))return blocked('hit_other_element');
@@ -96,7 +123,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='ccb9ea5e3c53b0334c70c89610e7b5476029b4abaf7b52672776db827d7fd102'
+DIGEST='1e8ef470a72547dc254e933c488a860c4899d3baa65283a116dc07e96f350a5b'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

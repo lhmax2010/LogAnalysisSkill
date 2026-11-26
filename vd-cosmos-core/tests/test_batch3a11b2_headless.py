@@ -408,6 +408,68 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
                 self.assertNotIn('fixture-private-text', str(info))
         self.assertEqual(self.server.calls, [])
 
+    def test_run_label_whitespace_is_collapsed_before_the_exact_match(self):
+        for label in ('Run<br>the configuration', 'Run&nbsp;the configuration', 'Run  the configuration',
+                      'Run\t the configuration'):
+            with self.subTest(label=label):
+                self.page.set_content(f'<button style="white-space:pre">{label}</button>')
+                result = self.driver._run_position(self.page.url)
+                self.assertTrue(result['clear'])
+                self.assertEqual(result['button_count'], 1)
+                self.assertEqual(result['hit']['tag'], 'button')
+                self.assertNotIn('near_matches', result)
+
+        self.page.set_content('<input type="button" value="Run&#160;the configuration">')
+        self.assertEqual(self.driver._run_position(self.page.url)['hit']['tag'], 'input')
+        self.page.set_content('<button>Run&nbsp;the configuration</button>'
+                              '<button>Run<br>the configuration</button>')
+        error = self.fails(4, self.driver._run_position, self.page.url)
+        self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 2))
+        self.assertEqual([row['visible']['new'] for row in error.details['near_matches']], [True, True])
+        self.assertEqual(self.server.calls, [])
+
+    def test_run_match_excludes_hidden_and_transparent_buttons_and_still_checks_hit(self):
+        button = '<button>Run the configuration</button>'
+        for style in ('opacity:0', 'visibility:hidden', 'display:none'):
+            for ancestor in (False, True):
+                with self.subTest(style=style, ancestor=ancestor):
+                    markup = f'<div style="{style}">{button}</div>' if ancestor else button.replace('<button>', f'<button style="{style}">')
+                    self.page.set_content(markup)
+                    error = self.fails(4, self.driver._run_position, self.page.url)
+                    self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 0))
+
+        self.page.set_content('<button style="pointer-events:none">Run the configuration</button>')
+        error = self.fails(4, self.driver._run_position, self.page.url)
+        self.assertEqual(error.details['button_count'], 1)
+        self.assertIn(error.details['hit_reason'], ('hit_other_element', 'hit_null'))
+        self.assertEqual(self.server.calls, [])
+
+    def test_run_near_match_diagnostics_are_bounded_and_sanitized(self):
+        self.page.set_content(
+            '<button>Run ' + 'a'*41 + '</button>'
+            '<button style="opacity:0;white-space:pre">Run&nbsp;the\t\nconfiguration extra</button>'
+            '<a title="RUN&#9;helper" href="https://local.invalid/private">Other label</a>'
+            '<input type="text" value="Run editable private value" aria-label="Run&nbsp;setup">'
+            '<button title="Run https://local.invalid/x" onclick="void \'private-handler\'">Another label</button>'
+            '<div id="myNav"><button>Run status</button></div>'
+            '<button>Run beyond the cap</button>')
+        error = self.fails(4, self.driver._run_position, self.page.url)
+        self.assertEqual((error.details['hit_reason'], error.details['button_count']), ('button_count', 0))
+        rows = error.details['near_matches']
+        self.assertEqual([(row['tag'], row['field'], row['label']) for row in rows], [
+            ('button', 'text', 'Run⍽the⇥⏎configuration␠extra'),
+            ('a', 'title', 'RUN⇥helper'),
+            ('input', 'aria-label', 'Run⍽setup'),
+            ('button', 'title', '<non-label>'),
+            ('button', 'text', 'Run␠status'),
+        ])
+        self.assertEqual([row['visible'] for row in rows], [{'old': False, 'new': False}] + [{'old': True, 'new': True}]*4)
+        self.assertEqual([row['inside_notice'] for row in rows], [False, False, False, False, True])
+        self.assertTrue(all(set(row['rect']) == {'x', 'y', 'w', 'h'} for row in rows))
+        for private in ('local.invalid', 'editable', 'private-handler', 'onclick', 'href', 'beyond'):
+            self.assertNotIn(private, str(error.details))
+        self.assertEqual(self.server.calls, [])
+
     def test_offscreen_run_scrolls_then_waits_and_hits_before_capture(self):
         driver = self.driver
         path = driver.gate.overview
