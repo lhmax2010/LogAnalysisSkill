@@ -896,3 +896,14 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - Playwright 主框架导航事件仅唤起异步 `Page.getFrameTree` 查询。其提交的 loader 变化退休已知旧文档请求，按 `superseded_by_navigation` 计数并列证据。未知 loader 仍阻挡静默。现有闸门和已暂停指令的处置保持原样。
 - 静默证据保留 loader 相对标签、Network 事件名称、HTTP 状态和缓存标志。Network 仅启用现有 `Network.enable`，不登记原始标识、请求或响应内容。B2 复验入口保持原样。
 - 回归：`test_navigation_retires_slow_image_without_a_loading_failed_event`、`test_cached_image_reaches_quiet_without_loading_finished`、`test_navigation_retires_only_confirmed_previous_main_loader`、`test_network_cache_pair_closes_in_either_order_but_partial_signals_do_not`、既有当前文档慢加载及网络边界测试。
+
+## B2.15 无 Network ID 的请求按文档代数归属
+
+`d9b441e` 第九次构建机演练的概览静默等待只剩一个 SSO 阶段已放行的外部请求，没有 Network 事件或 loader。现有实机证据不能确定 Fetch 是否携带 Network ID。
+
+本机 Chrome 158 在两个环回来源回放认证页，并依次进入 dashboard 和 overview。文档、慢图片、favicon 和 prefetch 的 Fetch 暂停全部携带 Network ID。慢图片只留下 CDP `requestWillBeSent` 和 Playwright `request`，其余样本有完成事件。探针关闭认证段的同会话 Network 观察后，Fetch 仍携带 ID，该会话收不到 Network 事件。Chrome 未自然产生无 ID 暂停。回归测试只对一个环回慢请求去掉传给记账器的 ID 和 Network 开始事件，实际浏览器和两次文档提交照常运行。
+
+- 主框架文档的 `Fetch.continueResponse` 获应答，并与 CDP 提交后的 loader 对上时，文档代数才前进。Network 开始及首次 Fetch 暂停记录请求代数，已知 loader 优先定位。新文档响应已放行但提交证据未齐时，无可识别 loader 的请求按即将提交的代数保守保留，避免把新页请求误清掉。
+- 旧代数请求按 `superseded_by_navigation` 退休，无 ID 或 loader 也适用。当前代数无终止证据的请求仍阻挡静默；闸门保持原样。
+- 收据增加 `generation`、`current_generation`、`network_id_present`、`host_class`。无法识别的 loader 显示 `unknown`，非 Hub 保留来源类别和“未登记”，无 URL。
+- 回归：`test_auth_request_without_network_id_blocks_current_then_is_superseded`、`test_unmapped_request_during_commit_is_kept_with_new_document`、`test_navigation_retires_previous_generation_and_correlates_main_loader`。B2 复验入口保持原样。

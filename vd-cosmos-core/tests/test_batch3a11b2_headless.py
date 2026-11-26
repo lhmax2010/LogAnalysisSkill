@@ -7,6 +7,7 @@ import shutil
 import threading
 import time
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+from urllib.parse import urlsplit
 from unittest.mock import patch
 from helpers import REPO
 from headless_watchdog import HeadlessWatchdog
@@ -423,6 +424,73 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         finally:
             release.set()
 
+    def test_auth_request_without_network_id_blocks_current_then_is_superseded(self):
+        driver = self.driver
+        auth = Server()
+        self.addCleanup(auth.close)
+        release = threading.Event()
+        self.addCleanup(release.set)
+        path = '/fixture-held-image.png'
+        auth.holds[path] = release
+        auth.responses['/fixture-auth'] = (200, None, b'<p>Loopback auth</p>')
+        held_url = auth.origin + path
+        auth_urls = {held_url, auth.origin + '/fixture-auth'}
+        driver.gate.s['auth_paths'] = [{'host': urlsplit(auth.origin).netloc, 'path': urlsplit(url).path, 'method': 'GET'}
+                                      for url in auth_urls]
+        original_gate = driver.gate.request
+        original_pause = driver._flight_for_pause
+
+        def gate(url, method, **options):
+            if method == 'GET' and url in auth_urls:
+                return True  # Loopback HTTP test exception, never used in the adapter.
+            return original_gate(url, method, **options)
+
+        driver._cdp.remove_listener('Network.requestWillBeSent', driver._network_start)
+
+        def network_start(event):
+            if event['request']['url'] != held_url:
+                driver._network_start(event)
+
+        def hide_id(event, url, *args):
+            if url == held_url:
+                event = {key: value for key, value in event.items() if key != 'networkId'}
+            return original_pause(event, url, *args)
+
+        driver._cdp.on('Network.requestWillBeSent', network_start)
+        with patch.object(driver.gate, 'request', side_effect=gate), \
+                 patch.object(driver, '_flight_for_pause', side_effect=hide_id):
+            self.page.goto(auth.origin + '/fixture-auth', wait_until='load')
+            driver._wait_for_quiet(load=True)
+            generation = driver._document_generation
+            self.page.evaluate('path => { const img = new Image(); img.src = path; document.body.append(img); }', path)
+            deadline = time.monotonic() + 5
+            while ('GET', path) not in auth.calls:
+                self.assertLess(time.monotonic(), deadline)
+                self.page.wait_for_timeout(25)
+            driver.quiet_timeout_s = .4
+            error = self.fails(5, driver._wait_for_quiet)
+            self.assertEqual((error.reason, error.details['wait_phase']), ('target_page_not_quiet', 'quiet'))
+            row, = error.details['in_flight_requests']
+            self.assertEqual({key: row[key] for key in ('host_class', 'loader', 'generation', 'current_generation',
+                                                        'network_id_present', 'decision', 'path', 'network_events_seen')},
+                             {'host_class': 'auth', 'loader': 'unknown', 'generation': generation,
+                              'current_generation': generation, 'network_id_present': False, 'decision': 'continued',
+                              'path': 'unregistered', 'network_events_seen': []})
+            self.assertNotIn(auth.origin, str(row))
+            self.assertNotIn(path, str(row))
+
+        driver.quiet_timeout_s = 5
+        for target in ('/fixture-dashboard', '/fixture-overview'):
+            self.server.responses[target] = (200, None, b'<p>Loopback hub</p>')
+            driver.gate.allowed = (self.server.origin + target, 'GET')
+            self.page.goto(self.server.origin + target, wait_until='load')
+            driver._wait_for_quiet(load=True)
+        self.assertEqual(driver._document_generation, generation + 2)
+        row, = driver._operation_evidence()['superseded_requests']
+        self.assertEqual((row['generation'], row['current_generation'], row['network_id_present'],
+                          row['resolution']), (generation, generation + 1, False, 'superseded_by_navigation'))
+        self.assertFalse(driver._in_flight)
+
     def test_cached_image_reaches_quiet_without_loading_finished(self):
         image = '/cacheable.gif'
         content = b64decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')
@@ -530,7 +598,8 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
                          {'origin': 'hub', 'method': 'GET', 'resource_type': 'Image',
                           'paused': False, 'decision': 'continued', 'path_shape': '/slow.png?v',
                           'loader': 'current', 'network_events_seen': ['requestWillBeSent'],
-                          'http_status': None, 'from_cache': False})
+                          'generation': self.driver._document_generation, 'current_generation': self.driver._document_generation,
+                          'network_id_present': True, 'host_class': 'hub', 'http_status': None, 'from_cache': False})
         self.assertGreaterEqual(image['age_s'], 0)
         self.assertNotIn('fixture-value', str(error.details))
 

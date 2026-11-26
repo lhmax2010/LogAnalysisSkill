@@ -20,7 +20,7 @@ from helpers import REPO
 from vd_cosmos_core import submit_model as model,submit_sessions as sessions,verification_process as vp
 from vd_cosmos_core import verify_b3a11 as verify
 from vd_cosmos_core.errors import FlowError
-from vd_cosmos_submit.playwright_driver import Driver, fetch_error
+from vd_cosmos_submit.playwright_driver import DocumentResponse, Driver, fetch_error
 
 
 class CallbackTests(B1Case):
@@ -69,8 +69,10 @@ class CallbackTests(B1Case):
         self.assertEqual(list(driver._in_flight.values()), [second])
         self.assertEqual(driver._in_flight_evidence(second.started_at + 1),
                          [{'origin': 'other', 'path': 'unregistered', 'method': 'POST', 'resource_type': 'Document',
-                           'age_s': 1, 'paused': False, 'decision': 'none', 'loader': 'current',
-                           'network_events_seen': ['requestWillBeSent'], 'http_status': None, 'from_cache': False}])
+                           'age_s': 1, 'paused': False, 'decision': 'none', 'loader': 'unknown',
+                           'generation': 0, 'current_generation': 0, 'network_id_present': True,
+                           'host_class': 'other', 'network_events_seen': ['requestWillBeSent'],
+                           'http_status': None, 'from_cache': False}])
         driver._network_end({'requestId': 'same'})
 
         early = driver._flight_for_pause({'requestId': 'fetch-3', 'networkId': 'late'}, hub+'/a42?key3=opaque',
@@ -81,7 +83,7 @@ class CallbackTests(B1Case):
         self.assertFalse(driver._in_flight)
         self.assertEqual((driver._network_started, driver._network_finished), (3, 3))
 
-    def test_navigation_retires_only_confirmed_previous_main_loader(self):
+    def test_navigation_retires_previous_generation_and_correlates_main_loader(self):
         from vd_cosmos_core.submit_gate import Gate
 
         driver = Driver(self.config, {})
@@ -102,14 +104,17 @@ class CallbackTests(B1Case):
         start('other-frame', 'child-loader')
         commit(1, 'loader-a')  # Same-document navigation leaves every flight alone.
         self.assertEqual(len(driver._in_flight), 4)
+        driver._document_responses['document'] = DocumentResponse(driver._in_flight['network', 'new'], 1, True)
         commit(3, 'loader-b')
         commit(2, 'loader-a')  # A late snapshot cannot replace the newer commit.
         start('late-old', 'loader-a')
-        self.assertEqual(set(driver._in_flight), {('network', name) for name in ('new', 'unknown', 'other-frame')})
+        self.assertEqual(set(driver._in_flight), {('network', 'new')})
         evidence = driver._operation_evidence()
-        self.assertEqual(evidence['superseded_by_navigation'], 2)
-        self.assertTrue(all(row['loader'] == 'previous' and row['path_shape'] == '/assetN.png'
-                            for row in evidence['superseded_requests']))
+        self.assertEqual(evidence['superseded_by_navigation'], 4)
+        self.assertCountEqual([row['loader'] for row in evidence['superseded_requests']],
+                              ['previous', 'previous', 'unknown', 'unknown'])
+        self.assertTrue(all(row['generation'] == 0 and row['current_generation'] == 1
+                            and row['path_shape'] == '/assetN.png' for row in evidence['superseded_requests']))
         old = driver._flight_for_pause({'requestId': 'late-fetch', 'networkId': 'old'},
                                        driver.gate.origin + '/asset138.png', 'GET', 'Image', True)
         self.assertEqual(old.loader_id, 'loader-a')
@@ -117,12 +122,53 @@ class CallbackTests(B1Case):
         driver._network_failed({'requestId': 'new', 'errorText': 'net::ERR_ABORTED', 'canceled': True})
         self.assertNotIn(('network', 'new'), driver._in_flight)
 
+    def test_unmapped_request_during_commit_is_kept_with_new_document(self):
+        from vd_cosmos_core.submit_gate import Gate
+
+        async def scenario():
+            driver = Driver(self.config, {})
+            driver.gate = Gate(self.config, rehearse=True)
+            driver._frame = 'main'
+            hub = driver.gate.origin
+            tree = lambda loader: {'frameTree': {'frame': {'id': 'main', 'loaderId': loader}}}
+            driver._observe_main_loader(0, tree('before'))
+            old = driver._flight_for_pause({'requestId': 'old'}, hub+'/old', 'GET', 'Other', False)
+            transmitted, acknowledge = asyncio.Event(), asyncio.Event()
+
+            async def send(command, options):
+                self.assertEqual(command, 'Fetch.continueResponse')
+                transmitted.set()
+                await acknowledge.wait()
+
+            driver._cdp = SimpleNamespace(_impl_obj=SimpleNamespace(_loop=asyncio.get_running_loop(), send=send))
+            driver._network_start({'requestId': 'document-network', 'loaderId': 'after', 'type': 'Document',
+                                   'request': {'url': hub+'/', 'method': 'GET'}})
+            driver._paused({'requestId': 'document', 'networkId': 'document-network', 'resourceType': 'Document',
+                            'frameId': 'main', 'responseStatusCode': 200, 'request': {'url': hub+'/', 'method': 'GET'}})
+            await asyncio.wait_for(transmitted.wait(), 2)
+            current = driver._flight_for_pause({'requestId': 'new'}, hub+'/new', 'GET', 'Other', False)
+            driver._observe_main_loader(1, tree('after'))
+            self.assertEqual(driver._document_generation, 0)
+            self.assertIn(old.key, driver._in_flight)
+            acknowledge.set()
+            await asyncio.sleep(0)
+            await asyncio.sleep(0)
+            self.assertEqual(driver._document_generation, 1)
+            self.assertNotIn(old.key, driver._in_flight)
+            self.assertEqual(driver._in_flight[current.key].generation, 1)
+            self.assertEqual(driver._in_flight['network', 'document-network'].generation, 1)
+            driver._observe_main_loader(2, tree('unmatched'))
+            self.assertEqual(driver._document_generation, 1)
+
+        asyncio.run(scenario())
+
     def test_network_cache_pair_closes_in_either_order_but_partial_signals_do_not(self):
         from vd_cosmos_core.submit_gate import Gate
 
         driver = Driver(self.config, {})
         driver.gate = Gate(self.config, rehearse=True)
-        driver._loader_id = 'main-loader'
+        driver._frame = 'main'
+        driver._observe_main_loader(0, {'frameTree': {'frame': {'id': 'main', 'loaderId': 'main-loader'}}})
         for rid in ('cache-first', 'response-first', 'disk-only'):
             with self.subTest(request=rid):
                 request = {'requestId': rid}

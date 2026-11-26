@@ -129,12 +129,20 @@ class Flight:
     evidence: dict
     started_at: float
     announced: bool
+    generation: int
     fetch_id: str | None = None
     decision: str = 'none'
     loader_id: str | None = None
     network_events_seen: list[str] = field(default_factory=list)
     http_status: int | None = None
     from_cache: bool = False
+
+
+@dataclass
+class DocumentResponse:
+    flight: Flight
+    after_sample: int
+    acknowledged: bool = False
 
 
 @dataclass
@@ -153,6 +161,7 @@ class Pause:
     teardown: bool = False
     flight: Flight | None = None
     main_document: bool = False
+    document_response: bool = False
 
 
 class Driver:
@@ -168,8 +177,11 @@ class Driver:
         self._deferred=set();self._pause_timeline=[];self._response_redirects=set()
         self._in_flight={};self._ended_before_start=set();self._network_started=0;self._network_finished=0
         self._loader_id = None
-        self._previous_loaders = set()
+        self._loader_generations = {}
         self._loader_sample = self._loader_sampled = 0
+        self._document_generation = 0
+        self._document_responses = {}
+        self._observed_loader = None
         self._superseded_flights = {}
         self._superseded_requests = []
         self._last_activity=time.monotonic()
@@ -316,17 +328,25 @@ class Driver:
         shape = self._url_shape(url)
         evidence = request_evidence(url, method, resource, 'none')
         details = {'origin': shape['origin'], 'method': evidence['method'],
-                   'resource_type': evidence['resource_type']}
+                   'resource_type': evidence['resource_type'], 'host_class': 'other'}
         if shape['origin'] == 'hub':
-            details['path_shape'] = hub_path_shape(evidence)
+            details.update(host_class='hub', path_shape=hub_path_shape(evidence))
         else:
             details['path'] = 'unregistered'
+            host = urlsplit(url).netloc
+            if self.gate is not None and any(entry['host'] == host for entry in self.gate.s.get('auth_paths', [])):
+                details['host_class'] = 'auth'
         now = time.monotonic()
-        flight = Flight(key, details, now, announced)
+        flight = Flight(key, details, now, announced, self._flight_generation())
         self._in_flight[key] = flight
         self._network_started += 1
         self._last_activity = now
         return flight
+
+    def _flight_generation(self):
+        # A new document can start requests before its commit callback reaches
+        # Python. Protect those requests as part of the upcoming generation.
+        return self._document_generation + bool(self._document_responses)
 
     def _finish_flight(self, flight):
         if flight is None or self._in_flight.get(flight.key) is not flight:
@@ -354,17 +374,47 @@ class Driver:
         self._loader_sampled = sample
         frame = tree['frameTree']['frame']
         loader = frame.get('loaderId')
-        if frame['id'] != self._frame or not loader or loader == self._loader_id:
+        if frame['id'] != self._frame or not loader:
             return
-        if self._loader_id:
-            self._previous_loaders.add(self._loader_id)
-        self._previous_loaders.discard(loader)
+        if sample == 0:
+            self._loader_id = loader
+            self._loader_generations[loader] = self._document_generation
+            return
+        self._observed_loader = (sample, loader)
+        self._commit_document()
+
+    def _commit_document(self):
+        if self._observed_loader is None:
+            return
+        sample, loader = self._observed_loader
+        if loader == self._loader_id:
+            return
+        eligible = [(rid, response) for rid, response in self._document_responses.items()
+                    if response.after_sample < sample]
+        match = next(((rid, response) for rid, response in reversed(eligible)
+                      if response.flight.loader_id == loader), None)
+        if match is None and len(eligible) == 1 and eligible[0][1].flight.loader_id is None:
+            # Without Network metadata, accept only an unambiguous correlation
+            # between a continued top-level response and the subsequent commit.
+            match = eligible[0]
+        if match is None or not match[1].acknowledged:
+            return
+
+        committed_id, response = match
+        self._document_generation += 1
         self._loader_id = loader
+        self._loader_generations[loader] = self._document_generation
+        response.flight.generation = self._document_generation
+        for rid in tuple(self._document_responses):
+            del self._document_responses[rid]
+            if rid == committed_id:
+                break
         for flight in tuple(self._in_flight.values()):
+            flight.generation = self._loader_generations.get(flight.loader_id, flight.generation)
             self._retire_old_flight(flight)
 
     def _retire_old_flight(self, flight):
-        if flight.loader_id not in self._previous_loaders:
+        if flight.generation >= self._document_generation or self._in_flight.get(flight.key) is not flight:
             return
         paused = any(pause.flight is flight for pause in self._pauses.values())
         evidence = self._flight_evidence(flight, time.monotonic(), paused=paused)
@@ -387,7 +437,10 @@ class Driver:
             flight = self._start_flight(key, request['url'], request['method'], event.get('type', 'Other'),
                                         announced=True)
         flight.loader_id = event.get('loaderId') or flight.loader_id
+        flight.generation = self._loader_generations.get(flight.loader_id, flight.generation)
         self._network_event(flight, 'requestWillBeSent')
+        if self._document_responses:
+            self._commit_document()
         self._retire_old_flight(flight)
 
     @staticmethod
@@ -438,13 +491,20 @@ class Driver:
             flight = self._superseded_flights.get(key)
         if flight is None:
             flight = self._start_flight(key, url, method, resource, announced=False)
+        elif flight.fetch_id is None and self._in_flight.get(key) is flight:
+            flight.generation = self._loader_generations.get(flight.loader_id, self._flight_generation())
         flight.fetch_id = fetch_id
         return flight
 
     def _flight_evidence(self, flight, now, *, paused):
+        if not flight.loader_id or flight.loader_id not in self._loader_generations:
+            loader = 'unknown'
+        else:
+            loader = 'current' if flight.loader_id == self._loader_id else 'previous'
         return {**flight.evidence, 'age_s': round(now - flight.started_at, 3),
-                'paused': paused, 'decision': flight.decision,
-                'loader': 'previous' if flight.loader_id in self._previous_loaders else 'current',
+                'paused': paused, 'decision': flight.decision, 'loader': loader,
+                'generation': flight.generation, 'current_generation': self._document_generation,
+                'network_id_present': flight.key[0] == 'network',
                 'network_events_seen': list(flight.network_events_seen),
                 'http_status': flight.http_status, 'from_cache': flight.from_cache}
 
@@ -490,12 +550,21 @@ class Driver:
         failed = args[0] == 'Fetch.failRequest'
         if pause.flight is not None:
             pause.flight.decision = 'failed' if failed else 'continued'
+        document = None
+        if pause.document_response and args[0] == 'Fetch.continueResponse':
+            document = DocumentResponse(pause.flight, self._loader_sample)
+            self._document_responses[pause.request_id] = document
         try:
             await function(*args)
         except (Exception, asyncio.CancelledError) as error:
+            if document is not None:
+                self._document_responses.pop(pause.request_id, None)
             pause.timeline.update(fetch_error(self.config, args[0], error))
             raise
         pause.timeline['acked_at']=time.monotonic()
+        if document is not None:
+            document.acknowledged = True
+            self._commit_document()
         if failed:
             self._finish_flight(pause.flight)
     def _forget_pause(self,pause):
@@ -627,6 +696,8 @@ class Driver:
                 self._defer(self._cdp,'send','Fetch.failRequest',
                             {'requestId':rid,'errorReason':blocked},pause=pause)
             elif response_stage:
+                pause.document_response = (resource == 'Document' and frame_id == self._frame
+                                           and status not in {204, 205, 301, 302, 303, 307, 308})
                 options={'requestId':rid}
                 if (event['responseStatusCode']==200 and resource=='Document'
                         and event.get('frameId')==self._frame):
