@@ -1172,8 +1172,11 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         for index in (1, 2):
             driver.fill(index, 'fixture-value')
             component = self.config.raw['submit']['gate_patterns'][index - 1]['component']
-            self.assertEqual(driver.records()[-1]['control'], component)
-            self.assertEqual(driver.records()[-1]['classification'], 'callback_candidate')
+            matches = [record for record in driver.records()
+                       if record.get('classification') == 'callback_candidate'
+                       and record.get('component') == component]
+            self.assertEqual(len(matches), 1)
+            self.assertEqual(matches[0]['control'], component)
             self.assertIsNone(driver.gate.filling)
         self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
 
