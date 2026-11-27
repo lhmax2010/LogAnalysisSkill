@@ -975,3 +975,9 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 终端预览只显示编码表、回调模式、指纹控件数及摘要和空隐藏值。输入 confirm 后锁内生成 0600 备份，按原文件字节范围只更新六个 submit 键，重新加载验证后原子替换。重复同一确认没有配置差异或新备份。现有配置导入脚本共用写入器。
 - 已登记的演练按当前控件、模式及精确 URL 编码字段和值放行至多一次。下拉框用选项实际 value 核对。收到 Chrome 放行应答后记为 callback_sent，摘要显示 callbacks sent。未登记的回调仍被拦截，正式模式产生 unregistered_callback。演练提交闸门始终不允许武装。
 - 回归：`test_failed_legacy_non_rehearsal_or_wrong_target_account_refused`、`test_registration_refuses_malformed_or_unattributed_callbacks_and_nonempty_hidden`、`test_terminal_review_and_exact_private_atomic_write_then_idempotent`、`test_confirmation_refusal_and_non_tty_leave_config_untouched`、`test_successful_real_rehearsal_cli_writes_result_with_checkout_identity`、`test_confirmed_rehearsal_fill_sends_enum_wire_value_and_never_arms_submit`、`test_unregistered_callback_is_fatal_in_real_mode`。操作命令见 FATTANK-B2-MANUAL.md。
+
+## B2.24 契约登记的 URL 标签与安全错误明细
+
+第十七次演练（`7083411`）生成的结果被登记命令拒绝，因为 GITURL 选项文本含 ` / https://…`。选项文本现允许斜杠与冒号，仍限 120 字符。选项值与复选框值沿用原字符集合，审阅内容与更新内容仍通过凭据检查。
+
+拒绝结果增加固定的 `check`，控件可由指纹索引定位时附 `control_index`。错误不回显选项、表单或产物内容。脱敏重建第十七次演练形状，测试端到端登记 14 条回调与空隐藏值，覆盖各个检查明细、字段限制及凭据拦截。构建机可用第十七次演练原结果重试。

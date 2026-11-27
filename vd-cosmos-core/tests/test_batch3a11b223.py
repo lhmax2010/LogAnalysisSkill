@@ -19,7 +19,8 @@ from vd_cosmos_submit import cli, contract_registration
 OBSERVED = (0, 4, 6, 1, 2, 3, 5, 7, 9, 10, 11, 12, 16, 17)
 ENUMS = {0: ({'Partial': '0', 'Full': '1'}, 'Full'),
          4: ({'armv7l': '0'}, 'armv7l'),
-         6: ({'': '', 'CODE': '0', 'ECODE': '1'}, ''),
+         6: ({'': '', 'CODE / https://code.example.invalid': '0',
+              'ECODE / https://ecode.example.invalid': '1'}, ''),
          15: ({'yes': '0', 'no': '1'}, 'no')}
 
 
@@ -89,6 +90,57 @@ class ContractRegistrationTests(B1Case):
         result['evidence']['parts'][-1] = part('id16f_hf_0', 'nonempty')
         self.fails(4, contract_registration.proposal, self.config, result)
 
+    def test_registration_reports_safe_check_and_control_index_for_each_refusal(self):
+        controls = ('fingerprint', 'controls')
+        parts = ('evidence', 'parts')
+        options = (*controls, 6, 'options')
+        synthetic = 'fixture-do-not-echo'
+        errors = (
+            ('result_flags', None, ('ok',), synthetic),
+            ('contract_source', None, ('contract_source', 'source_commit'), synthetic),
+            ('account_check', None, ('account_check',), synthetic),
+            ('evidence', None, ('evidence', 'verified'), synthetic),
+            ('fingerprint', None, ('fingerprint',), synthetic),
+            ('target_or_account', None, ('contract_source', 'account'), synthetic),
+            ('parts', None, (*parts, 6, 'sha256'), synthetic),
+            ('parts', 6, (*parts, 6, 'name'), synthetic),
+            ('parts', None, parts, self.result()['evidence']['parts'] + [part(synthetic, '')]),
+            ('hidden', None, ('evidence', 'hidden_name'), synthetic),
+            ('controls_count', None, controls, []),
+            ('control_fields', 6, (*controls, 6, 'name'), synthetic),
+            ('control_fields', 6, (*controls, 6), synthetic),
+            ('select_options', 6, options, synthetic),
+            ('select_options', 6, (*options, 1), synthetic),
+            ('select_option_text', 6, (*options, 1, 'text'), synthetic * 10),
+            ('select_option_text', 6, (*options, 1, 'text'), 'CODE / https://code.example.invalid?query'),
+            ('select_option_value', 6, (*options, 1, 'value'), 'https://code.example.invalid'),
+            ('select_default', 6, (*controls, 6, 'default'), synthetic),
+            ('control_options', 5, (*controls, 5, 'options'), synthetic),
+            ('control_default', 5, (*controls, 5, 'default'), synthetic),
+            ('checkbox_value', 13, (*controls, 13, 'checked_value'), synthetic),
+            ('callbacks', None, ('gate_records',), synthetic),
+            ('callbacks', None, ('gate_records', 0), synthetic),
+            ('callbacks', 0, ('gate_records', 0, 'behavior'), synthetic),
+        )
+        for check, index, path, value in errors:
+            with self.subTest(check=check, path=path):
+                result = self.result()
+                section = result
+                for key in path[:-1]:
+                    section = section[key]
+                section[path[-1]] = value
+                error = self.fails(4, contract_registration.proposal, self.config, result)
+                expected = {'check': check}
+                if index is not None:
+                    expected['control_index'] = index
+                self.assertEqual(error.details, expected)
+
+    def test_url_option_text_remains_subject_to_credential_check(self):
+        self.config.raw['prepush']['credential_patterns'] = [r'code\.example\.invalid']
+        error = self.fails(4, contract_registration.proposal, self.config, self.result())
+        self.assertEqual(error.reason, 'credential_pattern_blocked')
+        self.assertNotIn('code.example.invalid', str(error.as_dict()))
+
     def test_terminal_review_and_exact_private_atomic_write_then_idempotent(self):
         result = self.result()
         result['private_return_value'] = 'fixture-package-list'
@@ -105,6 +157,7 @@ class ContractRegistrationTests(B1Case):
             review = json.loads(prompt.split('\n', 1)[1].rsplit('\n', 1)[0])
             self.assertEqual(review['source_commit'], 'a' * 40)
             self.assertEqual(review['encodings'][0]['option_values'], {'Partial': '0', 'Full': '1'})
+            self.assertEqual(review['encodings'][6]['option_values'], ENUMS[6][0])
             self.assertEqual(review['encodings'][13]['checked_value'], 'on')
             self.assertEqual(review['encodings'][8]['encoding'], 'ids')
             self.assertEqual(review['fingerprint']['controls'], 18)
