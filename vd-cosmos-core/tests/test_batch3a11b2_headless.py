@@ -85,7 +85,10 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.server=Server();self.addCleanup(self.server.close);self.config.raw['submit']['browser_executable']=exe
         r=model.create_request(self.config,CTX,self.form(),'local browser verification');self.session=sessions.start(self.config,r,CTX,Processes())
         self.expect_pause_fault=False
-        self.driver=Driver(self.config,self.session,headless=True,local_origin=self.server.origin);self.addCleanup(self.close_driver);self.driver.launch(rehearse=True)
+        headed = os.environ.get('VD_TEST_EDITOR_HEADED') == '1'
+        self.driver=Driver(self.config,self.session,headless=not headed,local_origin=self.server.origin);self.addCleanup(self.close_driver);self.driver.launch(rehearse=True)
+        if headed:
+            print('Chrome running in headed mode', flush=True)
         self.driver.quiet_window_s=.18
         print('Chrome executable (launched): '+exe,flush=True)
         self.page=self.driver._page;url=self.server.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.driver.gate.navigation(url);self.page.goto(url,wait_until='domcontentloaded');self.page.wait_for_timeout(100)
@@ -924,6 +927,78 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         error=self.fails(5,self.driver.snapshot)
         self.assertEqual(error.reason,'form_unrecognized')
         self.assertEqual(error.details['breadcrumb_segments'],['PRODUCT','wrong','RELEASE'])
+
+    def test_editor_breadcrumb_id_counts_each_element_once_and_rejects_two(self):
+        self.open_fixture_editor()
+        form = self.editor_form()
+        for classes in ('flex-auto flex items-center text-base', 'breadcrumb breadcrumbs'):
+            with self.subTest(classes=classes):
+                self.page.set_content(f'<div id="breadcrumb" class="{classes}">PRODUCT / fixture / RELEASE</div>' + form)
+                self.assertEqual(self.driver.snapshot()['breadcrumb_segments'], ['PRODUCT', 'fixture', 'RELEASE'])
+        self.page.set_content('<div id="breadcrumb">PRODUCT / fixture / RELEASE</div>'
+                              '<nav class="breadcrumbs">PRODUCT / fixture / RELEASE</nav>' + form)
+        error = self.fails(5, self.driver.snapshot)
+        self.assertEqual(error.reason, 'form_unrecognized')
+        self.assertEqual(error.details['stage'], 'breadcrumb')
+        self.assertEqual(error.details['breadcrumb_segments'], [])
+        self.assertEqual(len(error.details['breadcrumb_candidates']), 2)
+        self.assertEqual(error.details['form_count'], 1)
+
+    def test_rehearsal15_editor_snapshot_fill_and_serialize(self):
+        from vd_cosmos_core.submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, readback, structure, wire_values
+        from vd_cosmos_core.submit_config import PROPERTIES
+
+        fixture = REPO / 'vd-cosmos-core/fixtures/editor_rehearsal15.html'
+        self.server.responses['/wicket/page?1'] = (200, None, fixture.read_bytes())
+        self.open_fixture_editor()
+        forms = self.page.locator('form').evaluate_all(
+            '(forms) => forms.map(f => [f.id, f.enctype, f.elements.length])')
+        self.assertEqual(forms, [['id16d', 'application/x-www-form-urlencoded', 4],
+                                 ['id16f', 'multipart/form-data', 26]])
+        self.assertEqual(self.page.locator('#id16f button:not([name])').count(), 5)
+
+        driver = self.driver
+        first = driver.snapshot()
+        first_fingerprint = structure(self.config, first)
+        self.assertEqual(first['breadcrumb_segments'], ['root', 'PRODUCT', 'fixture', 'RELEASE'])
+        self.assertEqual(first['hidden'], 'id16f_hf_0')
+        defaults = {c['label']: c['value'] for c in first['controls'] if c['label'] in DEFAULT_CONTROLS}
+        form = self.form() | {'BUILD_TYPE': 'Full', 'ARCH': 'armv7l', 'BASE_REPOS': 'fixture-repo',
+                              'BUILD_CONF': 'fixture-conf', 'EXTRA_BUILD_PARAMETER': 'fixture-knob'}
+        enforce_policy(form, defaults=defaults)
+        for index, name in enumerate(PROPERTIES):
+            if name not in DEFAULT_CONTROLS:
+                driver.fill(index, form[name])
+        snapshot = driver.snapshot()
+        self.assertEqual(readback(self.config, snapshot, form, defaults=defaults), form)
+        stable = lambda fp: [{k: v for k, v in c.items() if k != 'default'} for c in fp['controls']]
+        self.assertEqual(stable(structure(self.config, snapshot)), stable(first_fingerprint))
+        rehearsal = driver.serialize_check(snapshot, form, rehearse=True)
+        self.assertFalse(rehearsal['verified'])
+        self.assertEqual(rehearsal['reason'], 'ks_mapping_unregistered')
+
+        # Register a synthetic recorder encoding only to exercise exact body verification.
+        self.config.raw['submit']['property_map']['KS_LIST']['record_value'] = 'fixture-palette-record'
+        parts = dict(driver._script('serialize'))
+        expected = wire_values(self.config, snapshot, form, rehearsal=True)
+        package_list_name = snapshot['controls'][5]['name']
+        self.assertEqual([name for name, value in expected.items() if parts[name] != value], [package_list_name])
+        self.assertEqual(parts[package_list_name], form['PACKAGE_LIST'])
+        self.assertEqual(expected[package_list_name], form['PACKAGE_LIST'].replace('\n', '\r\n'))
+        failure = self.fails(4, driver.serialize_check, snapshot, form, rehearse=True)
+        self.assertEqual(failure.reason, 'submit_values_mismatch')
+
+        # A single-line list without a final newline verifies against the same layout.
+        form['PACKAGE_LIST'] = form['PACKAGE_LIST'].rstrip('\n')
+        driver.fill(5, form['PACKAGE_LIST'])
+        snapshot = driver.snapshot()
+        rehearsal = driver.serialize_check(snapshot, form, rehearse=True)
+        self.assertTrue(rehearsal['verified'])
+        names = {part['name'] for part in rehearsal['parts']}
+        self.assertEqual(names, {'id16f_hf_0'} | {control['name'] for control in snapshot['controls']})
+        self.assertTrue(any(name.endswith(':palette:recorder') for name in names))
+        self.assertFalse(driver.gate.sent)
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
 
     def test_editor_form_reports_each_structural_failure(self):
         from vd_cosmos_core.submit_browser_contract import SEED

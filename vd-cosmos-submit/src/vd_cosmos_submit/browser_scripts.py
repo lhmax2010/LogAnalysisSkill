@@ -91,7 +91,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   return {matched:false,element,container:null};
  }
  const splitBreadcrumb=text=>text.split(/[/»›>\r\n]+/).map(s=>s.trim()).filter(Boolean);
- const breadcrumbs=[...document.querySelectorAll('.breadcrumb,.breadcrumbs')];
+ const breadcrumbs=[...document.querySelectorAll('#breadcrumb,.breadcrumb,.breadcrumbs')];
  const segments=breadcrumbs.length===1?splitBreadcrumb(breadcrumbs[0].textContent):[];
  const documentForms=[...document.forms];
  const prefix='editor:content:basicProperties:';
@@ -187,7 +187,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='bf98dd6246ea2c5f0c9399a62dfed482862742f2a359568b228eaac52433a8f8'
+DIGEST='7eff7d9492a80239fbfd67056bcfe7b7452fd2ada76223130dadba6893b7faed'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

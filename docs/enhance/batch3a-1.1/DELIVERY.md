@@ -950,3 +950,12 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - `form_unrecognized` 记录挡住操作的阶段，附候选面包屑、全部 form 的属性及控件数量、控件名称前缀计数、basicProperties 按序号的类型和行标签，以及隐藏控件名称。采集标签时排除控件内容，失败报告不含控件值、选项文字或 URL。
 - 本地暂停时间线为 Hub 同源的未登记静态资源另记 `static_path`，省略查询串，将 Wicket 版本号归一化为 `-ver-*`。其它路径按原规则打码。带非路径字符或命中凭据检查的资源继续只记脱敏形状。未登记资源仍由闸门拦截。
 - 环回复现与回归覆盖 `test_editor_form_reports_each_structural_failure`、`test_editor_structure_reports_names_and_labels_without_values_options_or_urls`、`test_editor_quiet_precedes_snapshot_and_preserves_blocked_static_path`。现有面包屑和 Run 请求回归继续验证原口径。编辑器实页结构待下一次实机演练确认。
+
+## B2.21 编辑器面包屑与第十五次演练结构回归
+
+第十五次演练（`57ab021`）报告编辑器只有一个 `div#breadcrumb`，分段后的目标路径与配置一致。匹配加入 `#breadcrumb`，同一个元素命中多个选择器只计一次。存在两个候选时仍拒绝，原有路径比对和后续阶段的结构报告继续生效。
+
+- `vd-cosmos-core/fixtures/editor_rehearsal15.html` 按结构报告重建两个表单，分别有 4 和 26 个元素。保留 18 个属性的类型、已观察的标签后缀及行尾空格，包含调色板 recorder、两个多选框和五个无名按钮。配置路径及所有控件值为夹具值，未观察的枚举编码、按钮文字与布局使用合成值。
+- `test_editor_breadcrumb_id_counts_each_element_once_and_rejects_two` 覆盖 ID 独立命中、与 class 重叠去重、两个同路径的候选仍拒绝。`test_rehearsal15_editor_snapshot_fill_and_serialize` 通过环回 HTTP 在真实 Chrome 中覆盖表单识别、填写、回读和序列化。该试验只在浏览器本地构造表单数据，服务器收到零次 POST。
+- 后续发现：默认配置下序列化返回 `verified:false / ks_mapping_unregistered`，因为 KS_LIST recorder 编码待确认。在测试中登记夹具编码后，带行尾 LF 的 PACKAGE_LIST 依旧命中 `submit_values_mismatch`：DOM FormData 返回 LF，预期网络表单体为 CRLF。同一布局使用无末尾换行的单行清单时可通过严格比对。本批仅记录差异，保留原有序列化校验。
+- 本批保留静态资源准入配置和请求闸门。夹具模拟已观察到的结构，线上调色板和回调行为待实机演练确认。
