@@ -32,7 +32,7 @@ nice -n 19 python3 vd-cosmos-core/scripts/apply_property_map.py --config "$VD_CO
 nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse
 ```
 
-该命令不由实现者执行。浏览器打开前先确认来源构建；Run 请求先阻断录制，终端确认 allow-run 后才允许完全相同的一次 GET；提交请求在演练中始终拒绝。回读全部属性后输入请求摘要前 12 位。首轮未登记编码只输出字段长度/摘要，verified=false 不等于编码确认。指纹/回调候选写入结果产物，由 FatTank 核对后人工更新本机配置，工具不自动登记。
+该命令不由实现者执行。浏览器打开前先确认来源构建；Run 请求先阻断录制，终端确认 allow-run 后才允许完全相同的一次 GET；提交请求在演练中始终拒绝。回读全部属性后输入请求摘要前 12 位。首轮未登记编码只输出字段长度/摘要，verified=false 不等于编码确认。指纹与回调候选写入结果产物，由 FatTank 审阅并确认登记。
 
 回读确认时查看 `KS_LIST encoding observed`。工具按调色板实际 recorder 比对 ID 或文本。空选择的两个候选都为空，工具显示 ids。核对正式提交所用的表单后，再把确认的 `ids` 或 `texts` 写入本机的 `submit.property_map.KS_LIST.encoding`。填写前后 recorder 的字节数和 SHA256 见确认产物。
 
@@ -46,6 +46,16 @@ nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --
 | 重提（仅指定 `--resubmit-of`） | type resubmit to confirm | `resubmit` |
 
 终端仅显示摘要和 `Full JSON:` 路径。完整源清单、回读及历史见配置的 `data_root/submit/confirmations/` 下对应的 JSON 文件。路径以 `data_root/` 开头时相对于配置的数据根目录。答错时本次操作停止，错误的 `todo` 会重复应输入的值。输入“确认”不能代替构建号或确认词。
+
+## 确认演练契约
+
+用新版先完成一次录制演练。将 `VD_REHEARSAL_RESULT` 指向命令返回的 result JSON（不是 digest 确认文件）。旧版演练 16 在 `66fbc66` 生成的结果缺少提交号和落盘 ok，不能用于登记。
+
+```bash
+nice -n 19 python3 vd-cosmos-submit/scripts/run.py confirm-contract --config "$VD_CONFIG" --from-result "$VD_REHEARSAL_RESULT"
+```
+
+核对编码、回调、指纹摘要和空隐藏值后，在终端输入 `confirm`。命令保留一份 0600 配置备份，标准输出只列修改的键。登记后再用同一条 `once --rehearse` 指令复验，查看 `callbacks sent: N`，核对已登记回调能够通过。演练仍不会提交。
 
 ## 会话恢复
 

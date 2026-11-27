@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 from .playwright_driver import Driver
 from .fixture_driver import FixtureDriver
+from . import contract_registration
 from vd_cosmos_core.cli import Parser
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.commands import Category
@@ -21,7 +22,7 @@ from vd_cosmos_core import submit_claim, submit_terminal, submit_watch
 from vd_cosmos_core.files import atomic_write, json_bytes
 from vd_cosmos_core.export import check_content
 
-COMMANDS = ['lookup', 'doctor', 'watch', 'attest', 'bind', 'rebind', 'abandon', 'resolve', 'once', 'recover']
+COMMANDS = ['lookup', 'doctor', 'watch', 'attest', 'bind', 'rebind', 'abandon', 'resolve', 'once', 'recover', 'confirm-contract']
 
 
 def main(argv=None):
@@ -35,13 +36,19 @@ def main(argv=None):
             parser.add_argument('--config', required=True)
             parser.add_argument('--backend', choices=['real', 'fixture'], default='fixture')
             parser.add_argument('--fixture')
-            for name in ('hub-id', 'build-id', 'request', 'session', 'reason', 'checked-at', 'since', 'base-list', 'base-from-hub', 'bm-build', 'shelve-list', 'resubmit-of'):
+            for name in ('hub-id', 'build-id', 'request', 'session', 'reason', 'checked-at', 'since', 'base-list', 'base-from-hub', 'bm-build', 'shelve-list', 'resubmit-of', 'from-result'):
                 parser.add_argument('--' + name)
             for name in ('via-hub', 'online', 'read-only', 'manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit', 'no-manual-action', 'rehearse', 'holder-gone'):
                 parser.add_argument('--' + name, action='store_true')
             parser.add_argument('--max-scans', type=int)
             args = parser.parse_args(argv)
             if args.via_hub: raise FlowError(6, 'requires_B2_browser')
+            if args.command == 'confirm-contract':
+                result = contract_registration.run(args.config, args.from_result)
+                print(json.dumps({'ok': True, 'exit_code': 0, **result}, separators=(',', ':')))
+                return 0
+            if args.from_result is not None:
+                raise FlowError(2, 'from_result_requires_confirm_contract')
             context = None
             if args.command in {'attest', 'bind', 'rebind', 'abandon', 'resolve'}:
                 context = submit_terminal.human_context('round.abandon' if args.command == 'abandon' else args.command)
@@ -57,7 +64,10 @@ def main(argv=None):
             reader = None
             try:
                 if args.command == 'once':
+                    revision = contract_registration.source_commit() if args.rehearse and args.backend == 'real' else None
                     result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.confirm_once(config,value),driver_factory=(lambda c,s:FixtureDriver(c,s,args.fixture)) if args.backend=='fixture' else Driver)
+                    if revision and result.get('exit_code') == 0 and result.get('rehearsed') is True:
+                        result = contract_registration.record(config, result, revision)
                 elif args.command == 'recover':
                     if not args.session or not args.reason:raise FlowError(2,'recovery_arguments_required')
                     with submit_sessions.target_lock(config):

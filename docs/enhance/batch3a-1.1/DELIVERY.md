@@ -966,3 +966,12 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - 演练摘要输出 `KS_LIST encoding observed: ids|texts`。无法识别时报 `ks_mapping_unregistered`，附遮盖数字的有界候选形状、选项数量及 recorder 摘要。正式提交要求本机的 KS_LIST encoding 与本次观察一致，原 ks 值仍可加载但不能授权提交，旧固定 recorder 值不再使用。正式提交最终快照也重新核对 recorder。
 - 仅 DOM FormData 预检按 HTML §4.10.22.8 把 textarea 换行转为 CRLF。闸门对实际捕获 multipart 的字段和值仍做严格比较。回归使用 2245 行的带 LF 清单，预检通过，直接对严格校验器提交 LF 字段仍被拒绝。
 - 回归：`test_rehearsal15_editor_snapshot_fill_and_serialize`、`test_palette_serialization_observes_ids_and_texts_and_refuses_unknown`、`test_recorder_receipts_before_and_after_fill_are_digest_only`、`test_ks_config_loads_observed_encodings_and_ignores_legacy_constant`，以及原有确认摘要用例。实机编码由 FatTank 在下一次演练确认。
+
+## B2.23 实机演练契约登记
+
+第十六次实机演练（`66fbc66`）成功回读并核对序列化，未点击提交。实测枚举编码、两个复选框的 on、KS_LIST 的 ids、空隐藏字段、18 项指纹及 14 个回调模式均由设计方回报。覆盖这些实测形状的脱敏夹具在 `test_batch3a11b223.py`。
+
+- `confirm-contract` 只接受成功、未点击、序列化已验证、已核对账号且记录完整代码提交号的真实演练结果。核对目标路径、编号、实例及账号，复用配置加载器的回调模式校验，每条回调还须归属指纹中的同一控件。第十六次的旧版 JSON 缺少落盘 ok 标志和 run/src 提交号，命令会拒绝，需用新版重跑演练。
+- 终端预览只显示编码表、回调模式、指纹控件数及摘要和空隐藏值。输入 confirm 后锁内生成 0600 备份，按原文件字节范围只更新六个 submit 键，重新加载验证后原子替换。重复同一确认没有配置差异或新备份。现有配置导入脚本共用写入器。
+- 已登记的演练按当前控件、模式及精确 URL 编码字段和值放行至多一次。下拉框用选项实际 value 核对。收到 Chrome 放行应答后记为 callback_sent，摘要显示 callbacks sent。未登记的回调仍被拦截，正式模式产生 unregistered_callback。演练提交闸门始终不允许武装。
+- 回归：`test_failed_legacy_non_rehearsal_or_wrong_target_account_refused`、`test_registration_refuses_malformed_or_unattributed_callbacks_and_nonempty_hidden`、`test_terminal_review_and_exact_private_atomic_write_then_idempotent`、`test_confirmation_refusal_and_non_tty_leave_config_untouched`、`test_successful_real_rehearsal_cli_writes_result_with_checkout_identity`、`test_confirmed_rehearsal_fill_sends_enum_wire_value_and_never_arms_submit`、`test_unregistered_callback_is_fatal_in_real_mode`。操作命令见 FATTANK-B2-MANUAL.md。

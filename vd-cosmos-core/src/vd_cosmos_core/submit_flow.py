@@ -44,6 +44,8 @@ def execute(config,request,session,context,driver,confirm,reader_factory,*,rehea
         except FlowError as error:
             raise FlowError(error.code, error.reason, **{**error.details, **recorder_evidence}) from None
         evidence.update(recorder_evidence)
+        if rehearse:
+            evidence['callbacks_sent'] = sum(record.get('classification') == 'callback_sent' for record in driver.records())
         model.ensure_safe(config,{'values':values,'fingerprint':fingerprint,'serialization':evidence})
         prefix=request['digest'][:12]
         answer=confirm({'confirmation':'digest','target':request['target'],'request':request['request_id'],'digest':request['digest'],

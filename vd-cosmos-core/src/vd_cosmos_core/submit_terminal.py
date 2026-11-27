@@ -76,8 +76,10 @@ def _summary(kind, data):
         lines = [_target(data), f'Request: {_cell(data["request"])}; mode: {"rehearsal" if data["rehearse"] else "submit"}',
                  f'Request sha256={_cell(data["digest"])}; prefix={prefix}; {len(data["values"])} form fields']
         encoding = data['serialization'].get('ks_encoding')
-        if data['rehearse'] and encoding in ('ids', 'texts'):
-            lines.append(f'KS_LIST encoding observed: {encoding}')
+        if data['rehearse']:
+            if encoding in ('ids', 'texts'):
+                lines.append(f'KS_LIST encoding observed: {encoding}')
+            lines.append(f"callbacks sent: {data['serialization'].get('callbacks_sent', 0)}")
         return lines + _lists(data['values']), prefix
     previous = data['submissions']
     return [_target(data), f'Resubmit of: {_cell(data["resubmit_of"])}; next round: {_cell(data["next_round"])}',

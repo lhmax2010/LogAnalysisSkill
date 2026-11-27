@@ -162,6 +162,7 @@ class Pause:
     flight: Flight | None = None
     main_document: bool = False
     document_response: bool = False
+    callback_record: dict | None = None
 
 
 class Driver:
@@ -569,6 +570,8 @@ class Driver:
             pause.timeline.update(fetch_error(self.config, args[0], error))
             raise
         pause.timeline['acked_at']=time.monotonic()
+        if not failed and pause.callback_record is not None:
+            pause.callback_record['classification'] = 'callback_sent'
         if failed and pause.timeline.get('captured_run'):
             pause.timeline['ack_latency_s'] = pause.timeline['acked_at'] - pause.timeline['sent_at']
         if document is not None:
@@ -698,7 +701,10 @@ class Driver:
                     k.lower()=='wicket-ajax' for k in r.get('headers',{}))
                 body=r.get('postData','').encode() if inspect else b''
                 captured=len(self.gate.run_candidates)
+                callbacks = self.gate.callback_count
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=run_ajax or headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
+                if allow and self.gate.callback_count > callbacks:
+                    pause.callback_record = self.gate.records[-1]
                 if len(self.gate.run_candidates)>captured:
                     blocked = 'Aborted'
                     pause.timeline.update(captured_run=True, ack_latency_s=None)
@@ -931,12 +937,21 @@ class Driver:
     def snapshot(self):return self._script('snapshot')
     def fill(self,index,value):
         snap=self.snapshot();c=snap['controls'][index]
-        self.gate.filling=('form-'+c['name'].replace(':','-'),c['name'],value.replace('\r\n','\n').replace('\n','\r\n'));self.gate.callback_count=0
+        wire_value = value
+        if c['kind'] == 'select':
+            matches = [o['value'] for o in c['options'] if o['text'] == value]
+            if len(matches) != 1:
+                raise FlowError(4, 'enum_encoding_unregistered')
+            wire_value = matches[0]
+        self.gate.filling = ('form-' + c['name'].replace(':', '-'), c['name'], multipart_line_endings(wire_value))
+        self.gate.callback_count = 0
         try:
             self._script('fill',index=index,value=value);self._page.wait_for_timeout(100)
             if self.gate.fatal:raise FlowError(4,self.gate.fatal)
         finally:self.gate.filling=None
     def serialize_check(self,snapshot,form,*,rehearse):
+        if self.gate.s['gate_patterns_confirmed']:
+            self._wait_for_quiet()
         pairs=self._script('serialize')
         if len(dict(pairs))!=len(pairs):raise FlowError(4,'submit_parts_invalid')
         evidence = {}
@@ -952,7 +967,7 @@ class Driver:
         # Apply that conversion here to DOM textarea entries only.
         textareas = {control['name'] for control in snapshot['controls'] if control['kind'] == 'textarea'}
         parts = {name: multipart_line_endings(value) if name in textareas else value for name, value in pairs}
-        return {**evidence, 'verified': True,
+        return {**evidence, 'verified': True, 'hidden_name': snapshot['hidden'],
                 'parts': verify_parts(self.config, parts, expected, snapshot['hidden'], rehearsal=rehearse)}
     def records(self):return self.gate.records
     def release(self,expected,hidden):

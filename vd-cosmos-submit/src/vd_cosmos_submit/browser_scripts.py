@@ -175,7 +175,10 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
   const controls=elements.map((e,i)=>{
    const opts=e.tagName==='SELECT'?options(e):[];
    const v=i===8?selected:e.type==='checkbox'?String(e.checked):e.tagName==='SELECT'?e.selectedOptions[0]?.text||'':e.value;
-   return {index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,value:v,default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
+   const control={index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,value:v,
+     default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
+   if(e.type==='checkbox')control.checked_value=e.value;
+   return control;
   });
   const ks_palette={choices:options(choices),selection:options(selection),recorder:elements[8].value};
   return {target,controls,hidden:hidden[0].name,breadcrumb_segments:segments,ks_palette};
@@ -192,7 +195,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='6eaf660467596c6317ea8bf0ea091dda84c1f5a0715a0b8aad53490e674b6e6e'
+DIGEST='386c9296f3f76cf867d31d058171b8c44a40c2dfd6e12e66434dcfacdf1ed4f6'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

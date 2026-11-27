@@ -26,10 +26,10 @@ class ConfirmationPromptTests(B1Case):
              'allow-run', 'type allow-run to confirm', ('GET /overview/35367 ILinkListener run',)),
             ('digest', dict(request='request-1',digest=sha,digest_prefix=sha[:12],rehearse=True,
                             values={'PACKAGE_LIST':package_list,'KS_LIST':'one.ks\ntwo.ks'},
-                            fingerprint={},serialization={'ks_encoding': 'texts'}),
+                            fingerprint={},serialization={'ks_encoding': 'texts', 'callbacks_sent': 14}),
              sha[:12], f'type the 12-character digest prefix {sha[:12]} to confirm',
              ('request-1','mode: rehearsal','PACKAGE_LIST: 5300 nonblank lines',
-              'KS_LIST encoding observed: texts', digest(package_list.encode()))),
+              'KS_LIST encoding observed: texts', 'callbacks sent: 14', digest(package_list.encode()))),
             ('resubmit', dict(digest=sha,resubmit_of='request-2',next_round=4501,submissions=history),
              'resubmit', 'type resubmit to confirm', ('request-2','next round: 4501',digest(json_bytes(history)))),
         )

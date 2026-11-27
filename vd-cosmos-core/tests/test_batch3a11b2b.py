@@ -209,13 +209,40 @@ class GateTests(B1Case):
         self.assertEqual(g.records,[]);g.phase='business';self.assertFalse(g.request('https://auth.example.invalid/callback','POST'))
     def test_recording_blocks_even_exact_callbacks_and_submit_fatal(self):
         g=self.gate();url=g.origin+'/wicket/page?1-2.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-input'
-        self.assertFalse(g.request(url,'POST',ajax=True));self.assertEqual(g.records[-1]['classification'],'callback_candidate')
+        self.assertFalse(g.request(url, 'POST', ajax=True))
+        self.assertFalse(g.records)
+        g.filling = ('form-editor-content-basicProperties-1-property-editor-editor-input', 'field', '')
+        self.assertFalse(g.request(url, 'POST', ajax=True))
+        self.assertEqual(g.records[-1]['classification'], 'callback_candidate')
         self.assertFalse(g.request(g.origin+'/wicket/page?1-3.IFormSubmitListener-form','POST'));self.assertEqual(g.fatal,'submission_during_recording')
-    def test_callback_scope_values_duplicates_and_two_request_budget(self):
-        g=self.gate();g.recording=False;url=g.origin+'/wicket/page?1-2.IBehaviorListener.0-form-field';p=pattern(url,'POST');g.s['gate_patterns']=[p];g.filling=('form-field','field','x')
-        for _ in range(2):self.assertTrue(g.request(url,'POST',body=b'field=x',content_type='application/x-www-form-urlencoded',ajax=True))
-        self.assertFalse(g.request(url,'POST',body=b'field=x',content_type='application/x-www-form-urlencoded',ajax=True))
-        g.callback_count=0;self.assertFalse(g.request(url,'POST',body=b'field=x&field=x',content_type='application/x-www-form-urlencoded',ajax=True))
+    def test_callback_scope_values_duplicates_and_one_request_budget(self):
+        url = self.gate().origin + '/wicket/page?1-2.IBehaviorListener.0-form-field'
+        kw = {'content_type': 'application/x-www-form-urlencoded', 'ajax': True}
+        for body in (b'field=x&field=x', b'field=y', b'other=x'):
+            gate = self.gate()
+            gate.recording = False
+            gate.s['gate_patterns'] = [pattern(url, 'POST')]
+            gate.filling = ('form-field', 'field', 'x')
+            self.assertFalse(gate.request(url, 'POST', body=body, **kw))
+
+        gate = self.gate()
+        gate.recording = False
+        gate.filling = ('form-field', 'field', 'x')
+        self.assertTrue(gate.request(url, 'POST', body=b'field=x', **kw))
+        self.assertFalse(gate.request(url, 'POST', body=b'field=x', **kw))
+        self.assertEqual(gate.fatal, 'unregistered_callback')
+
+    def test_unregistered_callback_is_fatal_in_real_mode(self):
+        gate = self.gate(False)
+        gate.recording = False
+        gate.filling = ('form-editor-content-basicProperties-0-property-editor-editor-wrapper-select',
+                        'build_type', '1')
+        url = gate.origin + '/wicket/page?1-2.IBehaviorListener.0-' + gate.filling[0]
+        self.assertFalse(gate.request(url, 'POST', body=b'build_type=1',
+                                      content_type='application/x-www-form-urlencoded', ajax=True))
+        self.assertEqual(gate.fatal, 'unregistered_callback')
+        self.assertFalse(gate.sent)
+
     def test_one_intent_token_and_multipart_content_check(self):
         g=self.gate(False);g.recording=False;body=b'--B\r\nContent-Disposition: form-data; name="field"\r\n\r\nx\r\n--B\r\nContent-Disposition: form-data; name="hf"\r\n\r\n\r\n--B--\r\n'
         url=g.origin+'/wicket/page?1-2.IFormSubmitListener-form';kw={'body':body,'content_type':'multipart/form-data; boundary=B'}

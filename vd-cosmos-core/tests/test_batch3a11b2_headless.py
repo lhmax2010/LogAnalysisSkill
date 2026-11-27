@@ -230,10 +230,11 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
     def test_recording_callback_and_submit_both_blocked_server_counts_zero(self):
         self.page.evaluate("""base=>{fetch(base+'/wicket/page?1-2.IBehaviorListener.0-form-field',{method:'POST',body:'field=x'}).catch(()=>{});fetch(base+'/wicket/page?1-3.IFormSubmitListener-form',{method:'POST',body:'field=x'}).catch(()=>{});} """,self.server.origin)
         self.wait();self.assertEqual(self.server.calls,[]);self.assertEqual(self.driver.gate.fatal,'submission_during_recording')
-    def test_callback_attribution_exact_field_value_count_only_two(self):
+    def test_callback_attribution_exact_field_value_count_only_one(self):
         gate=self.driver.gate;gate.recording=False;url=self.server.origin+'/wicket/page?1-2.IBehaviorListener.0-form-field';gate.s['gate_patterns']=[pattern(url,'POST')];gate.filling=('form-field','field','x')
         self.page.evaluate("""url=>{for(let i=0;i<3;i++)fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','Wicket-Ajax':'true'},body:'field=x'}).catch(()=>{});} """,url)
-        self.wait();self.assertEqual(len(self.server.calls),2)
+        self.wait();self.assertEqual(len(self.server.calls),1)
+        self.assertEqual([r['classification'] for r in gate.records if 'classification' in r], ['callback_sent'])
     def test_submit_single_token_real_formdata_and_redirect_not_followed(self):
         gate=self.driver.gate;gate.recording=False;gate.rehearse=False;gate.arm({'field':'x'},'hf',intent_recorded=True);self.server.redirect='/overview/'+self.config.raw['submit']['target_config_id']
         url=self.server.origin+'/wicket/page?1-2.IFormSubmitListener-form'
@@ -1051,6 +1052,42 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(error.reason, 'ks_mapping_unregistered')
         self.assertNotIn('second22.ks', str(error.details))
         self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
+
+    def test_confirmed_rehearsal_fill_sends_enum_wire_value_and_never_arms_submit(self):
+        from vd_cosmos_core.submit_browser_contract import SEED
+
+        driver = self.driver
+        control = SEED[0]['name']
+        callback = '/wicket/page?1-2.IBehaviorListener.0-form-' + control.replace(':', '-')
+        config = self.config.raw['submit']
+        config['gate_patterns'] = [pattern(self.server.origin + callback, 'POST')]
+        config['gate_patterns_confirmed'] = True
+        driver.gate.recording = False
+        html = (REPO / 'vd-cosmos-core/fixtures/editor_rehearsal15.html').read_text()
+        html += f"""
+        <script>
+        document.querySelector('[name="{control}"]').addEventListener('change', e => {{
+          fetch('{callback}', {{
+            method: 'POST',
+            headers: {{'Wicket-Ajax': 'true'}},
+            body: new URLSearchParams([[e.target.name, e.target.value]])
+          }}).catch(() => {{}});
+        }});
+        </script>
+        """
+        self.server.responses['/wicket/page?1'] = (200, None, html.encode())
+        self.open_fixture_editor()
+
+        driver.fill(0, 'Full')
+        driver._wait_for_quiet()
+        sent = [row for row in driver.records() if row.get('classification') == 'callback_sent']
+        self.assertEqual(sent, [dict(config['gate_patterns'][0], control=config['gate_patterns'][0]['component'],
+                                     classification='callback_sent')])
+        self.assertEqual([call for call in self.server.calls if call[0] == 'POST'], [('POST', callback)])
+        self.assertTrue(driver.gate.rehearse)
+        arm_error = self.fails(4, driver.gate.arm, {}, 'id16f_hf_0', intent_recorded=True)
+        self.assertEqual(arm_error.reason, 'submit_gate_not_armed')
+        self.assertFalse(driver.gate.sent)
 
     def test_editor_form_reports_each_structural_failure(self):
         from vd_cosmos_core.submit_browser_contract import SEED

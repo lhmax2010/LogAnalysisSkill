@@ -16,6 +16,19 @@ SECRET_NAME = re.compile(r'(?:password|passwd|secret|token|cookie|ticket|saml|re
 NOT_LISTED = frozenset(PROPERTIES[i] for i in (6, 12, 14, 16))
 
 
+CALLBACK_FIELDS = frozenset(('method', 'path', 'listener', 'behavior', 'component'))
+
+
+def valid_callback_pattern(entry):
+    return (isinstance(entry, dict) and entry.keys() == CALLBACK_FIELDS
+            and entry['method'] == 'POST' and entry['path'] == '/wicket/page'
+            and entry['listener'] == 'IBehaviorListener' and isinstance(entry['behavior'], str)
+            and re.fullmatch(r'[0-9]+', entry['behavior']) is not None
+            and isinstance(entry['component'], str)
+            and re.fullmatch(r'form-editor-content-basicProperties-(?:[0-9]|1[0-7])-property-editor-editor-[A-Za-z0-9_-]+',
+                             entry['component']) is not None)
+
+
 def property_map_defaults():
     direct = {0, 1, 2, 3, 4, 5, 7, 8, 17}
     renamed = {9: 'KS_PRODUCT_VERSION', 10: 'KS_PACKAGE_ADD', 11: 'DELETE_PACKAGE_LIST',
@@ -115,7 +128,8 @@ def configure(raw):
             raise FlowError(2,'invalid_static_path')
     if not isinstance(submit['gate_patterns'],list):raise FlowError(2,'invalid_gate_patterns')
     for entry in submit['gate_patterns']:
-        if not isinstance(entry,dict) or set(entry)!={'method','path','listener','behavior','component'} or entry['method']!='POST' or entry['path']!='/wicket/page' or entry['listener']!='IBehaviorListener' or not isinstance(entry['behavior'],str) or not entry['behavior'].isdecimal() or not re.fullmatch(r'form-editor-content-basicProperties-(?:[0-9]|1[0-7])-property-editor-editor-[A-Za-z0-9_-]+',entry['component']):raise FlowError(2,'invalid_callback_pattern')
+        if not valid_callback_pattern(entry):
+            raise FlowError(2, 'invalid_callback_pattern')
     if not isinstance(submit['form_fingerprint'],dict) or len(submit['form_fingerprint'].get('controls',[]))!=18:raise FlowError(2,'invalid_form_fingerprint')
     props = submit.setdefault('property_map', {})
     if not isinstance(props, dict) or set(props) - set(PROPERTIES):

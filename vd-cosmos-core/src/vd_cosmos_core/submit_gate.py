@@ -147,10 +147,12 @@ class Gate:
             if self.phase!='business':return self.block(method,u,'authentication_not_complete')
             is_submit=p['listener']=='IFormSubmitListener' or p['component'].endswith('-submit') or p['component'].endswith('-ok')
             if self.recording:
-                self.records.append(dict(p,control=self.filling[0] if self.filling else None,classification='submit' if is_submit else 'callback_candidate'))
                 if is_submit:
+                    self.records.append(dict(p, classification='submit'))
                     self.fatal='submission_during_recording'
                     self.record_request(url,method,resource,self.fatal)
+                elif self.filling and p['component'] == self.filling[0] and method == 'POST' and p['listener'] == 'IBehaviorListener':
+                    self.records.append(dict(p, control=self.filling[0], classification='callback_candidate'))
                 return False
             if is_submit:
                 if method!='POST' or p!=self.s.get('submit_pattern') or self.submission is None or self.sent:return self.block(method,u,'submission_not_authorized')
@@ -159,10 +161,13 @@ class Gate:
                 except FlowError:
                     self.fatal='blocked_before_send';self.record_request(url,method,resource,self.fatal);return False
                 self.sent=True;return True
-            if self.filling is not None and method=='POST' and ajax and content_type.split(';')[0]=='application/x-www-form-urlencoded' and p in self.s.get('gate_patterns',[]) and p['component']==self.filling[0] and self.callback_count<2:
+            if self.filling is not None and method=='POST' and ajax and content_type.split(';')[0]=='application/x-www-form-urlencoded' and p in self.s.get('gate_patterns',[]) and p['component']==self.filling[0] and not self.fatal and self.callback_count == 0:
                 try:values=parse_qsl(body.decode('utf-8'),keep_blank_values=True,strict_parsing=True,errors='strict')
                 except (ValueError,UnicodeError):return self.block(method,u,'callback_encoding')
-                if values==[(self.filling[1],self.filling[2])]:self.callback_count+=1;return True
+                if values==[(self.filling[1],self.filling[2])]:
+                    self.callback_count += 1
+                    self.records.append(dict(p, control=self.filling[0], classification='callback_allowed'))
+                    return True
             self.fatal='unregistered_callback';self.record_request(url,method,resource,self.fatal);return self.block(method,u,self.fatal)
     def response(self,url,status,location='',*,main_document=True,method='GET',resource='Document'):
         """Authorize no automatic business redirect. Auth returns are exact and one-use."""

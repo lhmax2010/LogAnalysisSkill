@@ -24,7 +24,7 @@ COMMANDS = {
     "analyze.accept": Category.ACCEPT,
     **{name: Category.HUMAN for name in (
         "confirm-input", "bind-base-list", "inbox.done", "confirm", "confirm-group", "confirm-bug", "confirm-terminal", "approve",
-        "attest", "resolve", "recover", "bind", "rebind", "parse-override", "round.abandon")},
+        "attest", "resolve", "recover", "submit.confirm-contract", "bind", "rebind", "parse-override", "round.abandon")},
     **{name: Category.EXTERNAL for name in ("submit", "submit.once", "p4.create-cl", "p4.shelve")},
 }
 EVENTS = {
