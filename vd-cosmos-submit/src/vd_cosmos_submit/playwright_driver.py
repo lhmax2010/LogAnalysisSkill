@@ -169,6 +169,7 @@ class Driver:
     pause_timeout_s = 10
     quiet_window_s = 1.5
     quiet_timeout_s = 30
+    callback_timeout_s = 15
     window_restore_timeout_s = 5
 
     def __init__(self,config,session,*,headless=False,local_origin=None):
@@ -187,6 +188,7 @@ class Driver:
         self._superseded_flights = {}
         self._superseded_requests = []
         self._last_activity=time.monotonic()
+        self._fill_callback = None
     def operate(self,args,request,context,confirm,reader_factory):
         self.gate=Gate(self.config,rehearse=args.rehearse,local_origin=self.local_origin)
         try:
@@ -705,6 +707,7 @@ class Driver:
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=run_ajax or headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
                 if allow and self.gate.callback_count > callbacks:
                     pause.callback_record = self.gate.records[-1]
+                    self._fill_callback = pause
                 if len(self.gate.run_candidates)>captured:
                     blocked = 'Aborted'
                     pause.timeline.update(captured_run=True, ack_latency_s=None)
@@ -935,6 +938,21 @@ class Driver:
         if isinstance(value,dict) and value.get('password_present'):raise self._manual_login_error()
         return value
     def snapshot(self):return self._script('snapshot')
+    def _wait_for_fill_callback(self, index, deadline):
+        while True:
+            self._check_gate()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise FlowError(5, 'callback_timeout', control_index=index)
+            pause = self._fill_callback
+            if pause is not None and pause.timeline['acked_at'] is not None:
+                # Use events for this callback's correlated Network request.
+                # An acknowledgement alone only means Fetch released it.
+                events = pause.flight.network_events_seen
+                if 'loadingFinished' in events or 'loadingFailed' in events:
+                    return
+            self._page.wait_for_timeout(min(50, max(1, int(remaining * 1000))))
+
     def fill(self,index,value):
         snap=self.snapshot();c=snap['controls'][index]
         wire_value = value
@@ -943,12 +961,25 @@ class Driver:
             if len(matches) != 1:
                 raise FlowError(4, 'enum_encoding_unregistered')
             wire_value = matches[0]
-        self.gate.filling = ('form-' + c['name'].replace(':', '-'), c['name'], multipart_line_endings(wire_value))
+        component = 'form-' + c['name'].replace(':', '-')
+        expects_callback = not self.gate.recording and any(
+            pattern['component'] == component for pattern in self.gate.s['gate_patterns'])
+        self.gate.filling = (component, c['name'], multipart_line_endings(wire_value))
         self.gate.callback_count = 0
+        self._fill_callback = None
         try:
-            self._script('fill',index=index,value=value);self._page.wait_for_timeout(100)
-            if self.gate.fatal:raise FlowError(4,self.gate.fatal)
-        finally:self.gate.filling=None
+            deadline = time.monotonic() + self.callback_timeout_s
+            self._script('fill', index=index, value=value)
+            if expects_callback:
+                self._wait_for_fill_callback(index, deadline)
+            self._wait_for_quiet()
+        except BaseException:
+            # Keep attribution until teardown and refuse further callbacks.
+            self.gate.fatal = self.gate.fatal or 'fill_aborted'
+            raise
+        else:
+            self.gate.filling = None
+            self._fill_callback = None
     def serialize_check(self,snapshot,form,*,rehearse):
         if self.gate.s['gate_patterns_confirmed']:
             self._wait_for_quiet()
@@ -1017,3 +1048,6 @@ class Driver:
         submit_sessions.Processes().close(profile)
         browser_temp.cleanup(profile)
         if failed:raise FlowError(6,'browser_cleanup_unverified')
+        if self.gate is not None:
+            self.gate.filling = None
+        self._fill_callback = None

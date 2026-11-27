@@ -1,6 +1,7 @@
 """Real Chrome + local server request counts. Missing runtime is NEVER a pass."""
 from base64 import b64decode
 import importlib.util
+import json
 import os
 from pathlib import Path
 import shutil
@@ -74,10 +75,21 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError,ConnectionResetError):return
         self.server.completed[self.path]=time.monotonic()
     def do_POST(self):
-        body=self.rfile.read(int(self.headers.get('Content-Length','0')));self.server.calls.append(('POST',self.path))
+        self.rfile.read(int(self.headers.get('Content-Length','0')))
+        self.server.calls.append(('POST',self.path))
+        if self.path in self.server.holds:
+            self.server.holds[self.path].wait(5)
+        if self.path in self.server.delays:
+            time.sleep(self.server.delays[self.path])
         if self.server.redirect:self.send_response(302);self.send_header('Location',self.server.redirect)
         else:self.send_response(200)
-        self.end_headers();self.wfile.write(b'ok')
+        self.end_headers()
+        response_started = time.monotonic()
+        try:
+            self.wfile.write(b'ok')
+        except (BrokenPipeError, ConnectionResetError):
+            return
+        self.server.completed[self.path] = response_started
 
 class HeadlessGateTests(HeadlessWatchdog,B1Case):
     def setUp(self):
@@ -1053,41 +1065,117 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertNotIn('second22.ks', str(error.details))
         self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
 
-    def test_confirmed_rehearsal_fill_sends_enum_wire_value_and_never_arms_submit(self):
+    def callback_editor(self, registered, *, emitted=None, confirmed=True, delay_ms=0):
         from vd_cosmos_core.submit_browser_contract import SEED
 
-        driver = self.driver
-        control = SEED[0]['name']
-        callback = '/wicket/page?1-2.IBehaviorListener.0-form-' + control.replace(':', '-')
+        def listener(index):
+            component = 'form-' + SEED[index]['name'].replace(':', '-')
+            return '/wicket/page?1-2.IBehaviorListener.0-' + component
+
         config = self.config.raw['submit']
-        config['gate_patterns'] = [pattern(self.server.origin + callback, 'POST')]
-        config['gate_patterns_confirmed'] = True
-        driver.gate.recording = False
+        paths = {index: listener(index) for index in registered}
+        config['gate_patterns'] = [pattern(self.server.origin + path, 'POST') for path in paths.values()]
+        config['gate_patterns_confirmed'] = confirmed
+        self.driver.gate.recording = not confirmed
+        handlers = [[SEED[index]['name'], listener(index)] for index in (registered if emitted is None else emitted)]
         html = (REPO / 'vd-cosmos-core/fixtures/editor_rehearsal15.html').read_text()
         html += f"""
         <script>
-        document.querySelector('[name="{control}"]').addEventListener('change', e => {{
-          fetch('{callback}', {{
-            method: 'POST',
-            headers: {{'Wicket-Ajax': 'true'}},
-            body: new URLSearchParams([[e.target.name, e.target.value]])
-          }}).catch(() => {{}});
-        }});
+        let channel = Promise.resolve();
+        for (const [name, path] of {json.dumps(handlers)}) {{
+          document.querySelector('[name="' + name + '"]').addEventListener('change', e => {{
+            const body = new URLSearchParams([[e.target.name, e.target.value]]);
+            channel = channel.then(() => new Promise(resolve => setTimeout(resolve, {delay_ms})))
+              .then(() => fetch(path, {{method: 'POST', headers: {{'Wicket-Ajax': 'true'}}, body}}))
+              .then(response => response.text()).catch(() => {{}});
+          }});
+        }}
         </script>
         """
         self.server.responses['/wicket/page?1'] = (200, None, html.encode())
         self.open_fixture_editor()
+        return paths
 
+    def test_confirmed_rehearsal_fill_sends_delayed_enum_wire_value_and_never_arms_submit(self):
+        driver = self.driver
+        callback = self.callback_editor([0], delay_ms=250)[0]
         driver.fill(0, 'Full')
-        driver._wait_for_quiet()
+
+        patterns = self.config.raw['submit']['gate_patterns']
         sent = [row for row in driver.records() if row.get('classification') == 'callback_sent']
-        self.assertEqual(sent, [dict(config['gate_patterns'][0], control=config['gate_patterns'][0]['component'],
-                                     classification='callback_sent')])
+        self.assertEqual(sent, [dict(patterns[0], control=patterns[0]['component'], classification='callback_sent')])
         self.assertEqual([call for call in self.server.calls if call[0] == 'POST'], [('POST', callback)])
+        self.assertIsNone(driver.gate.filling)
         self.assertTrue(driver.gate.rehearse)
         arm_error = self.fails(4, driver.gate.arm, {}, 'id16f_hf_0', intent_recorded=True)
         self.assertEqual(arm_error.reason, 'submit_gate_not_armed')
         self.assertFalse(driver.gate.sent)
+
+    def test_serialized_fills_wait_for_queued_callback_completion_and_count_fourteen(self):
+        driver = self.driver
+        indices = (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 16, 17)
+        paths = self.callback_editor(indices)
+        self.server.delays.update({paths[0]: .35, paths[1]: .35})
+        values = {0: 'Full', 1: 'fixture-first-repo', 2: 'fixture-build-conf', 4: 'armv7l', 5: 'fixture-list'}
+        for index in indices:
+            driver.fill(index, values.get(index, ''))
+            self.assertIn(paths[index], self.server.completed)
+            self.assertGreaterEqual(time.monotonic() - self.server.completed[paths[index]], driver.quiet_window_s)
+            self.assertIsNone(driver.gate.filling)
+        self.assertEqual([call for call in self.server.calls if call[0] == 'POST'],
+                         [('POST', paths[index]) for index in indices])
+        self.assertEqual(sum(row.get('classification') == 'callback_sent' for row in driver.records()), 14)
+
+    def test_expected_callback_timeout_when_no_request_appears(self):
+        self.callback_editor([1], emitted=[])
+        self.assertEqual(self.driver.callback_timeout_s, 15)
+        self.driver.callback_timeout_s = .35
+        error = self.fails(5, self.driver.fill, 1, 'fixture-value')
+        self.assertEqual(error.reason, 'callback_timeout')
+        self.assertEqual(error.details, {'control_index': 1})
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
+
+    def test_callback_timeout_keeps_current_field_when_response_is_pending(self):
+        driver = self.driver
+        path = self.callback_editor([1])[1]
+        pending = threading.Event()
+        self.addCleanup(pending.set)
+        self.server.holds[path] = pending
+        driver.callback_timeout_s = 2
+        try:
+            error = self.fails(5, driver.fill, 1, 'fixture-value')
+            self.assertEqual(error.reason, 'callback_timeout')
+            self.assertEqual(error.details, {'control_index': 1})
+            self.assertIn(('POST', path), self.server.calls)
+            self.assertNotIn(path, self.server.completed)
+            self.assertEqual(driver.gate.filling[0], self.config.raw['submit']['gate_patterns'][0]['component'])
+            self.assertIn('callback_sent', [row.get('classification') for row in driver.records()])
+        finally:
+            pending.set()
+        driver.close()
+        self.assertIsNone(driver.gate.filling)
+
+    def test_unregistered_fill_waits_for_quiet_and_blocks_a_stray_callback(self):
+        driver = self.driver
+        self.callback_editor([0], emitted=[2], delay_ms=80)
+        driver.fill(1, 'fixture-no-callback')
+        self.assertIsNone(driver.gate.filling)
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
+        error = self.fails(4, driver.fill, 2, 'fixture-unregistered')
+        self.assertEqual(error.reason, 'unregistered_callback')
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
+
+    def test_recording_keeps_attribution_for_delayed_blocked_callbacks(self):
+        driver = self.driver
+        driver.quiet_window_s = .4
+        self.callback_editor([1, 2], confirmed=False, delay_ms=200)
+        for index in (1, 2):
+            driver.fill(index, 'fixture-value')
+            component = self.config.raw['submit']['gate_patterns'][index - 1]['component']
+            self.assertEqual(driver.records()[-1]['control'], component)
+            self.assertEqual(driver.records()[-1]['classification'], 'callback_candidate')
+            self.assertIsNone(driver.gate.filling)
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
 
     def test_editor_form_reports_each_structural_failure(self):
         from vd_cosmos_core.submit_browser_contract import SEED
