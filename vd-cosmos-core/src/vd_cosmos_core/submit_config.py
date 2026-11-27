@@ -129,9 +129,13 @@ def configure(raw):
                            ('affects_build', name != 'EMAIL_CC'), ('comparison', 'cmp-v1'),
                            ('request_text_verified', False), ('observed_values', [])]:
             entry.setdefault(key, value)
+        encodings = (None, 'text', 'enum', 'boolean', 'ks')
+        if name == 'KS_LIST':
+            encodings += ('ids', 'texts')
+            entry.pop('record_value', None)
         if (entry['control_index'] != index or entry['comparison'] != 'cmp-v1'
                 or entry['affects_build'] != (name != 'EMAIL_CC')
-                or entry['encoding'] not in (None, 'text', 'enum', 'boolean', 'ks')
+                or entry['encoding'] not in encodings
                 or not isinstance(entry['observed_values'], list)
                 or (entry['variable'] is not None and
                     (not isinstance(entry['variable'], str) or SECRET_NAME.search(entry['variable'])))):

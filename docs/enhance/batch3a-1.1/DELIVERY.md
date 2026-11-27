@@ -959,3 +959,10 @@ B2.9 无头测试使用带点号的化名，覆盖问候 div、nav 中的独立�
 - `test_editor_breadcrumb_id_counts_each_element_once_and_rejects_two` 覆盖 ID 独立命中、与 class 重叠去重、两个同路径的候选仍拒绝。`test_rehearsal15_editor_snapshot_fill_and_serialize` 通过环回 HTTP 在真实 Chrome 中覆盖表单识别、填写、回读和序列化。该试验只在浏览器本地构造表单数据，服务器收到零次 POST。
 - 后续发现：默认配置下序列化返回 `verified:false / ks_mapping_unregistered`，因为 KS_LIST recorder 编码待确认。在测试中登记夹具编码后，带行尾 LF 的 PACKAGE_LIST 依旧命中 `submit_values_mismatch`：DOM FormData 返回 LF，预期网络表单体为 CRLF。同一布局使用无末尾换行的单行清单时可通过严格比对。本批仅记录差异，保留原有序列化校验。
 - 本批保留静态资源准入配置和请求闸门。夹具模拟已观察到的结构，线上调色板和回调行为待实机演练确认。
+
+## B2.22 KS_LIST 编码与表单序列化
+
+- 固定脚本在快照中按名称读取调色板的 choices、selection 与 recorder。按当前 selection 顺序对请求文本逐项精确匹配，重复、缺失及顺序不符均拒绝。录制值与派生 ID 或文本完全相等才接受，同时匹配时取 ids。新快照私有数据不进入表单指纹或回执，回执只保留填写前后的 recorder 字节数和 SHA256。
+- 演练摘要输出 `KS_LIST encoding observed: ids|texts`。无法识别时报 `ks_mapping_unregistered`，附遮盖数字的有界候选形状、选项数量及 recorder 摘要。正式提交要求本机的 KS_LIST encoding 与本次观察一致，原 ks 值仍可加载但不能授权提交，旧固定 recorder 值不再使用。正式提交最终快照也重新核对 recorder。
+- 仅 DOM FormData 预检按 HTML §4.10.22.8 把 textarea 换行转为 CRLF。闸门对实际捕获 multipart 的字段和值仍做严格比较。回归使用 2245 行的带 LF 清单，预检通过，直接对严格校验器提交 LF 字段仍被拒绝。
+- 回归：`test_rehearsal15_editor_snapshot_fill_and_serialize`、`test_palette_serialization_observes_ids_and_texts_and_refuses_unknown`、`test_recorder_receipts_before_and_after_fill_are_digest_only`、`test_ks_config_loads_observed_encodings_and_ignores_legacy_constant`，以及原有确认摘要用例。实机编码由 FatTank 在下一次演练确认。

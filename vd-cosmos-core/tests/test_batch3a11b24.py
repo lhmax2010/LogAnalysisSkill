@@ -32,6 +32,17 @@ class PropertyPolicyTests(B1Case):
         self.assertFalse(self.config.raw['submit']['property_map_confirmed'])
         self.assertNotIn('record_value', props['KS_LIST'])
 
+    def test_ks_config_loads_observed_encodings_and_ignores_legacy_constant(self):
+        raw = json.loads(self.path.read_text())
+        for encoding in ('ks', 'ids', 'texts'):
+            with self.subTest(encoding=encoding):
+                raw['submit']['property_map'] = {
+                    'KS_LIST': {'encoding': encoding, 'record_value': 'unused-fixture-value'}}
+                self.path.write_text(json.dumps(raw))
+                prop = load_config(self.path).raw['submit']['property_map']['KS_LIST']
+                self.assertEqual(prop['encoding'], encoding)
+                self.assertNotIn('record_value', prop)
+
     def assert_policy(self, field, rule, call, *args, **kw):
         with self.assertRaises(FlowError) as caught:
             call(*args, **kw)

@@ -158,28 +158,33 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  const labels=['BUILD_TYPE','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','PACKAGE_LIST','GITURL','SHELVE_LIST','KS_LIST','Product Version (ks)','rpm Add & Delete','PACKAGE_LIST (DELETE)','PACKAGE_LIST (x86 arch)','Ignore package build failure?',"Keep 'Full' build type",'Image Skip?','EMAIL_CC','EXTRA_BUILD_PARAMETER'];
  const kinds=['select','text','text','text','select','textarea','select','textarea','ks','textarea','textarea','textarea','textarea','checkbox','checkbox','select','textarea','text'];
  const elements=groups.map((g,i)=>i===8?g.find(x=>x.type==='hidden'):g[0]);
+ const paletteSelect=suffix=>groups[8].find(e=>e.tagName==='SELECT' && e.name.endsWith(':palette:'+suffix));
+ const choices=paletteSelect('choices'),selection=paletteSelect('selection');
  for(const [i,g] of groups.entries()){
   const e=elements[i];
-  if(!e || (i!==8 && g.length!==1) || (i===8 && (g.length!==3 || !g.some(x=>x.name.endsWith(':palette:choices')) || !g.some(x=>x.name.endsWith(':palette:selection')))))return unrecognized('control');
+  if(!e || (i===8 ? g.length!==3 || !choices || !selection : g.length!==1))return unrecognized('control');
   if(i!==8 && (e.tagName==='SELECT'?'select':e.tagName==='TEXTAREA'?'textarea':e.type)!==kinds[i])return unrecognized('type');
   const row=e.closest('tr');const text=row?row.innerText:'';
   if(!text.includes(labels[i]))return unrecognized('label');
  }
  const hidden=all.filter(e=>e.type==='hidden' && e.name===f.id+'_hf_0');
  if(hidden.length!==1 || all.some(e=>e.name && !e.name.startsWith(prefix) && e!==hidden[0]))return unrecognized('extra');
- const controls=elements.map((e,i)=>{
-  const g=groups[i];
-  const opts=e.tagName==='SELECT'?[...e.options].map(o=>({text:o.text,value:o.value})):[];
-  const selected=i===8?[...g.filter(x=>x.tagName==='SELECT').slice(-1)[0]?.options||[]].map(o=>o.text):[];
-  const v=i===8?selected.join(','):e.type==='checkbox'?String(e.checked):e.tagName==='SELECT'?e.selectedOptions[0]?.text||'':e.value;
-  return {index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,selected,value:v,default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
- });
- if(operation==='snapshot')return {target,controls,hidden:hidden[0].name,breadcrumb_segments:segments};
+ const options=e=>[...e.options].map(o=>({text:o.text,value:o.value}));
+ const selected=[...selection.options].map(o=>o.text).join(',');
+ if(operation==='snapshot'){
+  const controls=elements.map((e,i)=>{
+   const opts=e.tagName==='SELECT'?options(e):[];
+   const v=i===8?selected:e.type==='checkbox'?String(e.checked):e.tagName==='SELECT'?e.selectedOptions[0]?.text||'':e.value;
+   return {index:i,label:labels[i],kind:kinds[i],name:e.name,options:opts,value:v,default:e.tagName==='SELECT'?v:e.type==='checkbox'?e.checked:e.value===''};
+  });
+  const ks_palette={choices:options(choices),selection:options(selection),recorder:elements[8].value};
+  return {target,controls,hidden:hidden[0].name,breadcrumb_segments:segments,ks_palette};
+ }
  if(operation==='serialize')return [...new FormData(f).entries()].map(([k,v])=>{if(typeof v!=='string')throw Error('file');return [k,v];});
  if(operation==='fill'){
   if(!Number.isInteger(index)||index<0||index>17||typeof value!=='string')throw Error('args');
   const e=elements[index];
-  if(index===8){if(controls[8].value!==value)throw Error('ks');return true;}
+  if(index===8){if(selected!==value)throw Error('ks');return true;}
   if(e.tagName==='SELECT'){const options=[...e.options].filter(o=>o.text===value);if(options.length!==1)throw Error('option');e.value=options[0].value;}
   else if(e.type==='checkbox'){if(!['true','false'].includes(value))throw Error('boolean');e.checked=value==='true';}
   else e.value=value;
@@ -187,7 +192,7 @@ SCRIPT = r"""({operation,index,value,target,account}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='7eff7d9492a80239fbfd67056bcfe7b7452fd2ada76223130dadba6893b7faed'
+DIGEST='6eaf660467596c6317ea8bf0ea091dda84c1f5a0715a0b8aad53490e674b6e6e'
 
 def arguments(operation,*,index=None,value=None,target=None,account=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill','account','login_probe','dismiss_notice','run_position','scroll_run'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

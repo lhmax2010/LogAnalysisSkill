@@ -3,7 +3,7 @@ import time
 from .errors import FlowError
 from .state import EventStore
 from . import submit_model as model, submit_sessions as sessions
-from .submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, structure, readback, wire_values, verify_parts
+from .submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, ks_recorder_evidence, structure, readback, wire_values
 from .submit_config import PROPERTIES
 from .submit_terminal import confirmation_error
 
@@ -37,7 +37,13 @@ def execute(config,request,session,context,driver,confirm,reader_factory,*,rehea
             # Default states change during filling; control names/types/options must not.
             def stable(fp):return [{k:v for k,v in c.items() if k!='default'} for c in fp['controls']]
             if stable(structure(config,snapshot))!=stable(fingerprint):raise FlowError(5,'form_changed_during_fill')
-        evidence=driver.serialize_check(snapshot,request['form'],rehearse=rehearse)
+        recorder = {stage: ks_recorder_evidence(state) for stage, state in (('before', first), ('after', snapshot))}
+        recorder_evidence = {'ks_recorder': recorder} if recorder['after'] is not None else {}
+        try:
+            evidence = driver.serialize_check(snapshot, request['form'], rehearse=rehearse)
+        except FlowError as error:
+            raise FlowError(error.code, error.reason, **{**error.details, **recorder_evidence}) from None
+        evidence.update(recorder_evidence)
         model.ensure_safe(config,{'values':values,'fingerprint':fingerprint,'serialization':evidence})
         prefix=request['digest'][:12]
         answer=confirm({'confirmation':'digest','target':request['target'],'request':request['request_id'],'digest':request['digest'],
@@ -56,7 +62,10 @@ def execute(config,request,session,context,driver,confirm,reader_factory,*,rehea
         final=driver.snapshot();readback(config,final,request['form'],defaults=defaults)
         def stable(fp):return [{k:v for k,v in c.items() if k not in {'default','value'}} for c in fp['controls']]
         if stable(structure(config,final))!=stable(structure(config,snapshot)):raise FlowError(5,'form_changed_before_click')
-        expected=wire_values(config,final,request['form']);request=intent(config,request,session,context,H_pre,clock);clicked=True
+        expected = wire_values(config, final, request['form'])
+        if ks_recorder_evidence(final) != recorder['after']:
+            raise FlowError(5, 'form_changed_before_click')
+        request=intent(config,request,session,context,H_pre,clock);clicked=True
         status=driver.release(expected,final['hidden'])
         if status not in {'accepted','rejected','blocked_before_send'}:status='uncertain'
         result=model.record_outcome(config,request['request_id'],context,status,click_time=request['click_time'],click_clock=clock,H_pre=H_pre)

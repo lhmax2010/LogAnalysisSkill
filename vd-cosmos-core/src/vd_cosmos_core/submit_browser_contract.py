@@ -60,12 +60,55 @@ def readback(config,snapshot,form, *, defaults=None):
     if any(not isinstance(actual.get(p),str) or normalized(actual[p])!=normalized(form[p]) for p in PROPERTIES):raise FlowError(5,'form_readback_mismatch')
     return actual
 
-def wire_values(config,snapshot,form, *, rehearsal=False):
+def multipart_line_endings(value):
+    return re.sub(r'\r\n|\r|\n', '\r\n', value)
+
+
+def ks_recorder_evidence(snapshot):
+    palette = snapshot.get('ks_palette', {})
+    if 'recorder' not in palette:
+        return None
+    raw = palette['recorder'].encode()
+    return {'length': len(raw), 'sha256': digest(raw)}
+
+
+def _ks_wire(snapshot, value, entry, *, rehearsal):
+    palette = snapshot.get('ks_palette')
+    if palette is None:
+        raise FlowError(4, 'ks_mapping_unregistered')
+    choices, selection = palette['choices'], palette['selection']
+    wanted = value.split(',') if value else []
+    candidates = {}
+    for option in choices + selection:
+        candidates.setdefault(option['text'], []).append(option['value'])
+    details = {'recorder': ks_recorder_evidence(snapshot), 'choices_count': len(choices),
+               'selection_count': len(selection)}
+    if [option['text'] for option in selection] != wanted or any(len(candidates[text]) != 1 for text in wanted):
+        raise FlowError(4, 'ks_mapping_unregistered', **details)
+
+    derived = {'ids': ','.join(candidates[text][0] for text in wanted), 'texts': ','.join(wanted)}
+    for encoding, encoded in derived.items():
+        if palette['recorder'] == encoded:
+            if not rehearsal and entry.get('encoding') != encoding:
+                raise FlowError(4, 'property_encoding_unregistered', property='KS_LIST', ks_encoding=encoding)
+            return encoded, encoding
+    shapes = {kind: re.sub(r'[0-9]+', 'N', encoded)[:80] if re.fullmatch(r'[\w. ,()+-]*', encoded)
+              else '<redacted>' for kind, encoded in derived.items()}
+    raise FlowError(4, 'ks_mapping_unregistered', candidate_shapes=shapes, **details)
+
+
+def wire_values(config,snapshot,form, *, rehearsal=False, evidence=None):
     """Explicitly decode encodings; unregistered fields can be observed, never sent."""
-    readback(config,snapshot,form);result={};props=config.raw['submit']['property_map']
+    readback(config,snapshot,form)
+    result = {}
+    props = config.raw['submit']['property_map']
+    ks_wire, ks_encoding = _ks_wire(snapshot, form['KS_LIST'], props['KS_LIST'], rehearsal=rehearsal)
+    if evidence is not None:
+        evidence['ks_encoding'] = ks_encoding
     for c in snapshot['controls']:
         p=c['label'];entry=props[p];value=form[p]
-        if not rehearsal and entry.get('encoding') is None:raise FlowError(4,'property_encoding_unregistered')
+        if c['kind'] != 'ks' and not rehearsal and entry.get('encoding') is None:
+            raise FlowError(4, 'property_encoding_unregistered')
         if c['kind']=='checkbox':
             if value not in {'true','false'}:raise FlowError(4,'checkbox_encoding_unregistered')
             if value=='false':continue
@@ -77,10 +120,9 @@ def wire_values(config,snapshot,form, *, rehearsal=False):
             wire=pairs[0]['value']
             if not rehearsal and entry.get('option_values',{}).get(value)!=wire:raise FlowError(4,'enum_encoding_unregistered')
         elif c['kind']=='ks':
-            if value!=','.join(c.get('selected',[])):raise FlowError(4,'ks_mapping_unregistered')
-            wire=entry.get('record_value')
-            if not isinstance(wire,str):raise FlowError(4,'ks_mapping_unregistered')
-        else:wire=value.replace('\r\n','\n').replace('\r','\n').replace('\n','\r\n')
+            wire = ks_wire
+        else:
+            wire = multipart_line_endings(value)
         result[c['name']]=wire
     return result
 

@@ -945,7 +945,7 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(error.details['form_count'], 1)
 
     def test_rehearsal15_editor_snapshot_fill_and_serialize(self):
-        from vd_cosmos_core.submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, readback, structure, wire_values
+        from vd_cosmos_core.submit_browser_contract import DEFAULT_CONTROLS, enforce_policy, readback, structure, verify_parts, wire_values
         from vd_cosmos_core.submit_config import PROPERTIES
 
         fixture = REPO / 'vd-cosmos-core/fixtures/editor_rehearsal15.html'
@@ -963,8 +963,10 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(first['breadcrumb_segments'], ['root', 'PRODUCT', 'fixture', 'RELEASE'])
         self.assertEqual(first['hidden'], 'id16f_hf_0')
         defaults = {c['label']: c['value'] for c in first['controls'] if c['label'] in DEFAULT_CONTROLS}
+        package_list = ''.join(f'//example/tree/product/[INT]/packages/fixture-{i}/...@100\n' for i in range(2245))
         form = self.form() | {'BUILD_TYPE': 'Full', 'ARCH': 'armv7l', 'BASE_REPOS': 'fixture-repo',
-                              'BUILD_CONF': 'fixture-conf', 'EXTRA_BUILD_PARAMETER': 'fixture-knob'}
+                              'BUILD_CONF': 'fixture-conf', 'EXTRA_BUILD_PARAMETER': 'fixture-knob',
+                              'PACKAGE_LIST': package_list}
         enforce_policy(form, defaults=defaults)
         for index, name in enumerate(PROPERTIES):
             if name not in DEFAULT_CONTROLS:
@@ -973,31 +975,81 @@ class HeadlessGateTests(HeadlessWatchdog,B1Case):
         self.assertEqual(readback(self.config, snapshot, form, defaults=defaults), form)
         stable = lambda fp: [{k: v for k, v in c.items() if k != 'default'} for c in fp['controls']]
         self.assertEqual(stable(structure(self.config, snapshot)), stable(first_fingerprint))
-        rehearsal = driver.serialize_check(snapshot, form, rehearse=True)
-        self.assertFalse(rehearsal['verified'])
-        self.assertEqual(rehearsal['reason'], 'ks_mapping_unregistered')
-
-        # Register a synthetic recorder encoding only to exercise exact body verification.
-        self.config.raw['submit']['property_map']['KS_LIST']['record_value'] = 'fixture-palette-record'
         parts = dict(driver._script('serialize'))
         expected = wire_values(self.config, snapshot, form, rehearsal=True)
         package_list_name = snapshot['controls'][5]['name']
-        self.assertEqual([name for name, value in expected.items() if parts[name] != value], [package_list_name])
-        self.assertEqual(parts[package_list_name], form['PACKAGE_LIST'])
-        self.assertEqual(expected[package_list_name], form['PACKAGE_LIST'].replace('\n', '\r\n'))
-        failure = self.fails(4, driver.serialize_check, snapshot, form, rehearse=True)
-        self.assertEqual(failure.reason, 'submit_values_mismatch')
-
-        # A single-line list without a final newline verifies against the same layout.
-        form['PACKAGE_LIST'] = form['PACKAGE_LIST'].rstrip('\n')
-        driver.fill(5, form['PACKAGE_LIST'])
-        snapshot = driver.snapshot()
+        self.assertEqual(parts[package_list_name], package_list)
+        self.assertEqual(expected[package_list_name], package_list.replace('\n', '\r\n'))
+        # The strict captured-body validator must still reject raw LF.
+        self.assertEqual(self.fails(4, verify_parts, self.config, parts, expected,
+                                   snapshot['hidden'], rehearsal=True).reason, 'submit_values_mismatch')
         rehearsal = driver.serialize_check(snapshot, form, rehearse=True)
         self.assertTrue(rehearsal['verified'])
+        self.assertEqual(rehearsal['ks_encoding'], 'ids')
         names = {part['name'] for part in rehearsal['parts']}
         self.assertEqual(names, {'id16f_hf_0'} | {control['name'] for control in snapshot['controls']})
         self.assertTrue(any(name.endswith(':palette:recorder') for name in names))
         self.assertFalse(driver.gate.sent)
+        self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
+
+    def test_palette_serialization_observes_ids_and_texts_and_refuses_unknown(self):
+        from vd_cosmos_core.files import digest
+
+        fixture = (REPO / 'vd-cosmos-core/fixtures/editor_rehearsal15.html').read_text()
+        populated = fixture.replace(':palette:selection"></select>', ':palette:selection">'
+                                    '<option value="731">second22.ks</option>'
+                                    '<option value="410">first11.ks</option></select>')
+        self.open_fixture_editor()
+        driver = self.driver
+        form = self.form() | {'BUILD_TYPE': 'Full', 'ARCH': 'armv7l', 'KS_LIST': 'second22.ks,first11.ks'}
+        encoding_config = self.config.raw['submit']['property_map']
+        self.config.raw['submit']['property_map_confirmed'] = True
+
+        for recorder, encoding in (('731,410', 'ids'), ('second22.ks,first11.ks', 'texts')):
+            with self.subTest(encoding=encoding):
+                self.page.set_content(populated.replace(':palette:recorder" value=""',
+                                                       f':palette:recorder" value="{recorder}"'))
+                # The fixture starts with the requested palette selection.
+                driver.fill(8, form['KS_LIST'])
+                driver.fill(5, form['PACKAGE_LIST'])
+                snapshot = driver.snapshot()
+                evidence = driver.serialize_check(snapshot, form, rehearse=True)
+                self.assertTrue(evidence['verified'])
+                self.assertEqual(evidence['ks_encoding'], encoding)
+                self.assertNotIn('second22.ks', str(evidence))
+                self.assertNotIn('731,410', str(evidence))
+                for control in snapshot['controls']:
+                    if control['kind'] == 'select':
+                        encoding_config[control['label']]['option_values'] = {
+                            option['text']: option['value'] for option in control['options']}
+                wrong = 'texts' if encoding == 'ids' else 'ids'
+                for unconfirmed in (None, 'ks', wrong):
+                    encoding_config['KS_LIST']['encoding'] = unconfirmed
+                    error = self.fails(4, driver.serialize_check, snapshot, form, rehearse=False)
+                    self.assertEqual(error.reason, 'property_encoding_unregistered')
+                encoding_config['KS_LIST']['encoding'] = encoding
+                self.assertTrue(driver.serialize_check(snapshot, form, rehearse=False)['verified'])
+
+        self.page.set_content(populated.replace(':palette:recorder" value=""',
+                                               ':palette:recorder" value="fixture-recorder-887"'))
+        driver.fill(5, form['PACKAGE_LIST'])
+        snapshot = driver.snapshot()
+        error = self.fails(4, driver.serialize_check, snapshot, form, rehearse=True)
+        self.assertEqual(error.reason, 'ks_mapping_unregistered')
+        self.assertEqual(error.details,
+                         {'recorder': {'length': len(b'fixture-recorder-887'), 'sha256': digest(b'fixture-recorder-887')},
+                          'candidate_shapes': {'ids': 'N,N', 'texts': 'secondN.ks,firstN.ks'},
+                          'choices_count': 1, 'selection_count': 2})
+        self.assertNotIn('fixture-recorder-887', str(error.details))
+        self.assertNotIn('Fixture KS', str(error.details))
+
+        ambiguous = populated.replace('>Fixture KS</option>', '>second22.ks</option>')
+        self.page.set_content(ambiguous.replace(':palette:recorder" value=""',
+                                               ':palette:recorder" value="731,410"'))
+        driver.fill(5, form['PACKAGE_LIST'])
+        error = self.fails(4, driver.serialize_check, driver.snapshot(), form, rehearse=True)
+        self.assertEqual(error.reason, 'ks_mapping_unregistered')
+        self.assertNotIn('second22.ks', str(error.details))
         self.assertFalse(any(method == 'POST' for method, _ in self.server.calls))
 
     def test_editor_form_reports_each_structural_failure(self):

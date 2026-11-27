@@ -45,6 +45,44 @@ class B2bTests(B1Case):
         r,s,d=self.setup_flow();result=flow.execute(self.config,r,s,CTX,d,lambda _:r['digest'][:12],self.reader,rehearse=True)
         self.assertTrue(result['rehearsed']);self.assertEqual(d.clicks,0);self.assertTrue(d.closed)
         with EventStore(self.config.data_root) as store:self.assertFalse(store.events(kinds=['click_intent']))
+    def test_recorder_receipts_before_and_after_fill_are_digest_only(self):
+        from vd_cosmos_core.files import digest
+
+        for refused in (False, True):
+            with self.subTest(refused=refused):
+                r, s, driver = self.setup_flow()
+                driver.snap['ks_palette'] = {'choices': [{'text': 'fixture-option-private', 'value': '1'}],
+                                             'selection': [], 'recorder': 'fixture-before'}
+                fill = driver.fill
+
+                def fill_with_recorder(index, value):
+                    fill(index, value)
+                    driver.snap['ks_palette']['recorder'] = 'fixture-after'
+
+                driver.fill = fill_with_recorder
+                seen = []
+
+                def confirm(payload):
+                    seen.append(payload)
+                    return r['digest'][:12]
+
+                with patch.object(driver, 'serialize_check', return_value={'verified': True, 'ks_encoding': 'ids'},
+                                  side_effect=FlowError(4, 'ks_mapping_unregistered') if refused else None):
+                    if refused:
+                        result = self.fails(4, flow.execute, self.config, r, s, CTX, driver, confirm,
+                                            self.reader, rehearse=True).details
+                        self.assertEqual(seen, [])
+                    else:
+                        rehearsal = flow.execute(self.config, r, s, CTX, driver, confirm, self.reader, rehearse=True)
+                        result = rehearsal['evidence']
+                        self.assertEqual(seen[0]['serialization'], result)
+                        self.assertNotIn('fixture-option-private', str(seen))
+                self.assertEqual(result['ks_recorder'],
+                                 {stage: {'length': len(value), 'sha256': digest(value)}
+                                  for stage, value in [('before', b'fixture-before'), ('after', b'fixture-after')]})
+                self.assertNotIn('fixture-before', str(result))
+                self.assertNotIn('fixture-after', str(result))
+
     def test_browser_result_keeps_account_evidence_after_a_later_failure(self):
         from vd_cosmos_submit.playwright_driver import Driver
         evidence={'matched':True,'element':{'tag':'a','id':'logout','class':''},

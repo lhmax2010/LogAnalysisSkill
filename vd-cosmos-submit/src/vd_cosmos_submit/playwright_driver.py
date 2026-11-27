@@ -14,7 +14,7 @@ from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core import submit_sessions, submit_flow, submit_model, browser_temp
 from vd_cosmos_core.export import check_content
 from vd_cosmos_core.submit_gate import Gate, address, request_evidence, static_key
-from vd_cosmos_core.submit_browser_contract import accepted_location, wire_values, verify_parts
+from vd_cosmos_core.submit_browser_contract import accepted_location, multipart_line_endings, wire_values, verify_parts
 from vd_cosmos_core.submit_terminal import confirmation_error
 from vd_cosmos_core.submit_config import SECRET_NAME
 from vd_cosmos_core.files import digest, json_bytes
@@ -939,12 +939,21 @@ class Driver:
     def serialize_check(self,snapshot,form,*,rehearse):
         pairs=self._script('serialize')
         if len(dict(pairs))!=len(pairs):raise FlowError(4,'submit_parts_invalid')
-        try:expected=wire_values(self.config,snapshot,form,rehearsal=rehearse)
+        evidence = {}
+        try:
+            expected = wire_values(self.config, snapshot, form, rehearsal=rehearse, evidence=evidence)
         except FlowError as e:
-            if not rehearse:raise
+            if not rehearse or e.reason == 'ks_mapping_unregistered':
+                raise
             # No automatic registration. Record only digests, never guess encoding.
-            return {'verified':False,'reason':e.reason,'parts':[{'name':k,'length':len(v),'sha256':digest(v.encode())} for k,v in pairs]}
-        return {'verified':True,'parts':verify_parts(self.config,dict(pairs),expected,snapshot['hidden'],rehearsal=rehearse)}
+            return {**evidence, 'verified':False,'reason':e.reason,'parts':[{'name':k,'length':len(v),'sha256':digest(v.encode())} for k,v in pairs]}
+        # The HTML multipart encoder converts line endings on the wire:
+        # https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#multipart-form-data
+        # Apply that conversion here to DOM textarea entries only.
+        textareas = {control['name'] for control in snapshot['controls'] if control['kind'] == 'textarea'}
+        parts = {name: multipart_line_endings(value) if name in textareas else value for name, value in pairs}
+        return {**evidence, 'verified': True,
+                'parts': verify_parts(self.config, parts, expected, snapshot['hidden'], rehearsal=rehearse)}
     def records(self):return self.gate.records
     def release(self,expected,hidden):
         self._check();self.gate.arm(expected,hidden,intent_recorded=True)

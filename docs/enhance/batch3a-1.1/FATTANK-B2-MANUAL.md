@@ -34,6 +34,8 @@ nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --
 
 该命令不由实现者执行。浏览器打开前先确认来源构建；Run 请求先阻断录制，终端确认 allow-run 后才允许完全相同的一次 GET；提交请求在演练中始终拒绝。回读全部属性后输入请求摘要前 12 位。首轮未登记编码只输出字段长度/摘要，verified=false 不等于编码确认。指纹/回调候选写入结果产物，由 FatTank 核对后人工更新本机配置，工具不自动登记。
 
+回读确认时查看 `KS_LIST encoding observed`。工具按调色板实际 recorder 比对 ID 或文本。空选择的两个候选都为空，工具显示 ids。核对正式提交所用的表单后，再把确认的 `ids` 或 `texts` 写入本机的 `submit.property_map.KS_LIST.encoding`。填写前后 recorder 的字节数和 SHA256 见确认产物。
+
 命令入口通用确认仍输入 `yes`。之后按每次提示末行输入显示的精确值：
 
 | 确认 | 终端提示示例 | 输入 |

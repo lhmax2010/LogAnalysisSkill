@@ -318,7 +318,7 @@ def compare(request, values, config):
             except FlowError: equal = False
         elif entry['encoding'] is None:
             result[name] = '未核验'; continue
-        elif entry['encoding'] in {'enum', 'boolean', 'ks'} and str(expected) not in entry['observed_values']:
+        elif entry['encoding'] in {'enum', 'boolean', 'ks', 'ids', 'texts'} and str(expected) not in entry['observed_values']:
             result[name] = '未核验'; continue
         else:
             equal = cmp_v1(entry.get('variable_values', {}).get(expected, expected)) == cmp_v1(actual)
